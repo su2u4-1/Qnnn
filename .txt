@@ -1,0 +1,44 @@
+declare
+expression
+    operator
+    variable
+    call
+if-elif-else
+while-else
+for-else
+try-catch
+include/import
+
+built-in 
+    type
+    class
+    function
+class
+    attribute
+method
+function
+
+type system
+variable scope
+    global
+    local
+    argument
+
+built_in_function:
+    int(obj: any) -> int
+    char(c: int) -> char
+    bool(obj: any) -> bool
+    void() -> NULL
+    str(obj: any) -> str
+    float(obj: any) -> float
+    arr(type: T, *item: T) -> arr<T>
+    pointer(type: T, var: T) -> pointer<T>
+
+    range(a: int, b: int, c: int) -> iterator
+    print(s :obj, *other: tuple[obj]) -> NULL
+    input(s: str) -> str
+    // max(a: int, *other: tuple[int]) -> bool
+    // min(a: int, *other: tuple[int]) -> bool
+    // bin(a: int) -> str
+    // oct(a: int) -> str
+    // hex(a: int) -> str
