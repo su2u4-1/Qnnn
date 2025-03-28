@@ -28,7 +28,13 @@ int main(int argc, char* argv[]) {
     }
     input.close();
 
-    vector<Token> tokens = lexer(source_code, file_name);
+    auto t = lexer(source_code, file_name);
+    vector<Token> tokens = t.first;
+    string error_msg = t.second;
+    if (error_msg != "") {
+        cerr << error_msg << endl;
+        return 1;
+    }
 
     return 0;
 }

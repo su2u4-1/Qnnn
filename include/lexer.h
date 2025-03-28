@@ -3,6 +3,6 @@
 
 #include "qlib.h"
 
-vector<Token> lexer(vector<string> source_code, string file_name);
+pair<vector<Token>, string> lexer(vector<string> source_code, string file_name);
 
 #endif  // LEXER_H

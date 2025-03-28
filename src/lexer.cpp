@@ -1,6 +1,230 @@
 #include "../include/qlib.h"
 
-vector<Token> lexer(vector<string> source_code, string file_name) {
+string error(string msg, string file_name, pair<int, int> pos) {
+    printf("Error: %s in %s: (%d, %d)\n", msg.c_str(), file_name.c_str(), pos.first, pos.second);
+}
+
+pair<vector<Token>, string> lexer(vector<string> source_code, string file_name) {
     vector<Token> tokens;
-    return tokens;
-};
+    string state = "", content = "";
+    char p = ' ', pp = ' ';
+    pair<int, int> pos = {-1, -1};
+    for (int i = 0; i < source_code.size(); i++) {
+        string line = source_code[i];
+        for (int j = 0; j < line.size(); j++) {
+            char c = line[j];
+            p = pp;
+            pp = c;
+            if (state == "comment_1") {
+                content += c;
+                if (p == '*' && c == '/') {
+                    tokens.push_back(Token("comment", content, file_name, pos));
+                }
+            }
+            if (state == "+" || state == "%") {
+                state = "";
+                if (c == '=') {
+                    tokens.push_back(Token("symbol", {p, c}, file_name, {i + 1, j - 1}));
+                    continue;
+                } else {
+                    tokens.push_back(Token("symbol", {p}, file_name, {i + 1, j - 1}));
+                }
+            } else if (state == "-") {
+                state = "";
+                if (isdigit(c)) {
+                    state = "integer";
+                    content = {p, c};
+                    pos = {i + 1, j - 1};
+                    continue;
+                } else if (c == '=') {
+                    tokens.push_back(Token("symbol", "-=", file_name, {i + 1, j - 1}));
+                    continue;
+                } else {
+                    tokens.push_back(Token("symbol", "-", file_name, {i + 1, j - 1}));
+                }
+            } else if (state == "*") {
+                state = "";
+                if (c == '=') {
+                    tokens.push_back(Token("symbol", "*=", file_name, {i + 1, j - 1}));
+                    continue;
+                } else if (c == '*') {
+                    tokens.push_back(Token("symbol", "**", file_name, {i + 1, j - 1}));
+                    continue;
+                } else {
+                    tokens.push_back(Token("symbol", "*", file_name, {i + 1, j - 1}));
+                }
+            } else if (state == "/") {
+                state = "";
+                if (c == '/') {
+                    state = "comment_0";
+                    content = "//";
+                    pos = {i + 1, j - 1};
+                    continue;
+                } else if (c == '*') {
+                    state = "comment_1";
+                    content = "/*";
+                    pos = {i + 1, j - 1};
+                    continue;
+                } else if (c == '=') {
+                    tokens.push_back(Token("symbol", "/=", file_name, {i + 1, j - 1}));
+                    continue;
+                } else {
+                    tokens.push_back(Token("symbol", "/", file_name, {i + 1, j - 1}));
+                }
+            } else if (state == ">") {
+                state = "";
+                if (c == '=') {
+                    tokens.push_back(Token("symbol", ">=", file_name, {i + 1, j - 1}));
+                    continue;
+                } else if (c == '>') {
+                    tokens.push_back(Token("symbol", ">>", file_name, {i + 1, j - 1}));
+                    continue;
+                } else {
+                    tokens.push_back(Token("symbol", ">", file_name, {i + 1, j - 1}));
+                }
+            } else if (state == "<") {
+                state = "";
+                if (c == '=') {
+                    tokens.push_back(Token("symbol", "<=", file_name, {i + 1, j - 1}));
+                    continue;
+                } else if (c == '<') {
+                    tokens.push_back(Token("symbol", "<<", file_name, {i + 1, j - 1}));
+                    continue;
+                } else {
+                    tokens.push_back(Token("symbol", "<", file_name, {i + 1, j - 1}));
+                }
+            } else if (state == "=") {
+                state = "";
+                if (c == '=') {
+                    tokens.push_back(Token("symbol", "==", file_name, {i + 1, j - 1}));
+                    continue;
+                } else {
+                    tokens.push_back(Token("symbol", "=", file_name, {i + 1, j - 1}));
+                }
+            } else if (state == "!") {
+                state = "";
+                if (c == '=') {
+                    tokens.push_back(Token("symbol", "!=", file_name, {i + 1, j - 1}));
+                    continue;
+                } else {
+                    tokens.push_back(Token("symbol", "!", file_name, {i + 1, j - 1}));
+                }
+            } else if (state == "&") {
+                state = "";
+                if (c == '&') {
+                    tokens.push_back(Token("symbol", "&&", file_name, {i + 1, j - 1}));
+                    continue;
+                } else {
+                    tokens.push_back(Token("symbol", "&", file_name, {i + 1, j - 1}));
+                }
+            } else if (state == "|") {
+                state = "";
+                if (c == '|') {
+                    tokens.push_back(Token("symbol", "||", file_name, {i + 1, j - 1}));
+                    continue;
+                } else {
+                    tokens.push_back(Token("symbol", "|", file_name, {i + 1, j - 1}));
+                }
+            } else if (state == "char") {
+                if (c != '\'') {
+                    if (content == "") {
+                        content = c;
+                    } else {
+                        error("Character constant too long", file_name, {i + 1, j});
+                    }
+                } else {
+                    if (content == "") {
+                        tokens.push_back(Token("char", "'" + content + "'", file_name, {i + 1, j}));
+                        state = "";
+                        content = "";
+                    } else {
+                        error("Character constant too long or too short", file_name, {i + 1, j});
+                    }
+                }
+                continue;
+            } else if (state == "string") {
+                if (c == '"') {
+                    tokens.push_back(Token("string", "\"" + content + "\"", file_name, pos));
+                    state = "";
+                    content = "";
+                } else {
+                    content += c;
+                }
+                continue;
+            } else if (state == "integer") {
+                if (isdigit(c)) {
+                    content += c;
+                    continue;
+                } else if (c == '.') {
+                    state = "float";
+                    content += c;
+                    continue;
+                } else {
+                    tokens.push_back(Token("int", content, file_name, pos));
+                    state = "";
+                    content = "";
+                }
+            } else if (state == "float") {
+                if (isdigit(c)) {
+                    content += c;
+                    continue;
+                } else {
+                    tokens.push_back(Token("float", content, file_name, pos));
+                    state = "";
+                    content = "";
+                }
+            } else if (state == "comment_0") {
+                if (c != '\n') {
+                    content += c;
+                } else {
+                    tokens.push_back(Token("comment", content, file_name, pos));
+                    state = "";
+                    content = "";
+                }
+            } else if (state == "identifier") {
+                if (isalnum(c) || c == '_') {
+                    content += c;
+                    continue;
+                } else {
+                    if (is_keyword(content)) {
+                        tokens.push_back(Token("keyword", content, file_name, pos));
+                    } else {
+                        tokens.push_back(Token("identifier", content, file_name, pos));
+                    }
+                    state = "";
+                    content = "";
+                }
+            }
+
+            if (is_symbol(c)) {
+                if (c == '+' || c == '-' || c == '*' || c == '/' || c == '%' || c == '>' || c == '=' || c == '<' || c == '!' || c == '&' || c == '|') {
+                    state = string(1, c);
+                } else {
+                    tokens.push_back(Token("symbol", string(1, c), file_name, {i + 1, j}));
+                }
+            } else if (c == '\'') {
+                state = "char";
+            } else if (c == '"') {
+                state = "string";
+                pos = {i + 1, j + 1};
+            } else if (isdigit(c)) {
+                state = "integer";
+                pos = {i + 1, j};
+                content = c;
+            } else if (c == '#') {
+                state = "comment_0";
+                content = "#";
+                pos = {i + 1, j};
+            } else if (isalpha(c) || c == '_') {
+                state = "identifier";
+                pos = {i + 1, j};
+                content = c;
+            } else {
+                if (c != ' ' && c != '\t' && c != '\n' && c != '\r' && c != '\0' && c != '\v' && c != '\f') {
+                    error("Invalid character " + c, file_name, {i + 1, j});
+                }
+            }
+        }
+    }
+    return {tokens, ""};
+}
