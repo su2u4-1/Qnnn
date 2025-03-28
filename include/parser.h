@@ -1,6 +1,8 @@
 #ifndef PARSER_H
 #define PARSER_H
 
+#include "qlib.h"
+
 class Parser {
    public:
     Parser(vector<Token> tokens, string file_name);
@@ -10,7 +12,6 @@ class Parser {
     Token current_token;
     Token next_token();
     void get_token();
-    void error(string message, pair<int, int> location);
     Node parse();
     Node parse_import();
     Node parse_declare(int state);

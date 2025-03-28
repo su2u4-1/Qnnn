@@ -4,21 +4,11 @@
 
 using namespace std;
 
-int main(int argc, char* argv[]) {
-    if (argc < 2) {
-        cerr << "Usage: " << argv[0] << " <filename>" << endl;
-        return 1;
-    }
-    string file_name = argv[1];
+vector<string> read_file(string file_name) {
     ifstream input;
-    if (file_name.find(".qn") == string::npos) {
-        cerr << "Error: File must have .qn extension" << endl;
-        return 1;
-    }
     input.open(file_name);
     if (input.fail()) {
-        cerr << "Error: Could not open file " << file_name << endl;
-        return 1;
+        throw runtime_error("Error: Could not open file " + file_name);
     }
     vector<string> source_code;
     string line;
@@ -34,12 +24,32 @@ int main(int argc, char* argv[]) {
         source_code.push_back(line);
     }
     input.close();
+}
 
-    auto t = lexer(source_code, file_name);
-    vector<Token> tokens = t.first;
-    string error_msg = t.second;
-    if (error_msg != "") {
-        cerr << error_msg << endl;
+int main(int argc, char* argv[]) {
+    if (argc < 2) {
+        cerr << "Usage: " << argv[0] << " <filename>" << endl;
+        return 1;
+    }
+    string file_name = argv[1];
+    if (file_name.find(".qn") == string::npos) {
+        cerr << "Error: File must have .qn extension" << endl;
+        return 1;
+    }
+
+    vector<string> source_code;
+    try {
+        source_code = read_file(file_name);
+    } catch (const runtime_error& e) {
+        cerr << e.what() << endl;
+        return 1;
+    }
+    source_code_map[file_name] = source_code;
+
+    try {
+        vector<Token> tokens = lexer(source_code, file_name);
+    } catch (const runtime_error& e) {
+        cerr << e.what() << endl;
         return 1;
     }
 

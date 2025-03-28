@@ -1,6 +1,6 @@
 #include "../include/qlib.h"
 
-pair<vector<Token>, string> lexer(vector<string> source_code, string file_name) {
+vector<Token> lexer(vector<string> source_code, string file_name) {
     vector<Token> tokens;
     string state = "", content = "";
     char p = ' ', pp = ' ';
@@ -127,7 +127,7 @@ pair<vector<Token>, string> lexer(vector<string> source_code, string file_name) 
                     if (content == "") {
                         content = c;
                     } else {
-                        return {tokens, error("Character constant too long", file_name, {i + 1, j}, line)};
+                        error("Character constant too long", file_name, {i + 1, j}, line);
                     }
                 } else {
                     if (content.size() == 1) {
@@ -135,7 +135,7 @@ pair<vector<Token>, string> lexer(vector<string> source_code, string file_name) 
                         state = "";
                         content = "";
                     } else {
-                        return {tokens, error("Character constant too long or too short", file_name, {i + 1, j}, line)};
+                        error("Character constant too long or too short", file_name, {i + 1, j}, line);
                     }
                 }
                 continue;
@@ -219,10 +219,10 @@ pair<vector<Token>, string> lexer(vector<string> source_code, string file_name) 
                 content = c;
             } else {
                 if (c != ' ' && c != '\t' && c != '\n' && c != '\r' && c != '\0' && c != '\v' && c != '\f') {
-                    return {tokens, error("Invalid character " + string(1, c), file_name, {i + 1, j}, line)};
+                    error("Invalid character " + string(1, c), file_name, {i + 1, j}, line);
                 }
             }
         }
     }
-    return {tokens, ""};
+    return tokens;
 }

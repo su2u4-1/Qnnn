@@ -10,10 +10,12 @@
 
 using namespace std;
 
+map<string, vector<string>> source_code_map;
+
 bool is_keyword(string word);
 bool is_symbol(string word);
 bool is_symbol(char c);
-string error(string msg, string file_name, pair<int, int> pos, string source_code);
+void error(string msg, string file_name, pair<int, int> pos, string source_code);
 
 class Tokens;
 

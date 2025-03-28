@@ -31,9 +31,6 @@ void Parser::get_token() {
     }
 }
 
-void Parser::error(string message, pair<int, int> location) {
-}
-
 Node Parser::parse() {
 }
 
