@@ -10,7 +10,7 @@
 
 using namespace std;
 
-map<string, vector<string>> source_code_map;
+extern map<string, vector<string>> source_code_map;
 
 bool is_keyword(string word);
 bool is_symbol(string word);
