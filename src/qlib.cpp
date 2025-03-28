@@ -43,6 +43,22 @@ Token::Token(string type, string value, string file_name, pair<int, int> pos) {
     this->column = pos.second;
 }
 
+Token::Token(string type, string value) {
+    this->type = type;
+    this->value = value;
+    this->file_name = "";
+    this->line = -1;
+    this->column = -1;
+}
+
+Token::Token() {
+    this->type = "None";
+    this->value = "None";
+    this->file_name = "";
+    this->line = -1;
+    this->column = -1;
+}
+
 string Token::toString() {
     return "Token(" + type + ", " + value + ", " + to_string(line) + ", " + to_string(column) + ")";
 }
@@ -99,4 +115,46 @@ bool Tokens::operator==(const Token& other) const {
 
 bool Tokens::operator!=(const Token& other) const {
     return !(*this == other);
+}
+
+// Node
+Node::Node(string type, map<string, string> value, vector<Node*> children) {
+    this->type = type;
+    this->value = value;
+    this->children = children;
+    this->parent = nullptr;
+}
+
+Node::Node(string type, map<string, string> value, Node* child) {
+    this->type = type;
+    this->value = value;
+    this->children.push_back(child);
+    this->parent = nullptr;
+}
+
+Node::Node(string type, map<string, string> value) {
+    this->type = type;
+    this->value = value;
+    this->children = vector<Node*>();
+    this->parent = nullptr;
+}
+
+Node::Node(string type) {
+    this->type = type;
+    this->value = map<string, string>();
+    this->children = vector<Node*>();
+    this->parent = nullptr;
+}
+
+string Node::toString() {
+    string t = type + "({";
+    for (const pair<string, string>& i : value) {
+        t += i.first + ": " + i.second + ", ";
+    }
+    t += "}";
+    for (Node* i : children) {
+        t += ", " + i->toString();
+    }
+    t += ")";
+    return t;
 }
