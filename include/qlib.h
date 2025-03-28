@@ -3,6 +3,7 @@
 
 #include <fstream>
 #include <iostream>
+#include <sstream>
 #include <string>
 #include <vector>
 
@@ -11,6 +12,9 @@ using namespace std;
 bool is_keyword(string word);
 bool is_symbol(string word);
 bool is_symbol(char c);
+string error(string msg, string file_name, pair<int, int> pos, string source_code);
+
+class Tokens;
 
 class Token {
    public:
@@ -33,8 +37,8 @@ class Tokens {
     string type;
     vector<string> value;
     string toString();
-    bool Tokens::operator==(const Token& other) const;
-    bool Tokens::operator!=(const Token& other) const;
+    bool operator==(const Token& other) const;
+    bool operator!=(const Token& other) const;
 };
 
 #endif  // QLIB_H

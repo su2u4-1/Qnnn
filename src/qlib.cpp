@@ -25,6 +25,15 @@ bool is_symbol(char c) {
     return is_symbol(string(1, c));
 }
 
+string error(string msg, string file_name, pair<int, int> pos, string source_code) {
+    ostringstream oss;
+    oss << "File " << file_name << ", line " << pos.first << ", in " << pos.second << "\n"
+        << msg << "\n"
+        << source_code << string(pos.second, ' ') << "^\n";
+    return oss.str();
+    // throw runtime_error(oss.str());
+}
+
 // Token
 Token::Token(string type, string value, string file_name, pair<int, int> pos) {
     this->type = type;

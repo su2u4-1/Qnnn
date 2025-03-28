@@ -23,7 +23,14 @@ int main(int argc, char* argv[]) {
     vector<string> source_code;
     string line;
     while (getline(input, line)) {
-        line += "\n";
+        if (line.size() > 0) {
+            if (line.back() == '\r') {
+                line.pop_back();
+            }
+            if (line.back() != '\n') {
+                line.append("\n");
+            }
+        }
         source_code.push_back(line);
     }
     input.close();

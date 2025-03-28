@@ -1,9 +1,5 @@
 #include "../include/qlib.h"
 
-string error(string msg, string file_name, pair<int, int> pos) {
-    printf("Error: %s in %s: (%d, %d)\n", msg.c_str(), file_name.c_str(), pos.first, pos.second);
-}
-
 pair<vector<Token>, string> lexer(vector<string> source_code, string file_name) {
     vector<Token> tokens;
     string state = "", content = "";
@@ -20,6 +16,7 @@ pair<vector<Token>, string> lexer(vector<string> source_code, string file_name) 
                 if (p == '*' && c == '/') {
                     tokens.push_back(Token("comment", content, file_name, pos));
                 }
+                continue;
             }
             if (state == "+" || state == "%") {
                 state = "";
@@ -130,15 +127,15 @@ pair<vector<Token>, string> lexer(vector<string> source_code, string file_name) 
                     if (content == "") {
                         content = c;
                     } else {
-                        error("Character constant too long", file_name, {i + 1, j});
+                        return {tokens, error("Character constant too long", file_name, {i + 1, j}, line)};
                     }
                 } else {
-                    if (content == "") {
+                    if (content.size() == 1) {
                         tokens.push_back(Token("char", "'" + content + "'", file_name, {i + 1, j}));
                         state = "";
                         content = "";
                     } else {
-                        error("Character constant too long or too short", file_name, {i + 1, j});
+                        return {tokens, error("Character constant too long or too short", file_name, {i + 1, j}, line)};
                     }
                 }
                 continue;
@@ -181,6 +178,7 @@ pair<vector<Token>, string> lexer(vector<string> source_code, string file_name) 
                     state = "";
                     content = "";
                 }
+                continue;
             } else if (state == "identifier") {
                 if (isalnum(c) || c == '_') {
                     content += c;
@@ -221,7 +219,7 @@ pair<vector<Token>, string> lexer(vector<string> source_code, string file_name) 
                 content = c;
             } else {
                 if (c != ' ' && c != '\t' && c != '\n' && c != '\r' && c != '\0' && c != '\v' && c != '\f') {
-                    error("Invalid character " + c, file_name, {i + 1, j});
+                    return {tokens, error("Invalid character " + string(1, c), file_name, {i + 1, j}, line)};
                 }
             }
         }
