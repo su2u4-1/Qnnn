@@ -74,7 +74,7 @@ for label (int i in range(0, 10, 1)) {
     print("done");
 }
 
-char t = input(": ")[0];  # normal, file, char, example
+var char t = input(": ")[0];  # normal, file, char, example
 if (t == 'a') {
     print("aaa");
 } elif (t == 'b') {
@@ -83,7 +83,7 @@ if (t == 'a') {
     print("???");
 }
 
-bool r = ^(@(!(1 + 1 - 1 * 1 / 1 % 1 == 1 != 1 < 1 > 1 <= 1 >= 1 && 1 || 1 & 1 | 1 = 1 += 1 -= 1 *= 1 /= 1 %= 1 ** 1 << 1 >> 1)));
+var bool r = ^(@(!(1 + 1 - 1 * 1 / 1 % 1 == 1 != 1 < 1 > 1 <= 1 >= 1 && 1 || 1 & 1 | 1 = 1 += 1 -= 1 *= 1 /= 1 %= 1 ** 1 << 1 >> 1)));
 #    ^ normal, file, bool, example
 
 var int a1, a2 = 0;

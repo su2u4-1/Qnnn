@@ -25,7 +25,7 @@ while ::= 'while' [<identifier'label'>] '(' <expression> ')' '{' {<statement>} '
 return ::= 'return' [<expression>] ';'
 break ::= 'break' [<identifier'label'>] ';'
 continue ::= 'continue' ';'
-import ::= 'import' (<identifier'stblib_name'> | <str'userlib_name'> 'as' <identifier'alias_name'>) ';'
+import ::= 'import' (<identifier'stdlib_name'> | <str'userlib_name'> 'as' <identifier'alias_name'>) ';'
 
 # tokens type
 identifier ::= (<atoz> | <AtoZ> | '_') {<atoz> | <AtoZ> | <digit> | '_'}

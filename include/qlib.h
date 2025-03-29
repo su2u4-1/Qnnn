@@ -11,6 +11,7 @@
 using namespace std;
 
 extern map<string, vector<string>> source_code_map;
+extern vector<string> STDLIB;
 
 bool is_keyword(string word);
 bool is_symbol(string word);

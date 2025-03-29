@@ -40,12 +40,46 @@ Node Parser::parse() {
             for (Node i : parse_declare()) {
                 root.children.push_back(i);
             }
+        } else if (current_token == Token("keyword", "class")) {
+            root.children.push_back(parse_class());
+        } else if (current_token == Token("keyword", "function")) {
+            root.children.push_back(parse_function());
+        } else if (current_token == Tokens("keyword", {"if", "while", "for"})) {
+            root.children.push_back(parse_statement());
+        } else if (current_token.type == "identifier") {
+            root.children.push_back(parse_expression());
+        } else {
+            error("Unexpected token", file_name, {current_token.line, current_token.column}, source_code_map[file_name][current_token.line - 1]);
         }
     }
     return root;
 }
 
 Node Parser::parse_import() {
+    get_token();
+    Node import("Import", {});
+    if (current_token == Tokens("identifier", STDLIB)) {
+        import.value["name"] = current_token.value;
+        get_token();
+        if (current_token != Token("symbol", ";")) {
+            error("Expected ';'", file_name, {current_token.line, current_token.column}, source_code_map[file_name][current_token.line - 1]);
+        }
+        import.value["alias"] = "stdlib";
+        return import;
+    } else if (current_token.type == "string") {
+        import.value["name"] = current_token.value;
+        get_token();
+        if (current_token != Token("keyword", "as")) {
+            error("Expected keyword 'as'", file_name, {current_token.line, current_token.column}, source_code_map[file_name][current_token.line - 1]);
+        }
+        get_token();
+        if (current_token.type != "identifier") {
+            error("Expected identifier", file_name, {current_token.line, current_token.column}, source_code_map[file_name][current_token.line - 1]);
+        }
+        import.value["alias"] = current_token.value;
+    } else {
+        error("Expected stdlib or string", file_name, {current_token.line, current_token.column}, source_code_map[file_name][current_token.line - 1]);
+    }
 }
 
 vector<Node> Parser::parse_declare() {

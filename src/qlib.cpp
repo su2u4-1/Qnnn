@@ -3,6 +3,7 @@
 vector<string> keywords = {"arr", "as", "attr", "bool", "break", "char", "class", "constant", "continue", "dict", "elif", "else", "false", "float", "for", "fpointer", "function", "global", "if", "import", "in", "int", "method", "NULL", "pointer", "public", "range", "return", "static", "str", "true", "tuple", "type", "var", "void", "while"};
 vector<string> symbols = {"(", ")", "[", "]", "{", "}", ",", ";", ".", "+", "-", "*", "/", "%", "<", ">", "&", "|", "=", "@", "^", "!", "==", "!=", "<=", ">=", "&&", "||", "+=", "-=", "*=", "/=", "%=", "**", "<<", ">>"};
 map<string, vector<string>> source_code_map = map<string, vector<string>>();
+vector<string> STDLIB = {"math", "list", "random", "io", "time"};
 
 bool is_keyword(string word) {
     for (const string& i : keywords) {
