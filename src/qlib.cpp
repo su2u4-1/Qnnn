@@ -118,32 +118,34 @@ bool Tokens::operator!=(const Token& other) const {
 }
 
 // Node
-Node::Node(string type, map<string, string> value, vector<Node*> children) {
+Node::Node(string type, map<string, string> value, vector<Node> children) {
     this->type = type;
     this->value = value;
     this->children = children;
-    this->parent = nullptr;
 }
 
-Node::Node(string type, map<string, string> value, Node* child) {
+Node::Node(string type, map<string, string> value, Node child) {
     this->type = type;
     this->value = value;
     this->children.push_back(child);
-    this->parent = nullptr;
 }
 
 Node::Node(string type, map<string, string> value) {
     this->type = type;
     this->value = value;
-    this->children = vector<Node*>();
-    this->parent = nullptr;
+    this->children = vector<Node>();
 }
 
 Node::Node(string type) {
     this->type = type;
     this->value = map<string, string>();
-    this->children = vector<Node*>();
-    this->parent = nullptr;
+    this->children = vector<Node>();
+}
+
+Node::Node() {
+    this->type = "None";
+    this->value = map<string, string>();
+    this->children = vector<Node>();
 }
 
 string Node::toString() {
@@ -152,8 +154,8 @@ string Node::toString() {
         t += i.first + ": " + i.second + ", ";
     }
     t += "}";
-    for (Node* i : children) {
-        t += ", " + i->toString();
+    for (Node i : children) {
+        t += ", " + i.toString();
     }
     t += ")";
     return t;

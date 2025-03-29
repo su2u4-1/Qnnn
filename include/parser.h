@@ -14,7 +14,7 @@ class Parser {
     void get_token();
     Node parse();
     Node parse_import();
-    Node parse_declare(int state);
+    vector<Node> parse_declare();
     Node parse_type();
     Node parse_expression();
     Node parse_term();

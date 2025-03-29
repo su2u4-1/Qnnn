@@ -48,14 +48,14 @@ class Tokens {
 
 class Node {
    public:
-    Node(string type, map<string, string> value, vector<Node*> children);
-    Node(string type, map<string, string> value, Node* child);
+    Node(string type, map<string, string> value, vector<Node> children);
+    Node(string type, map<string, string> value, Node child);
     Node(string type, map<string, string> value);
     Node(string type);
+    Node();
     string type;
     map<string, string> value;
-    vector<Node*> children;
-    Node* parent;
+    vector<Node> children;
     string toString();
 };
 
