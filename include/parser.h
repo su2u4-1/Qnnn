@@ -5,7 +5,7 @@
 
 class Parser {
    public:
-    Parser(vector<Token> tokens, string file_name);
+    Parser(const vector<Token>& tokens, const string& file_name);
     vector<Token> tokens;
     string file_name;
     int index;

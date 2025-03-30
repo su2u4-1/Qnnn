@@ -1,4 +1,4 @@
-from os import system, listdir
+from os import makedirs, system, listdir
 from os.path import isfile, isdir, abspath, split
 from sys import argv
 
@@ -15,7 +15,7 @@ if len(argv) > 2:
     output_dir = split(output)[0]
     if not isdir(output_dir):
         system(f"echo mkdir {output_dir}")
-        system(f"mkdir {output_dir}")
+        makedirs(output_dir)
     system(f"echo g++ {' '.join(files)} -o {output}")
     system(f"g++ {' '.join(files)} -o {output}")
 else:

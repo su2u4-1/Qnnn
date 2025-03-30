@@ -2,7 +2,7 @@
 
 #include "../include/qlib.h"
 
-Parser::Parser(vector<Token> tokens, string file_name) {
+Parser::Parser(const vector<Token>& tokens, const string& file_name) {
     if (!tokens.empty()) {
         this->tokens = tokens;
         this->file_name = file_name;
@@ -32,7 +32,7 @@ void Parser::get_token() {
 }
 
 Node Parser::parse() {
-    Node root("Program", {}, vector<Node>());
+    Node root("program", {}, vector<Node>());
     while (current_token.type != "EOF") {
         if (current_token == Token("keyword", "import")) {
             root.children.push_back(parse_import());
@@ -49,7 +49,7 @@ Node Parser::parse() {
         } else if (current_token.type == "identifier") {
             root.children.push_back(parse_expression());
         } else {
-            error("Unexpected token", file_name, {current_token.line, current_token.column}, source_code_map[file_name][current_token.line - 1]);
+            error("Unexpected token", file_name, {current_token.line, current_token.column}, source_code_getitem(file_name, current_token.line - 1));
         }
     }
     return root;
@@ -57,12 +57,12 @@ Node Parser::parse() {
 
 Node Parser::parse_import() {
     get_token();
-    Node import("Import", {});
+    Node import("import", {});
     if (current_token == Tokens("identifier", STDLIB)) {
         import.value["name"] = current_token.value;
         get_token();
         if (current_token != Token("symbol", ";")) {
-            error("Expected ';'", file_name, {current_token.line, current_token.column}, source_code_map[file_name][current_token.line - 1]);
+            error("Expected ';'", file_name, {current_token.line, current_token.column}, source_code_getitem(file_name, current_token.line - 1));
         }
         import.value["alias"] = "stdlib";
         return import;
@@ -70,15 +70,16 @@ Node Parser::parse_import() {
         import.value["name"] = current_token.value;
         get_token();
         if (current_token != Token("keyword", "as")) {
-            error("Expected keyword 'as'", file_name, {current_token.line, current_token.column}, source_code_map[file_name][current_token.line - 1]);
+            error("Expected keyword 'as'", file_name, {current_token.line, current_token.column}, source_code_getitem(file_name, current_token.line - 1));
         }
         get_token();
         if (current_token.type != "identifier") {
-            error("Expected identifier", file_name, {current_token.line, current_token.column}, source_code_map[file_name][current_token.line - 1]);
+            error("Expected identifier", file_name, {current_token.line, current_token.column}, source_code_getitem(file_name, current_token.line - 1));
         }
         import.value["alias"] = current_token.value;
+        return import;
     } else {
-        error("Expected stdlib or string", file_name, {current_token.line, current_token.column}, source_code_map[file_name][current_token.line - 1]);
+        error("Expected stdlib or string", file_name, {current_token.line, current_token.column}, source_code_getitem(file_name, current_token.line - 1));
     }
 }
 
@@ -94,7 +95,7 @@ vector<Node> Parser::parse_declare() {
     } else if (current_token == Token("keyword", "static")) {
         state["kind"] = "static";
     } else {
-        error("Expected 'var', 'constant', 'attr', or 'static'", file_name, {current_token.line, current_token.column}, source_code_map[file_name][current_token.line - 1]);
+        error("Expected 'var', 'constant', 'attr', or 'static'", file_name, {current_token.line, current_token.column}, source_code_getitem(file_name, current_token.line - 1));
     }
     get_token();
     if (current_token == Token("keyword", "global")) {
@@ -102,14 +103,14 @@ vector<Node> Parser::parse_declare() {
             state["modifier"] = "global";
             get_token();
         } else {
-            error("'attr' or 'static' should not be followed by 'global'", file_name, {current_token.line, current_token.column}, source_code_map[file_name][current_token.line - 1]);
+            error("'attr' or 'static' should not be followed by 'global'", file_name, {current_token.line, current_token.column}, source_code_getitem(file_name, current_token.line - 1));
         }
     } else if (current_token == Token("keyword", "public")) {
         if (state["kind"] == "attr" || state["kind"] == "static") {
             state["modifier"] = "public";
             get_token();
         } else {
-            error("'var' or 'constant' should not be followed by 'public'", file_name, {current_token.line, current_token.column}, source_code_map[file_name][current_token.line - 1]);
+            error("'var' or 'constant' should not be followed by 'public'", file_name, {current_token.line, current_token.column}, source_code_getitem(file_name, current_token.line - 1));
         }
     } else {
         if (state["kind"] == "var" || state["kind"] == "constant") {
@@ -121,7 +122,7 @@ vector<Node> Parser::parse_declare() {
     Node type = parse_type();
     get_token();
     if (current_token.type != "identifier") {
-        error("Expected identifier", file_name, {current_token.line, current_token.column}, source_code_map[file_name][current_token.line - 1]);
+        error("Expected identifier", file_name, {current_token.line, current_token.column}, source_code_getitem(file_name, current_token.line - 1));
     }
     string name = current_token.value;
     get_token();
@@ -130,11 +131,11 @@ vector<Node> Parser::parse_declare() {
         get_token();
         expression = parse_expression();
     }
-    nodes.push_back(Node("Declare", state, {Node("Identifier", {{"name", name}}), type, expression}));
+    nodes.push_back(Node("declare", state, {Node("identifier", {{"name", name}}), type, expression}));
     while (current_token == Token("symbol", ",")) {
         get_token();
         if (current_token.type != "identifier") {
-            error("Expected identifier", file_name, {current_token.line, current_token.column}, source_code_map[file_name][current_token.line - 1]);
+            error("Expected identifier", file_name, {current_token.line, current_token.column}, source_code_getitem(file_name, current_token.line - 1));
         }
         name = current_token.value;
         get_token();
@@ -143,15 +144,33 @@ vector<Node> Parser::parse_declare() {
             get_token();
             expression = parse_expression();
         }
-        nodes.push_back(Node("Declare", state, {Node("Identifier", {{"name", name}}), type, expression}));
+        nodes.push_back(Node("declare", state, {Node("identifier", {{"name", name}}), type, expression}));
     }
     if (current_token != Token("symbol", ";")) {
-        error("Expected ';'", file_name, {current_token.line, current_token.column}, source_code_map[file_name][current_token.line - 1]);
+        error("Expected ';'", file_name, {current_token.line, current_token.column}, source_code_getitem(file_name, current_token.line - 1));
     }
     return nodes;
 }
 
 Node Parser::parse_type() {
+    Node type("type", {});
+    if (current_token == Tokens("keyword", BUILTINTYPE) || current_token.type == "identifier") {
+        type.value["name"] = current_token.value;
+    } else {
+        error("Expected built-in type or identifier", file_name, {current_token.line, current_token.column}, source_code_getitem(file_name, current_token.line - 1));
+    }
+    if (next_token() == Token("symbol", "<")) {
+        get_token();
+        do {
+            get_token();
+            type.children.push_back(parse_type());
+            get_token();
+        } while (current_token == Token("symbol", ","));
+        if (current_token != Token("symbol", ">")) {
+            error("Expected '>'", file_name, {current_token.line, current_token.column}, source_code_getitem(file_name, current_token.line - 1));
+        }
+    }
+    return type;
 }
 
 Node Parser::parse_expression() {

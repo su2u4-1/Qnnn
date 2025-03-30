@@ -1,10 +1,10 @@
 #include "../include/qlib.h"
 
-vector<Token> lexer(vector<string> source_code, string file_name) {
+vector<Token> lexer(const vector<string>& source_code, const string& file_name) {
     vector<Token> tokens;
     string state = "", content = "";
     char p = ' ', pp = ' ';
-    pair<int, int> pos = {-1, -1};
+    pair<int, int> pos = make_pair(-1, -1);
     for (int i = 0; i < source_code.size(); i++) {
         string line = source_code[i];
         for (int j = 0; j < line.size(); j++) {

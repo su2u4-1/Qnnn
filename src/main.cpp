@@ -24,6 +24,7 @@ vector<string> read_file(string file_name) {
         source_code.push_back(line);
     }
     input.close();
+    return source_code;
 }
 
 int main(int argc, char* argv[]) {
@@ -44,7 +45,7 @@ int main(int argc, char* argv[]) {
         cerr << e.what() << endl;
         return 1;
     }
-    source_code_map[file_name] = source_code;
+    source_code_setitem(file_name, source_code);
 
     try {
         vector<Token> tokens = lexer(source_code, file_name);

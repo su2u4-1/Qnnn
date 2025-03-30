@@ -6,24 +6,27 @@
 #include <map>
 #include <sstream>
 #include <string>
+#include <unordered_set>
 #include <vector>
 
 using namespace std;
 
-extern map<string, vector<string>> source_code_map;
 extern vector<string> STDLIB;
+extern vector<string> BUILTINTYPE;
 
-bool is_keyword(string word);
-bool is_symbol(string word);
+bool is_keyword(const string& word);
+bool is_symbol(const string& word);
 bool is_symbol(char c);
-void error(string msg, string file_name, pair<int, int> pos, string source_code);
+void error(const string& msg, const string& file_name, pair<int, int> pos, const string& source_code);
+void source_code_setitem(string file_name, vector<string> source_code);
+string source_code_getitem(string file_name, int line);
 
 class Tokens;
 
 class Token {
    public:
-    Token(string type, string value, string file_name, pair<int, int> pos);
-    Token(string type, string value);
+    Token(const string& type, const string& value, const string& file_name, pair<int, int> pos);
+    Token(const string& type, const string& value);
     Token();
     string type;
     string value;
@@ -39,7 +42,7 @@ class Token {
 
 class Tokens {
    public:
-    Tokens(string type, vector<string> value);
+    Tokens(const string& type, const vector<string>& value);
     string type;
     vector<string> value;
     string toString();
@@ -49,10 +52,10 @@ class Tokens {
 
 class Node {
    public:
-    Node(string type, map<string, string> value, vector<Node> children);
-    Node(string type, map<string, string> value, Node child);
-    Node(string type, map<string, string> value);
-    Node(string type);
+    Node(const string& type, const map<string, string>& value, const vector<Node>& children);
+    Node(const string& type, const map<string, string>& value, const Node& child);
+    Node(const string& type, const map<string, string>& value);
+    Node(const string& type);
     Node();
     string type;
     map<string, string> value;
