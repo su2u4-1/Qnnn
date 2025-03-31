@@ -1,7 +1,7 @@
 # qnnn grammar
 code ::= [{<import> | <statement> | <function> | <class> | <comment_0> | <comment_1>}]
 declare_var ::= ('var' | 'constant') ['global'] <type> <identifier'var_name'> ['=' <expression>] [{',' <identifier'var_name'> ['=' <expression>]}] ';'
-declare_attr ::= ('attr' | 'static') ['public'] <type> <identifier'attr_name'> ['=' <expression>] ';'
+declare_attr ::= ('attr' | 'static') ['public'] <type> <identifier'attr_name'> ['=' <expression>] [{',' <identifier'var_name'> ['=' <expression>]}] ';'
 declare_args ::= <type> <identifier'var_name'> [{',' <type> <identifier'var_name'>}] [',' '*' <type> <identifier'arr[var]_name'>]
 type ::= <builtin_type> | <identifier'class_name'> | <type> '<' <type> [{',' <type>}] '>'
 expression ::= <term> {<operator> <term>}
