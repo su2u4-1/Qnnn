@@ -24,7 +24,7 @@ class Parser {
     Node parse_function();
     Node parse_class();
     Node parse_method();
-    Node parse_args();
+    vector<Node> parse_args();
     Node parse_arr();
     Node parse_tuple();
     Node parse_dict();

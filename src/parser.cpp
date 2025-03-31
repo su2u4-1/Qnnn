@@ -106,27 +106,27 @@ vector<Node> Parser::parse_declare_var() {
     if (current_token.type != "identifier") {
         error("Expected identifier", file_name, {current_token.line, current_token.column}, source_code_getitem(file_name, current_token.line - 1));
     }
-    string name = current_token.value;
+    state["name"] = current_token.value;
     get_token();
     Node expression("expression");
     if (current_token == Token("symbol", "=")) {
         get_token();
         expression = parse_expression();
     }
-    nodes.push_back(Node("declare_var", state, {Node("identifier", {{"name", name}}), type, expression}));
+    nodes.push_back(Node("declare_var", state, {type, expression}));
     while (current_token == Token("symbol", ",")) {
         get_token();
         if (current_token.type != "identifier") {
             error("Expected identifier", file_name, {current_token.line, current_token.column}, source_code_getitem(file_name, current_token.line - 1));
         }
-        name = current_token.value;
+        state["name"] = current_token.value;
         get_token();
         expression = Node();
         if (current_token == Token("symbol", "=")) {
             get_token();
             expression = parse_expression();
         }
-        nodes.push_back(Node("declare_var", state, {Node("identifier", {{"name", name}}), type, expression}));
+        nodes.push_back(Node("declare_var", state, {type, expression}));
     }
     if (current_token != Token("symbol", ";")) {
         error("Expected ';'", file_name, {current_token.line, current_token.column}, source_code_getitem(file_name, current_token.line - 1));
@@ -226,7 +226,22 @@ Node Parser::parse_class() {
 Node Parser::parse_method() {
 }
 
-Node Parser::parse_args() {
+vector<Node> Parser::parse_args() {
+    vector<Node> args;
+    Node type;
+    do {
+        get_token();
+        type = parse_type();
+        get_token();
+        if (current_token.type != "identifier") {
+            error("Expected identifier", file_name, {current_token.line, current_token.column}, source_code_getitem(file_name, current_token.line - 1));
+        }
+        args.push_back(Node("declare_arg", {{"name", current_token.value}}, {type}));
+    } while (current_token == Token("symbol", ","));
+    if (current_token != Token("symbol", ")")) {
+        error("Expected ')'", file_name, {current_token.line, current_token.column}, source_code_getitem(file_name, current_token.line - 1));
+    }
+    return args;
 }
 
 Node Parser::parse_arr() {
