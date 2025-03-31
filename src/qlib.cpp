@@ -19,6 +19,27 @@ bool is_symbol(char c) {
     return is_symbol(string(1, c));
 }
 
+bool is_term(const Token& token) {
+    if (token.type == "identifier") {
+        return true;
+    } else if (token.type == "keyword") {
+        if (is_keyword(token.value)) {
+            return true;
+        } else {
+            for (const string& i : BUILTINTYPE) {
+                if (token.value == i) {
+                    return true;
+                }
+            }
+        }
+    } else if (token.type == "symbol") {
+        if (token.value == "(" || token.value == "@" || token.value == "^" || token.value == "!" || token.value == "-") {
+            return true;
+        }
+    }
+    return false;
+}
+
 void error(const string& msg, const string& file_name, pair<int, int> pos, const string& source_code) {
     ostringstream oss;
     oss << "File " << file_name << ", line " << pos.first << ", in " << pos.second << "\n"
