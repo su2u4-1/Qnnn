@@ -15,7 +15,7 @@ class Parser {
     Node parse();
     Node parse_import();
     vector<Node> parse_declare_var();
-    vector<Node> Parser::parse_declare_attr(const string& class_name);
+    vector<Node> parse_declare_attr(const string& class_name);
     Node parse_type();
     Node parse_expression();
     Node parse_term();
@@ -28,7 +28,7 @@ class Parser {
     Node parse_arr();
     Node parse_tuple();
     Node parse_dict();
-    Node parse_statement();
+    vector<Node> parse_statement();
     Node parse_if();
     Node parse_for();
     Node parse_while();

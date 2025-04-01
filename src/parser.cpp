@@ -26,6 +26,10 @@ void Parser::get_token() {
     if (index < tokens.size()) {
         current_token = tokens[index];
         index++;
+        while (current_token.type == "comment") {
+            current_token = tokens[index];
+            index++;
+        }
     } else {
         current_token = Token("EOF", "", file_name, {-1, -1});
     }
@@ -146,27 +150,27 @@ vector<Node> Parser::parse_declare_attr(const string& class_name) {
     if (current_token.type != "identifier") {
         error("Expected identifier", file_name, {current_token.line, current_token.column}, source_code_getitem(file_name, current_token.line - 1));
     }
-    string name = current_token.value;
+    state["name"] = current_token.value;
     get_token();
     Node expression("expression");
     if (current_token == Token("symbol", "=")) {
         get_token();
         expression = parse_expression();
     }
-    nodes.push_back(Node("declare_attr", state, {Node("identifier", {{"name", name}}), type, expression}));
+    nodes.push_back(Node("declare_attr", state, {type, expression}));
     while (current_token == Token("symbol", ",")) {
         get_token();
         if (current_token.type != "identifier") {
             error("Expected identifier", file_name, {current_token.line, current_token.column}, source_code_getitem(file_name, current_token.line - 1));
         }
-        name = current_token.value;
+        state["name"] = current_token.value;
         get_token();
         expression = Node();
         if (current_token == Token("symbol", "=")) {
             get_token();
             expression = parse_expression();
         }
-        nodes.push_back(Node("declare_attr", state, {Node("identifier", {{"name", name}}), type, expression}));
+        nodes.push_back(Node("declare_attr", state, {type, expression}));
     }
     if (current_token != Token("symbol", ";")) {
         error("Expected ';'", file_name, {current_token.line, current_token.column}, source_code_getitem(file_name, current_token.line - 1));
@@ -286,7 +290,7 @@ Node Parser::parse_dict() {
     return dict;
 }
 
-Node Parser::parse_statement() {
+vector<Node> Parser::parse_statement() {
     vector<Node> statements;
     if (current_token == Token("keyword", "if")) {
         statements.push_back(parse_if());
@@ -312,9 +316,82 @@ Node Parser::parse_statement() {
     } else if (current_token != Token("keyword", "pass")) {
         error("Expected statement", file_name, {current_token.line, current_token.column}, source_code_getitem(file_name, current_token.line - 1));
     }
+    return statements;
 }
 
 Node Parser::parse_if() {
+    get_token();
+    Node if_node("if");
+    if (current_token != Token("symbol", "(")) {
+        error("Expected '('", file_name, {current_token.line, current_token.column}, source_code_getitem(file_name, current_token.line - 1));
+    }
+    get_token();
+    if_node.children.push_back(parse_expression());
+    if (current_token != Token("symbol", ")")) {
+        error("Expected ')'", file_name, {current_token.line, current_token.column}, source_code_getitem(file_name, current_token.line - 1));
+    }
+    if (current_token != Token("symbol", "{")) {
+        error("Expected '{'", file_name, {current_token.line, current_token.column}, source_code_getitem(file_name, current_token.line - 1));
+    }
+    get_token();
+    Node statements("statements");
+    while (current_token != Token("symbol", "}")) {
+        for (const Node& i : parse_statement()) {
+            statements.children.push_back(i);
+        }
+    }
+    if_node.children.push_back(statements);
+    if (current_token != Token("symbol", "}")) {
+        error("Expected '}'", file_name, {current_token.line, current_token.column}, source_code_getitem(file_name, current_token.line - 1));
+    }
+    int n = 0;
+    while (next_token() == Token("keyword", "elif")) {
+        get_token();
+        if (current_token != Token("symbol", "(")) {
+            error("Expected '('", file_name, {current_token.line, current_token.column}, source_code_getitem(file_name, current_token.line - 1));
+        }
+        get_token();
+        if_node.children.push_back(parse_expression());
+        if (current_token != Token("symbol", ")")) {
+            error("Expected ')'", file_name, {current_token.line, current_token.column}, source_code_getitem(file_name, current_token.line - 1));
+        }
+        if (current_token != Token("symbol", "{")) {
+            error("Expected '{'", file_name, {current_token.line, current_token.column}, source_code_getitem(file_name, current_token.line - 1));
+        }
+        get_token();
+        statements = Node("statements");
+        while (current_token != Token("symbol", "}")) {
+            for (const Node& i : parse_statement()) {
+                statements.children.push_back(i);
+            }
+        }
+        if_node.children.push_back(statements);
+        if (current_token != Token("symbol", "}")) {
+            error("Expected '}'", file_name, {current_token.line, current_token.column}, source_code_getitem(file_name, current_token.line - 1));
+        }
+        n++;
+    }
+    if_node.value["elif"] = to_string(n);
+    if (next_token() == Token("keyword", "else")) {
+        get_token();
+        get_token();
+        if (current_token != Token("symbol", "{")) {
+            error("Expected '{'", file_name, {current_token.line, current_token.column}, source_code_getitem(file_name, current_token.line - 1));
+        }
+        get_token();
+        statements = Node("statements");
+        while (current_token != Token("symbol", "}")) {
+            for (const Node& i : parse_statement()) {
+                statements.children.push_back(i);
+            }
+        }
+        if_node.children.push_back(statements);
+        if (current_token != Token("symbol", "}")) {
+            error("Expected '}'", file_name, {current_token.line, current_token.column}, source_code_getitem(file_name, current_token.line - 1));
+        }
+        if_node.value["else"] = "true";
+    }
+    return if_node;
 }
 
 Node Parser::parse_for() {
@@ -350,18 +427,84 @@ Node Parser::parse_for() {
         error("Expected '{'", file_name, {current_token.line, current_token.column}, source_code_getitem(file_name, current_token.line - 1));
     }
     get_token();
+    Node statements("statements");
     while (current_token != Token("symbol", "}")) {
         for (const Node& i : parse_statement()) {
-            for_node.children.push_back(i);
+            statements.children.push_back(i);
         }
     }
+    for_node.children.push_back(statements);
     if (current_token != Token("symbol", "}")) {
         error("Expected '}'", file_name, {current_token.line, current_token.column}, source_code_getitem(file_name, current_token.line - 1));
+    }
+    if (next_token() == Token("keyword", "else")) {
+        get_token();
+        get_token();
+        if (current_token != Token("symbol", "{")) {
+            error("Expected '{'", file_name, {current_token.line, current_token.column}, source_code_getitem(file_name, current_token.line - 1));
+        }
+        get_token();
+        Node statements("statements");
+        while (current_token != Token("symbol", "}")) {
+            for (const Node& i : parse_statement()) {
+                statements.children.push_back(i);
+            }
+        }
+        for_node.children.push_back(statements);
+        if (current_token != Token("symbol", "}")) {
+            error("Expected '}'", file_name, {current_token.line, current_token.column}, source_code_getitem(file_name, current_token.line - 1));
+        }
+        for_node.value["else"] = "true";
     }
     return for_node;
 }
 
 Node Parser::parse_while() {
+    get_token();
+    Node while_node("while");
+    if (current_token != Token("symbol", "(")) {
+        error("Expected '('", file_name, {current_token.line, current_token.column}, source_code_getitem(file_name, current_token.line - 1));
+    }
+    get_token();
+    while_node.children.push_back(parse_expression());
+    if (current_token != Token("symbol", ")")) {
+        error("Expected ')'", file_name, {current_token.line, current_token.column}, source_code_getitem(file_name, current_token.line - 1));
+    }
+    get_token();
+    if (current_token != Token("symbol", "{")) {
+        error("Expected '{'", file_name, {current_token.line, current_token.column}, source_code_getitem(file_name, current_token.line - 1));
+    }
+    get_token();
+    Node statements("statements");
+    while (current_token != Token("symbol", "}")) {
+        for (const Node& i : parse_statement()) {
+            statements.children.push_back(i);
+        }
+    }
+    while_node.children.push_back(statements);
+    if (current_token != Token("symbol", "}")) {
+        error("Expected '}'", file_name, {current_token.line, current_token.column}, source_code_getitem(file_name, current_token.line - 1));
+    }
+    if (next_token() == Token("keyword", "else")) {
+        get_token();
+        get_token();
+        if (current_token != Token("symbol", "{")) {
+            error("Expected '{'", file_name, {current_token.line, current_token.column}, source_code_getitem(file_name, current_token.line - 1));
+        }
+        get_token();
+        Node statements("statements");
+        while (current_token != Token("symbol", "}")) {
+            for (const Node& i : parse_statement()) {
+                statements.children.push_back(i);
+            }
+        }
+        while_node.children.push_back(statements);
+        if (current_token != Token("symbol", "}")) {
+            error("Expected '}'", file_name, {current_token.line, current_token.column}, source_code_getitem(file_name, current_token.line - 1));
+        }
+        while_node.value["else"] = "true";
+    }
+    return while_node;
 }
 
 Node Parser::parse_break() {

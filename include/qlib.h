@@ -11,6 +11,9 @@
 
 using namespace std;
 
+class Token;
+class Tokens;
+
 extern vector<string> STDLIB;
 extern vector<string> BUILTINTYPE;
 
@@ -21,8 +24,6 @@ bool is_term(const Token& token);
 void error(const string& msg, const string& file_name, pair<int, int> pos, const string& source_code);
 void source_code_setitem(string file_name, vector<string> source_code);
 string source_code_getitem(string file_name, int line);
-
-class Tokens;
 
 class Token {
    public:
