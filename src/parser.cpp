@@ -36,20 +36,10 @@ Node Parser::parse() {
     while (current_token.type != "EOF") {
         if (current_token == Token("keyword", "import")) {
             root.children.push_back(parse_import());
-        } else if (current_token == Tokens("keyword", {"var", "constant"})) {
-            for (Node i : parse_declare_var()) {
+        } else {
+            for (const Node& i : parse_statement()) {
                 root.children.push_back(i);
             }
-        } else if (current_token == Token("keyword", "class")) {
-            root.children.push_back(parse_class());
-        } else if (current_token == Token("keyword", "function")) {
-            root.children.push_back(parse_function());
-        } else if (current_token == Tokens("keyword", {"if", "while", "for"})) {
-            root.children.push_back(parse_statement());
-        } else if (current_token.type == "identifier") {
-            root.children.push_back(parse_expression());
-        } else {
-            error("Unexpected token", file_name, {current_token.line, current_token.column}, source_code_getitem(file_name, current_token.line - 1));
         }
     }
     return root;
@@ -308,20 +298,19 @@ Node Parser::parse_statement() {
         statements.push_back(parse_break());
     } else if (current_token == Token("keyword", "return")) {
         statements.push_back(parse_return());
-    } else if (current_token == Token("keyword", "break")) {
-        statements.push_back(parse_break());
     } else if (current_token == Token("keyword", "continue")) {
         statements.push_back(Node("continue"));
     } else if (current_token == Tokens("keyword", {"var", "constant"})) {
         for (Node i : parse_declare_var()) {
             statements.push_back(i);
         }
-    } else if (current_token == Tokens("keyword", {"attr", "static"})) {
-        for (Node i : parse_declare_attr("self")) {
-            statements.push_back(i);
-        }
     } else if (is_term(current_token)) {
         statements.push_back(parse_expression());
+        if (current_token != Token("symbol", ";")) {
+            error("Expected ';'", file_name, {current_token.line, current_token.column}, source_code_getitem(file_name, current_token.line - 1));
+        }
+    } else if (current_token != Token("keyword", "pass")) {
+        error("Expected statement", file_name, {current_token.line, current_token.column}, source_code_getitem(file_name, current_token.line - 1));
     }
 }
 
@@ -329,6 +318,47 @@ Node Parser::parse_if() {
 }
 
 Node Parser::parse_for() {
+    get_token();
+    Node for_node("for");
+    if (current_token.type == "identifier") {
+        for_node.value["label"] = current_token.value;
+        get_token();
+    } else {
+        for_node.value["label"] = "for";
+    }
+    if (current_token != Token("symbol", "(")) {
+        error("Expected '('", file_name, {current_token.line, current_token.column}, source_code_getitem(file_name, current_token.line - 1));
+    }
+    get_token();
+    for_node.children.push_back(parse_type());
+    get_token();
+    if (current_token.type != "identifier") {
+        error("Expected identifier", file_name, {current_token.line, current_token.column}, source_code_getitem(file_name, current_token.line - 1));
+    }
+    for_node.value["name"] = current_token.value;
+    get_token();
+    if (current_token != Token("symbol", "in")) {
+        error("Expected 'in'", file_name, {current_token.line, current_token.column}, source_code_getitem(file_name, current_token.line - 1));
+    }
+    get_token();
+    for_node.children.push_back(parse_expression());
+    if (current_token != Token("symbol", ")")) {
+        error("Expected ')'", file_name, {current_token.line, current_token.column}, source_code_getitem(file_name, current_token.line - 1));
+    }
+    get_token();
+    if (current_token != Token("symbol", "{")) {
+        error("Expected '{'", file_name, {current_token.line, current_token.column}, source_code_getitem(file_name, current_token.line - 1));
+    }
+    get_token();
+    while (current_token != Token("symbol", "}")) {
+        for (const Node& i : parse_statement()) {
+            for_node.children.push_back(i);
+        }
+    }
+    if (current_token != Token("symbol", "}")) {
+        error("Expected '}'", file_name, {current_token.line, current_token.column}, source_code_getitem(file_name, current_token.line - 1));
+    }
+    return for_node;
 }
 
 Node Parser::parse_while() {
