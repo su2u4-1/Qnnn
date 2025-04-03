@@ -12,10 +12,11 @@ class Parser {
     Token current_token;
     Token next_token();
     void get_token();
+    void parser_error(const string& msg);
+    void parser_error(const string& msg, const Token& token);
     Node parse();
     Node parse_import();
-    vector<Node> parse_declare_var();
-    vector<Node> parse_declare_attr(const string& class_name);
+    vector<Node> parse_declare(bool attr);
     Node parse_type();
     Node parse_expression();
     Node parse_term();
