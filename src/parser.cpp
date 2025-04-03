@@ -212,6 +212,52 @@ Node Parser::parse_call() {
 }
 
 Node Parser::parse_function() {
+    get_token();
+    Node func("function");
+    if (current_token == Token("keyword", "constant")) {
+        func.value["constant"] = "true";
+    } else {
+        func.value["constant"] = "false";
+    }
+    get_token();
+    func.children.push_back(parse_type());
+    get_token();
+    if (current_token.type != "identifier") {
+        error("Expected identifier", file_name, {current_token.line, current_token.column}, source_code_getitem(file_name, current_token.line - 1));
+    }
+    func.value["name"] = current_token.value;
+    get_token();
+    int n = 0;
+    if (current_token == Token("symbol", "<")) {
+        do {
+            get_token();
+            func.children.push_back(parse_type());
+            n++;
+            get_token();
+        } while (current_token == Token("symbol", ","));
+        if (current_token != Token("symbol", ">")) {
+            error("Expected '>'", file_name, {current_token.line, current_token.column}, source_code_getitem(file_name, current_token.line - 1));
+        }
+    }
+    func.value["type_n"] = to_string(n);
+    if (current_token != Token("symbol", "(")) {
+        error("Expected '('", file_name, {current_token.line, current_token.column}, source_code_getitem(file_name, current_token.line - 1));
+    }
+    Node args("args");
+    for (const Node& i : parse_args()) {
+        args.children.push_back(i);
+    }
+    func.children.push_back(args);
+    get_token();
+    if (current_token != Token("symbol", "{")) {
+        error("Expected '{'", file_name, {current_token.line, current_token.column}, source_code_getitem(file_name, current_token.line - 1));
+    }
+    Node statements("statements");
+    do {
+        for (const Node& i : parse_statement())
+            statements.children.push_back(i);
+        get_token();
+    } while (current_token != Token("symbol", "}"));
 }
 
 Node Parser::parse_class() {
@@ -231,6 +277,7 @@ vector<Node> Parser::parse_args() {
             error("Expected identifier", file_name, {current_token.line, current_token.column}, source_code_getitem(file_name, current_token.line - 1));
         }
         args.push_back(Node("declare_arg", {{"name", current_token.value}}, {type}));
+        get_token();
     } while (current_token == Token("symbol", ","));
     if (current_token != Token("symbol", ")")) {
         error("Expected ')'", file_name, {current_token.line, current_token.column}, source_code_getitem(file_name, current_token.line - 1));
@@ -291,32 +338,30 @@ Node Parser::parse_dict() {
 }
 
 vector<Node> Parser::parse_statement() {
-    vector<Node> statements;
     if (current_token == Token("keyword", "if")) {
-        statements.push_back(parse_if());
+        return {parse_if()};
     } else if (current_token == Token("keyword", "for")) {
-        statements.push_back(parse_for());
+        return {parse_for()};
     } else if (current_token == Token("keyword", "while")) {
-        statements.push_back(parse_while());
+        return {parse_while()};
     } else if (current_token == Token("keyword", "break")) {
-        statements.push_back(parse_break());
+        return {parse_break()};
     } else if (current_token == Token("keyword", "return")) {
-        statements.push_back(parse_return());
+        return {parse_return()};
     } else if (current_token == Token("keyword", "continue")) {
-        statements.push_back(Node("continue"));
+        return {Node("continue")};
     } else if (current_token == Tokens("keyword", {"var", "constant"})) {
-        for (Node i : parse_declare_var()) {
-            statements.push_back(i);
-        }
+        return parse_declare_var();
     } else if (is_term(current_token)) {
-        statements.push_back(parse_expression());
+        Node t = parse_expression();
         if (current_token != Token("symbol", ";")) {
             error("Expected ';'", file_name, {current_token.line, current_token.column}, source_code_getitem(file_name, current_token.line - 1));
         }
-    } else if (current_token != Token("keyword", "pass")) {
+        return {t};
+    } else if (current_token == Token("keyword", "pass")) {
         error("Expected statement", file_name, {current_token.line, current_token.column}, source_code_getitem(file_name, current_token.line - 1));
     }
-    return statements;
+    return {};
 }
 
 Node Parser::parse_if() {
@@ -371,7 +416,7 @@ Node Parser::parse_if() {
         }
         n++;
     }
-    if_node.value["elif"] = to_string(n);
+    if_node.value["elif_n"] = to_string(n);
     if (next_token() == Token("keyword", "else")) {
         get_token();
         get_token();
