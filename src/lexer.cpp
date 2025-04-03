@@ -23,9 +23,8 @@ vector<Token> lexer(const vector<string>& source_code, const string& file_name) 
                 if (c == '=') {
                     tokens.push_back(Token("symbol", {p, c}, file_name, {i + 1, j - 1}));
                     continue;
-                } else {
+                } else
                     tokens.push_back(Token("symbol", {p}, file_name, {i + 1, j - 1}));
-                }
             } else if (state == "-") {
                 state = "";
                 if (isdigit(c)) {
@@ -36,9 +35,8 @@ vector<Token> lexer(const vector<string>& source_code, const string& file_name) 
                 } else if (c == '=') {
                     tokens.push_back(Token("symbol", "-=", file_name, {i + 1, j - 1}));
                     continue;
-                } else {
+                } else
                     tokens.push_back(Token("symbol", "-", file_name, {i + 1, j - 1}));
-                }
             } else if (state == "*") {
                 state = "";
                 if (c == '=') {
@@ -47,9 +45,8 @@ vector<Token> lexer(const vector<string>& source_code, const string& file_name) 
                 } else if (c == '*') {
                     tokens.push_back(Token("symbol", "**", file_name, {i + 1, j - 1}));
                     continue;
-                } else {
+                } else
                     tokens.push_back(Token("symbol", "*", file_name, {i + 1, j - 1}));
-                }
             } else if (state == "/") {
                 state = "";
                 if (c == '/') {
@@ -65,9 +62,8 @@ vector<Token> lexer(const vector<string>& source_code, const string& file_name) 
                 } else if (c == '=') {
                     tokens.push_back(Token("symbol", "/=", file_name, {i + 1, j - 1}));
                     continue;
-                } else {
+                } else
                     tokens.push_back(Token("symbol", "/", file_name, {i + 1, j - 1}));
-                }
             } else if (state == ">") {
                 state = "";
                 if (c == '=') {
@@ -76,9 +72,8 @@ vector<Token> lexer(const vector<string>& source_code, const string& file_name) 
                 } else if (c == '>') {
                     tokens.push_back(Token("symbol", ">>", file_name, {i + 1, j - 1}));
                     continue;
-                } else {
+                } else
                     tokens.push_back(Token("symbol", ">", file_name, {i + 1, j - 1}));
-                }
             } else if (state == "<") {
                 state = "";
                 if (c == '=') {
@@ -87,56 +82,49 @@ vector<Token> lexer(const vector<string>& source_code, const string& file_name) 
                 } else if (c == '<') {
                     tokens.push_back(Token("symbol", "<<", file_name, {i + 1, j - 1}));
                     continue;
-                } else {
+                } else
                     tokens.push_back(Token("symbol", "<", file_name, {i + 1, j - 1}));
-                }
             } else if (state == "=") {
                 state = "";
                 if (c == '=') {
                     tokens.push_back(Token("symbol", "==", file_name, {i + 1, j - 1}));
                     continue;
-                } else {
+                } else
                     tokens.push_back(Token("symbol", "=", file_name, {i + 1, j - 1}));
-                }
             } else if (state == "!") {
                 state = "";
                 if (c == '=') {
                     tokens.push_back(Token("symbol", "!=", file_name, {i + 1, j - 1}));
                     continue;
-                } else {
+                } else
                     tokens.push_back(Token("symbol", "!", file_name, {i + 1, j - 1}));
-                }
             } else if (state == "&") {
                 state = "";
                 if (c == '&') {
                     tokens.push_back(Token("symbol", "&&", file_name, {i + 1, j - 1}));
                     continue;
-                } else {
+                } else
                     tokens.push_back(Token("symbol", "&", file_name, {i + 1, j - 1}));
-                }
             } else if (state == "|") {
                 state = "";
                 if (c == '|') {
                     tokens.push_back(Token("symbol", "||", file_name, {i + 1, j - 1}));
                     continue;
-                } else {
+                } else
                     tokens.push_back(Token("symbol", "|", file_name, {i + 1, j - 1}));
-                }
             } else if (state == "char") {
                 if (c != '\'') {
-                    if (content == "") {
+                    if (content == "")
                         content = c;
-                    } else {
+                    else
                         error("Character constant too long", file_name, {i + 1, j}, line);
-                    }
                 } else {
                     if (content.size() == 1) {
                         tokens.push_back(Token("char", "'" + content + "'", file_name, {i + 1, j}));
                         state = "";
                         content = "";
-                    } else {
+                    } else
                         error("Character constant too long or too short", file_name, {i + 1, j}, line);
-                    }
                 }
                 continue;
             } else if (state == "string") {
@@ -144,9 +132,8 @@ vector<Token> lexer(const vector<string>& source_code, const string& file_name) 
                     tokens.push_back(Token("string", "\"" + content + "\"", file_name, pos));
                     state = "";
                     content = "";
-                } else {
+                } else
                     content += c;
-                }
                 continue;
             } else if (state == "integer") {
                 if (isdigit(c)) {
@@ -171,9 +158,9 @@ vector<Token> lexer(const vector<string>& source_code, const string& file_name) 
                     content = "";
                 }
             } else if (state == "comment_0") {
-                if (c != '\n') {
+                if (c != '\n')
                     content += c;
-                } else {
+                else {
                     tokens.push_back(Token("comment", content, file_name, pos));
                     state = "";
                     content = "";
@@ -184,25 +171,23 @@ vector<Token> lexer(const vector<string>& source_code, const string& file_name) 
                     content += c;
                     continue;
                 } else {
-                    if (is_keyword(content)) {
+                    if (is_keyword(content))
                         tokens.push_back(Token("keyword", content, file_name, pos));
-                    } else {
+                    else
                         tokens.push_back(Token("identifier", content, file_name, pos));
-                    }
                     state = "";
                     content = "";
                 }
             }
 
             if (is_symbol(c)) {
-                if (c == '+' || c == '-' || c == '*' || c == '/' || c == '%' || c == '>' || c == '=' || c == '<' || c == '!' || c == '&' || c == '|') {
+                if (c == '+' || c == '-' || c == '*' || c == '/' || c == '%' || c == '>' || c == '=' || c == '<' || c == '!' || c == '&' || c == '|')
                     state = string(1, c);
-                } else {
+                else
                     tokens.push_back(Token("symbol", string(1, c), file_name, {i + 1, j}));
-                }
-            } else if (c == '\'') {
+            } else if (c == '\'')
                 state = "char";
-            } else if (c == '"') {
+            else if (c == '"') {
                 state = "string";
                 pos = {i + 1, j + 1};
             } else if (isdigit(c)) {
@@ -218,9 +203,8 @@ vector<Token> lexer(const vector<string>& source_code, const string& file_name) 
                 pos = {i + 1, j};
                 content = c;
             } else {
-                if (c != ' ' && c != '\t' && c != '\n' && c != '\r' && c != '\0' && c != '\v' && c != '\f') {
+                if (c != ' ' && c != '\t' && c != '\n' && c != '\r' && c != '\0' && c != '\v' && c != '\f')
                     error("Invalid character " + string(1, c), file_name, {i + 1, j}, line);
-                }
             }
         }
     }

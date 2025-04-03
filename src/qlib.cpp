@@ -20,23 +20,17 @@ bool is_symbol(char c) {
 }
 
 bool is_term(const Token& token) {
-    if (token.type == "identifier") {
+    if (token.type == "identifier")
         return true;
-    } else if (token.type == "keyword") {
-        if (is_keyword(token.value)) {
+    else if (token.type == "keyword") {
+        if (is_keyword(token.value))
             return true;
-        } else {
-            for (const string& i : BUILTINTYPE) {
-                if (token.value == i) {
-                    return true;
-                }
-            }
+        else {
+            for (const string& i : BUILTINTYPE)
+                if (token.value == i) return true;
         }
-    } else if (token.type == "symbol") {
-        if (token.value == "(" || token.value == "@" || token.value == "^" || token.value == "!" || token.value == "-") {
-            return true;
-        }
-    }
+    } else if (token.type == "symbol" && (token.value == "(" || token.value == "@" || token.value == "^" || token.value == "!" || token.value == "-"))
+        return true;
     return false;
 }
 
@@ -90,14 +84,10 @@ bool Token::operator==(const Token& other) const {
 }
 
 bool Token::operator==(const Tokens& other) const {
-    if (type != other.type) {
+    if (type != other.type)
         return false;
-    }
-    for (const string& i : other.value) {
-        if (value == i) {
-            return true;
-        }
-    }
+    for (const string& i : other.value)
+        if (value == i) return true;
     return false;
 }
 
@@ -117,21 +107,16 @@ Tokens::Tokens(const string& type, const vector<string>& value) {
 
 string Tokens::toString() {
     string t = "";
-    for (const string& i : value) {
+    for (const string& i : value)
         t += ", " + i;
-    }
     return "Tokens(" + type + t + ")";
 }
 
 bool Tokens::operator==(const Token& other) const {
-    if (type != other.type) {
+    if (type != other.type)
         return false;
-    }
-    for (const string& i : value) {
-        if (other.value == i) {
-            return true;
-        }
-    }
+    for (const string& i : value)
+        if (other.value == i) return true;
     return false;
 }
 
@@ -172,13 +157,11 @@ Node::Node() {
 
 string Node::toString() {
     string t = type + "({";
-    for (const auto& [key, val] : value) {
+    for (const auto& [key, val] : value)
         t += key + ": " + val + ", ";
-    }
     t += "}";
-    for (Node i : children) {
+    for (Node i : children)
         t += ", " + i.toString();
-    }
     t += ")";
     return t;
 }

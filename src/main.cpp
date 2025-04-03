@@ -7,19 +7,16 @@ using namespace std;
 vector<string> read_file(string file_name) {
     ifstream input;
     input.open(file_name);
-    if (input.fail()) {
+    if (input.fail())
         throw runtime_error("Error: Could not open file " + file_name);
-    }
     vector<string> source_code;
     string line;
     while (getline(input, line)) {
         if (line.size() > 0) {
-            if (line.back() == '\r') {
+            if (line.back() == '\r')
                 line.pop_back();
-            }
-            if (line.back() != '\n') {
+            if (line.back() != '\n')
                 line.append("\n");
-            }
         }
         source_code.push_back(line);
     }
