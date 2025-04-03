@@ -204,11 +204,11 @@ Node Parser::parse_function() {
     if (current_token != Token("symbol", "{"))
         parser_error("Expected '{'");
     Node statements("statements");
-    do {
+    while (current_token != Token("symbol", "}")) {
         for (const Node& i : parse_statement())
             statements.children.push_back(i);
         get_token();
-    } while (current_token != Token("symbol", "}"));
+    }
 }
 
 Node Parser::parse_class() {
@@ -234,12 +234,73 @@ Node Parser::parse_class() {
 }
 
 Node Parser::parse_method() {
-    // TODO: 'method' ['static'] ['public'] <type> (<identifier'method_name'> | <str'operator'>) ['<' <identifier'type_name'> [{',' <identifier'type_name'>}] '>'] '(' [<identifier'self'>] [',' <declare_args>] ')' '{' {<statement>} '}'
+    get_token();
+    Node method("method");
+    if (current_token == Token("keyword", "static")) {
+        method.value["static"] = "true";
+        get_token();
+    } else
+        method.value["static"] = "false";
+    if (current_token == Token("keyword", "public")) {
+        method.value["modifier"] = "public";
+        get_token();
+    } else
+        method.value["modifier"] = "local";
+    method.children.push_back(parse_type());
+    if (current_token.type == "identifier") {
+        method.value["name"] = current_token.value;
+        method.value["operator"] = "false";
+    } else if (current_token.type == "string") {
+        method.value["name"] = current_token.value;
+        method.value["operator"] = "true";
+    } else
+        parser_error("Expected identifier or string");
+    get_token();
+    int n = 0;
+    if (current_token == Token("symbol", "<")) {
+        do {
+            get_token();
+            method.children.push_back(parse_type());
+            n++;
+            get_token();
+        } while (current_token == Token("symbol", ","));
+        if (current_token != Token("symbol", ">"))
+            parser_error("Expected '>'");
+    }
+    method.value["type_n"] = to_string(n);
+    get_token();
+    if (current_token != Token("symbol", "("))
+        parser_error("Expected '('");
+    if (next_token() == Token("identifier", "self")) {
+        get_token();
+        method.value["self"] = "true";
+        get_token();
+    }
+    Node args("args");
+    if (current_token == Token("symbol", ",")) {
+        for (const Node& i : parse_args())
+            args.children.push_back(i);
+    } else if (current_token != Token("symbol", ")"))
+        parser_error("Expected ',' or ')'");
+    method.children.push_back(args);
+    get_token();
+    if (current_token != Token("symbol", "{"))
+        parser_error("Expected '{'");
+    while (current_token != Token("symbol", "}")) {
+        for (const Node& i : parse_statement())
+            method.children.push_back(i);
+        get_token();
+    }
+    return method;
 }
 
 vector<Node> Parser::parse_args() {
     vector<Node> args;
     Node type;
+    if (next_token() == Token("symbol", ")")) {
+        get_token();
+        return {};
+    }
     do {
         get_token();
         type = parse_type();
