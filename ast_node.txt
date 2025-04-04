@@ -1,0 +1,218 @@
+type = "program"
+value = {}
+children = [
+    Node("import") or
+    Node("declare_var") or
+    Node("if") or
+    Node("for") or
+    Node("while") or
+    Node("function") or
+    Node("class") or
+    Node("expression") or
+    Node("pass"), *n
+]
+
+type = "import"
+value = {
+    "name": "stdlib" or string,
+    "alias": "stdlib" or identifier
+}
+children = {}
+
+type = "declare_var" or "declare_attr"
+value = {
+    "kind": "var" or "attr",
+    "modifier": "local" or "global" or "public",
+    "name": identifier
+}
+children = [
+    Node("type"),
+    Node("expression")
+]
+
+type = "type"
+value = {
+    "name": BUILTINTYPE or identifier
+}
+children = [
+    Node("type"), *n
+]
+
+type = "expression"
+value = {}
+children = [
+    Node("term") or Node("operator"), *n
+]
+
+type = "operator"
+value = {
+    "value": operator
+}
+children = []
+
+type = "term"
+value = {
+    "modifier": "@" or "^" or "!" or "-"
+}
+children = [
+    Node("variable") or
+    Node("call") or
+    Node("term") or
+    Node("expression") or
+    Node("value")
+]
+
+type = "value"
+value = {
+    value: int or char or bool or null or string or float or arr or pointer or dict or tuple or ^pointer
+}
+children = []
+
+type = "call"
+value = {}
+children = [
+    Node("variable"),
+    Node("typevar"),
+    Node("args_call")
+]
+
+type = "typevar"
+value = {}
+children = [
+    Node("type"), *n
+]
+
+type = args_call
+value = {}
+children = [
+    Node("expression"), *n
+]
+
+type = "statements"
+value = {}
+children = [
+    Node("declare_var") or
+    Node("declare_attr") or
+    Node("if") or
+    Node("for") or
+    Node("while") or
+    Node("break") or
+    Node("return") or
+    Node("continue") or
+    Node("function") or
+    Node("class") or
+    Node("expression") or
+    Node("pass"), *n
+]
+
+type = "function"
+value = {
+    "constant": "true" or "false",
+    "name": identifier,
+}
+children = [
+    Node("type"),
+    Node("typevar"),
+    Node("args_declare"),
+    Node("statements")
+]
+
+type = "args_declare"
+value = {}
+children = [
+    Node("declare_arg"), *n
+]
+
+type = "class"
+value = {
+    "name" : "class_name"
+}
+children = [
+    Node("function") or Node("method") or Node("declare_attr"), *n
+]
+
+type = "method"
+value = {
+    "static": "true" or "false",
+    "modifier": "local" or "public",
+    "name": identifier or string,
+    "operator": "true" or "false",
+    "self": "true" or "false"
+}
+children = [
+    Node("typevar"),
+    Node("args"),
+    Node("statements")
+]
+
+type = "args"
+value = {}
+children = [
+    Node("declare_arg"), *n
+]
+
+type = "arr"
+value = {}
+children = [
+    Node("expression"), *n
+]
+
+type = "tuple"
+value = {
+    "length": int
+}
+children = [
+    Node("expression"), *n
+]
+
+type = "dict"
+value = {}
+children = [
+    Node("expression"), Node("expression"), *n
+]
+
+type = "if"
+value = {
+    "elif_n": int,
+    "else": "true" or "false"
+}
+children = [
+    Node("expression"), Node("statements"),
+    Node("expression"), Node("statements"), *n
+    Node("statements") /maybe
+]
+
+type = "for"
+value = {
+    "label": identifier or "for",
+    "name": identifier
+    "else": "true" or "false"
+}
+children = [
+    Node("type"),
+    Node("expression"),
+    Node("statements"),
+    Node("statements") /maybe
+]
+
+type = "while"
+value = {
+    "else": "true" or "false"
+}
+children = [
+    Node("expression"),
+    Node("statements"),
+    Node("statements") /maybe
+]
+
+type = "break"
+value = {
+    "label": identifier
+}
+children = {}
+
+type = "return"
+value = {}
+children = [
+    Node("expression") /maybe
+]
