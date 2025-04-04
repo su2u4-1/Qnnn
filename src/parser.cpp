@@ -46,6 +46,10 @@ Node Parser::parse() {
     while (current_token.type != "EOF") {
         if (current_token == Token("keyword", "import"))
             root.children.push_back(parse_import());
+        else if (current_token == Token("keyword", "class"))
+            root.children.push_back(parse_class());
+        else if (current_token == Token("keyword", "function"))
+            root.children.push_back(parse_function());
         else
             for (const Node& i : parse_statement()) root.children.push_back(i);
     }
@@ -118,7 +122,10 @@ vector<Node> Parser::parse_declare(bool attr) {
         get_token();
         expression = parse_expression();
     }
-    nodes.push_back(Node("declare_var", state, {type, expression}));
+    if (attr)
+        nodes.push_back(Node("declare_attr", state, {type, expression}));
+    else
+        nodes.push_back(Node("declare_var", state, {type, expression}));
     while (current_token == Token("symbol", ",")) {
         get_token();
         if (current_token.type != "identifier")
@@ -130,7 +137,10 @@ vector<Node> Parser::parse_declare(bool attr) {
             get_token();
             expression = parse_expression();
         }
-        nodes.push_back(Node("declare_var", state, {type, expression}));
+        if (attr)
+            nodes.push_back(Node("declare_attr", state, {type, expression}));
+        else
+            nodes.push_back(Node("declare_var", state, {type, expression}));
     }
     if (current_token != Token("symbol", ";"))
         parser_error("Expected ';'");
@@ -165,7 +175,38 @@ Node Parser::parse_term() {
 Node Parser::parse_variable() {
 }
 
-Node Parser::parse_call() {
+Node Parser::parse_typevar() {
+    Node typevar("typevar");
+    if (current_token == Token("symbol", "<")) {
+        do {
+            get_token();
+            typevar.children.push_back(parse_type());
+            get_token();
+        } while (current_token == Token("symbol", ","));
+        if (current_token != Token("symbol", ">"))
+            parser_error("Expected '>'");
+        get_token();
+    }
+    return typevar;
+}
+
+Node Parser::parse_call(const Node& var) {
+    Node call("call", {}, var);
+    call.children.push_back(parse_typevar());
+    if (next_token() == Token("symbol", ")")) {
+        get_token();
+        return call;
+    }
+    Node args_call("args_call");
+    do {
+        get_token();
+        args_call.children.push_back(parse_expression());
+        get_token();
+    } while (current_token == Token("symbol", ","));
+    if (current_token != Token("symbol", ")"))
+        parser_error("Expected ')'");
+    call.children.push_back(args_call);
+    return call;
 }
 
 Node Parser::parse_function() {
@@ -182,24 +223,13 @@ Node Parser::parse_function() {
         parser_error("Expected identifier");
     func.value["name"] = current_token.value;
     get_token();
-    int n = 0;
-    if (current_token == Token("symbol", "<")) {
-        do {
-            get_token();
-            func.children.push_back(parse_type());
-            n++;
-            get_token();
-        } while (current_token == Token("symbol", ","));
-        if (current_token != Token("symbol", ">"))
-            parser_error("Expected '>'");
-    }
-    func.value["type_n"] = to_string(n);
+    func.children.push_back(parse_typevar());
     if (current_token != Token("symbol", "("))
         parser_error("Expected '('");
-    Node args("args");
+    Node args_declare("args_declare");
     for (const Node& i : parse_args())
-        args.children.push_back(i);
-    func.children.push_back(args);
+        args_declare.children.push_back(i);
+    func.children.push_back(args_declare);
     get_token();
     if (current_token != Token("symbol", "{"))
         parser_error("Expected '{'");
@@ -256,19 +286,7 @@ Node Parser::parse_method() {
     } else
         parser_error("Expected identifier or string");
     get_token();
-    int n = 0;
-    if (current_token == Token("symbol", "<")) {
-        do {
-            get_token();
-            method.children.push_back(parse_type());
-            n++;
-            get_token();
-        } while (current_token == Token("symbol", ","));
-        if (current_token != Token("symbol", ">"))
-            parser_error("Expected '>'");
-    }
-    method.value["type_n"] = to_string(n);
-    get_token();
+    method.children.push_back(parse_typevar());
     if (current_token != Token("symbol", "("))
         parser_error("Expected '('");
     if (next_token() == Token("identifier", "self")) {
@@ -385,7 +403,7 @@ vector<Node> Parser::parse_statement() {
         if (current_token != Token("symbol", ";"))
             parser_error("Expected ';'");
         return {t};
-    } else if (current_token == Token("keyword", "pass"))
+    } else if (current_token != Token("keyword", "pass"))
         parser_error("Expected statement");
     return {};
 }
