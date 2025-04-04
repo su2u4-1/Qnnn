@@ -21,11 +21,13 @@ class Parser {
     Node parse_expression();
     Node parse_term();
     Node parse_variable();
-    Node parse_call();
+    Node parse_typevar();
+    Node parse_call(const Node& var);
+    Node parse_statements();
     Node parse_function();
     Node parse_class();
     Node parse_method();
-    vector<Node> parse_args();
+    vector<Node> parse_declare_args();
     Node parse_arr();
     Node parse_tuple();
     Node parse_dict();

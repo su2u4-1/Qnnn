@@ -117,11 +117,12 @@ children = [
     Node("statements")
 ]
 
-type = "args_declare"
-value = {}
-children = [
-    Node("declare_arg"), *n
-]
+type = "declare_arg"
+value = {
+    "name": identifier,
+    "tuple": "true" or "false"
+}
+children = []
 
 type = "class"
 value = {

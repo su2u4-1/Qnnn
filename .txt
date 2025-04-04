@@ -31,8 +31,8 @@ built_in_function:
     void() -> NULL
     str(obj: any) -> str
     float(obj: any) -> float
-    arr(type: T, *item: T) -> arr<T>
-    pointer(type: T, var: T) -> pointer<T>
+    arr<T>(*item: T) -> arr<T>
+    pointer<T>(var: T) -> pointer<T>
 
     range(a: int, b: int, c: int) -> iterator
     print(s :obj, *other: tuple[obj]) -> NULL

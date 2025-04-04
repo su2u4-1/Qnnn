@@ -1,7 +1,7 @@
 # qnnn grammar
 code ::= [{<import> | <statement> | <function> | <class> | <comment_0> | <comment_1>}]
 declare ::= (('var' | 'constant') ['global'] | ('attr' | 'static') ['public']) <type> <identifier'var_name'> ['=' <expression>] [{',' <identifier'var_name'> ['=' <expression>]}] ';'
-declare_args ::= <type> <identifier'var_name'> [{',' <type> <identifier'var_name'>}] [',' '*' <type> <identifier'arr[var]_name'>]
+declare_args ::= ['*'] <type> <identifier'var_name'> [{',' ['*'] <type> <identifier'var_name'>}]
 type ::= <builtin_type> | <identifier'class_name'> | <type> '<' <type> [{',' <type>}] '>'
 expression ::= <term> {<operator> <term>}
 term ::= ('^' | '@' | '-' | '!') <term> | <call> | <variable> | <value> | '(' <expression> ')'
@@ -47,7 +47,7 @@ AtoZ ::= 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G' | 'H' | 'I' | 'J' | 'K' | 'L' |
 digit ::= '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9'
 unicode_character
 builtin_type ::= 'int' | 'char' | 'bool' | 'void' | 'str' | 'float' | 'arr' | 'pointer'
-        | 'range' | 'type' | 'tuple' | 'dict' | 'fpointer'
+        | 'range' | 'type' | 'tuple' | 'dict'
 operator ::= '+' | '-' | '*' | '/' | '%' | '==' | '!=' | '<' | '>' | '<=' | '>=' | '&&'
 | '||' | '&' | '|' | '=' | '+=' | '-=' | '*=' | '/=' | '%=' | '**' | '@' | '^' | '<<'
 | '>>' | '!'

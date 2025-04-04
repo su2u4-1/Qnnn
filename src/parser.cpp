@@ -209,6 +209,16 @@ Node Parser::parse_call(const Node& var) {
     return call;
 }
 
+Node Parser::parse_statements() {
+    Node statements("statements");
+    while (current_token != Token("symbol", "}")) {
+        for (const Node& i : parse_statement())
+            statements.children.push_back(i);
+        get_token();
+    }
+    return statements;
+}
+
 Node Parser::parse_function() {
     get_token();
     Node func("function");
@@ -227,7 +237,7 @@ Node Parser::parse_function() {
     if (current_token != Token("symbol", "("))
         parser_error("Expected '('");
     Node args_declare("args_declare");
-    for (const Node& i : parse_args())
+    for (const Node& i : parse_declare_args())
         args_declare.children.push_back(i);
     func.children.push_back(args_declare);
     get_token();
@@ -296,7 +306,7 @@ Node Parser::parse_method() {
     }
     Node args("args");
     if (current_token == Token("symbol", ",")) {
-        for (const Node& i : parse_args())
+        for (const Node& i : parse_declare_args())
             args.children.push_back(i);
     } else if (current_token != Token("symbol", ")"))
         parser_error("Expected ',' or ')'");
@@ -304,28 +314,30 @@ Node Parser::parse_method() {
     get_token();
     if (current_token != Token("symbol", "{"))
         parser_error("Expected '{'");
-    while (current_token != Token("symbol", "}")) {
-        for (const Node& i : parse_statement())
-            method.children.push_back(i);
-        get_token();
-    }
+    method.children.push_back(parse_statements());
     return method;
 }
 
-vector<Node> Parser::parse_args() {
+vector<Node> Parser::parse_declare_args() {
     vector<Node> args;
     Node type;
     if (next_token() == Token("symbol", ")")) {
         get_token();
         return {};
     }
+    string tuple;
     do {
+        tuple = "false";
         get_token();
+        if (current_token == Token("symbol", "*")) {
+            get_token();
+            tuple = "true";
+        }
         type = parse_type();
         get_token();
         if (current_token.type != "identifier")
             parser_error("Expected identifier");
-        args.push_back(Node("declare_arg", {{"name", current_token.value}}, {type}));
+        args.push_back(Node("declare_arg", {{"name", current_token.value}, {"tuple", tuple}}, {type}));
         get_token();
     } while (current_token == Token("symbol", ","));
     if (current_token != Token("symbol", ")"))
@@ -420,12 +432,7 @@ Node Parser::parse_if() {
     if (current_token != Token("symbol", "{"))
         parser_error("Expected '{'");
     get_token();
-    Node statements("statements");
-    while (current_token != Token("symbol", "}"))
-        for (const Node& i : parse_statement()) statements.children.push_back(i);
-    if_node.children.push_back(statements);
-    if (current_token != Token("symbol", "}"))
-        parser_error("Expected '}'");
+    if_node.children.push_back(parse_statements());
     int n = 0;
     while (next_token() == Token("keyword", "elif")) {
         get_token();
@@ -438,12 +445,7 @@ Node Parser::parse_if() {
         if (current_token != Token("symbol", "{"))
             parser_error("Expected '{'");
         get_token();
-        statements = Node("statements");
-        while (current_token != Token("symbol", "}"))
-            for (const Node& i : parse_statement()) statements.children.push_back(i);
-        if_node.children.push_back(statements);
-        if (current_token != Token("symbol", "}"))
-            parser_error("Expected '}'");
+        if_node.children.push_back(parse_statements());
         n++;
     }
     if_node.value["elif_n"] = to_string(n);
@@ -453,14 +455,10 @@ Node Parser::parse_if() {
         if (current_token != Token("symbol", "{"))
             parser_error("Expected '{'");
         get_token();
-        statements = Node("statements");
-        while (current_token != Token("symbol", "}"))
-            for (const Node& i : parse_statement()) statements.children.push_back(i);
-        if_node.children.push_back(statements);
-        if (current_token != Token("symbol", "}"))
-            parser_error("Expected '}'");
+        if_node.children.push_back(parse_statements());
         if_node.value["else"] = "true";
-    }
+    } else
+        if_node.value["else"] = "false";
     return if_node;
 }
 
@@ -491,26 +489,17 @@ Node Parser::parse_for() {
     if (current_token != Token("symbol", "{"))
         parser_error("Expected '{'");
     get_token();
-    Node statements("statements");
-    while (current_token != Token("symbol", "}"))
-        for (const Node& i : parse_statement()) statements.children.push_back(i);
-    for_node.children.push_back(statements);
-    if (current_token != Token("symbol", "}"))
-        parser_error("Expected '}'");
+    for_node.children.push_back(parse_statements());
     if (next_token() == Token("keyword", "else")) {
         get_token();
         get_token();
         if (current_token != Token("symbol", "{"))
             parser_error("Expected '{'");
         get_token();
-        Node statements("statements");
-        while (current_token != Token("symbol", "}"))
-            for (const Node& i : parse_statement()) statements.children.push_back(i);
-        for_node.children.push_back(statements);
-        if (current_token != Token("symbol", "}"))
-            parser_error("Expected '}'");
+        for_node.children.push_back(parse_statements());
         for_node.value["else"] = "true";
-    }
+    } else
+        for_node.value["else"] = "false";
     return for_node;
 }
 
@@ -527,26 +516,17 @@ Node Parser::parse_while() {
     if (current_token != Token("symbol", "{"))
         parser_error("Expected '{'");
     get_token();
-    Node statements("statements");
-    while (current_token != Token("symbol", "}"))
-        for (const Node& i : parse_statement()) statements.children.push_back(i);
-    while_node.children.push_back(statements);
-    if (current_token != Token("symbol", "}"))
-        parser_error("Expected '}'");
+    while_node.children.push_back(parse_statements());
     if (next_token() == Token("keyword", "else")) {
         get_token();
         get_token();
         if (current_token != Token("symbol", "{"))
             parser_error("Expected '{'");
         get_token();
-        Node statements("statements");
-        while (current_token != Token("symbol", "}"))
-            for (const Node& i : parse_statement()) statements.children.push_back(i);
-        while_node.children.push_back(statements);
-        if (current_token != Token("symbol", "}"))
-            parser_error("Expected '}'");
+        while_node.children.push_back(parse_statements());
         while_node.value["else"] = "true";
-    }
+    } else
+        while_node.value["else"] = "false";
     return while_node;
 }
 
