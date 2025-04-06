@@ -4,12 +4,17 @@ Qnnn
 ## file extension:
 .qn
 # use
+run: `$ python ./build.py ./src ./build/app.exe ./example.qn`  
+output:
 ```sh
-python ./build.py ./include ./src ./build/app.exe
-```
-or
-```sh
-g++ ./include/lexer.h ./include/parser.h ./include/qlib.h ./src/lexer.cpp ./src/main.cpp ./src/parser.cpp ./src/qlib.cpp -o ./build/app.exe
+$ g++ ./src/lexer.cpp ./src/main.cpp ./src/parser.cpp ./src/qlib.cpp -o .\build\app.exe
+$ .\build\app.exe .\example.qn
+0. check args
+1. check file extension.\example.qn
+2. start read sourece code
+3. read completed, start lexing
+4. tokens generated, start parsing
+5. parsing completed, start compile
 ```
 # environment
 ## compiler
