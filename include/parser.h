@@ -24,7 +24,6 @@ class Parser {
     Node parse_use_typevar();
     Node parse_declare_typevar();
     Node parse_call(const Node& var);
-    Node parse_statements();
     Node parse_function();
     Node parse_class();
     Node parse_method();
@@ -32,6 +31,7 @@ class Parser {
     Node parse_arr();
     Node parse_tuple();
     Node parse_dict();
+    Node parse_statements();
     vector<Node> parse_statement();
     Node parse_if();
     Node parse_for();

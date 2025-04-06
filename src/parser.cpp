@@ -246,16 +246,6 @@ Node Parser::parse_call(const Node& var) {
     return call;
 }
 
-Node Parser::parse_statements() {
-    Node statements("statements");
-    while (current_token != Token("symbol", "}")) {
-        for (const Node& i : parse_statement())
-            statements.children.push_back(i);
-        get_token();
-    }
-    return statements;
-}
-
 Node Parser::parse_function() {
     get_token();
     Node func("function");
@@ -428,6 +418,16 @@ Node Parser::parse_dict() {
             parser_error("Expected ',' or '}'");
     }
     return dict;
+}
+
+Node Parser::parse_statements() {
+    Node statements("statements");
+    while (current_token != Token("symbol", "}")) {
+        for (const Node& i : parse_statement())
+            statements.children.push_back(i);
+        get_token();
+    }
+    return statements;
 }
 
 vector<Node> Parser::parse_statement() {
