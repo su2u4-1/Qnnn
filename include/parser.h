@@ -21,7 +21,8 @@ class Parser {
     Node parse_expression();
     Node parse_term();
     Node parse_variable();
-    Node parse_typevar();
+    Node parse_use_typevar();
+    Node parse_declare_typevar();
     Node parse_call(const Node& var);
     Node parse_statements();
     Node parse_function();

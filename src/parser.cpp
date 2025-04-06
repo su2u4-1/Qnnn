@@ -173,10 +173,30 @@ Node Parser::parse_term() {
 }
 
 Node Parser::parse_variable() {
+    Node variable("variable");
+    if (current_token == Token("symbol", "[")) {
+        variable.value["state"] = "index";
+        get_token();
+        variable.children.push_back(parse_expression());
+        if (current_token != Token("symbol", "]"))
+            parser_error("Expected ']'");
+    } else if (current_token == Token("symbol", ".")) {
+        variable.value["state"] = "attr";
+        get_token();
+        if (current_token.type != "identifier")
+            parser_error("Expected identifier");
+        variable.value["name"] = current_token.value;
+    } else
+        parser_error("Expected '[' or '.'");
+    if (next_token() == Tokens("symbol", {".", "["})) {
+        get_token();
+        variable.children.push_back(parse_variable());
+    }
+    return variable;
 }
 
-Node Parser::parse_typevar() {
-    Node typevar("typevar");
+Node Parser::parse_use_typevar() {
+    Node typevar("use_typevar");
     if (current_token == Token("symbol", "<")) {
         do {
             get_token();
@@ -190,9 +210,26 @@ Node Parser::parse_typevar() {
     return typevar;
 }
 
+Node Parser::parse_declare_typevar() {
+    Node typevar("typevar");
+    if (current_token == Token("symbol", "<")) {
+        do {
+            get_token();
+            if (current_token.type != "identifier")
+                parser_error("Expected identifier");
+            typevar.children.push_back(Node("declare_typevar", {{"name", current_token.value}}));
+            get_token();
+        } while (current_token == Token("symbol", ","));
+        if (current_token != Token("symbol", ">"))
+            parser_error("Expected '>'");
+        get_token();
+    }
+    return typevar;
+}
+
 Node Parser::parse_call(const Node& var) {
     Node call("call", {}, var);
-    call.children.push_back(parse_typevar());
+    call.children.push_back(parse_use_typevar());
     if (next_token() == Token("symbol", ")")) {
         get_token();
         return call;
@@ -233,7 +270,7 @@ Node Parser::parse_function() {
         parser_error("Expected identifier");
     func.value["name"] = current_token.value;
     get_token();
-    func.children.push_back(parse_typevar());
+    func.children.push_back(parse_declare_typevar());
     if (current_token != Token("symbol", "("))
         parser_error("Expected '('");
     Node args_declare("args_declare");
@@ -296,7 +333,7 @@ Node Parser::parse_method() {
     } else
         parser_error("Expected identifier or string");
     get_token();
-    method.children.push_back(parse_typevar());
+    method.children.push_back(parse_declare_typevar());
     if (current_token != Token("symbol", "("))
         parser_error("Expected '('");
     if (next_token() == Token("identifier", "self")) {

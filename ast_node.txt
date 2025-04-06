@@ -76,11 +76,23 @@ children = [
     Node("args_call")
 ]
 
-type = "typevar"
+type = "use_typevar"
 value = {}
 children = [
     Node("type"), *n
 ]
+
+type = "typevar"
+value = {}
+children = [
+    Node("declare_typevar"), *n
+]
+
+type = "declare_typevar"
+value = {
+    name: identifier
+}
+children = []
 
 type = args_call
 value = {}

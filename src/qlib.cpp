@@ -22,15 +22,12 @@ bool is_symbol(char c) {
 bool is_term(const Token& token) {
     if (token.type == "identifier")
         return true;
-    else if (token.type == "keyword") {
-        if (is_keyword(token.value))
-            return true;
-        else {
-            for (const string& i : BUILTINTYPE)
-                if (token.value == i) return true;
-        }
-    } else if (token.type == "symbol" && (token.value == "(" || token.value == "@" || token.value == "^" || token.value == "!" || token.value == "-"))
+    else if (token == Tokens("keyword", BUILTINTYPE))
         return true;
+    else if (token == Tokens("symbol", {"(", "@", "^", "!", "-"}))
+        return true;
+    for (const string& i : BUILTINTYPE)
+        if (token.type == i) return true;
     return false;
 }
 
