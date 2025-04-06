@@ -7,7 +7,8 @@ Parser::Parser(const vector<Token>& tokens, const string& file_name) {
         this->tokens = tokens;
         this->file_name = file_name;
         this->index = 0;
-        this->current_token = tokens[index];
+        this->current_token;
+        get_token();
     } else {
         cout << "Error: No tokens provided." << endl;
         exit(1);
@@ -15,9 +16,17 @@ Parser::Parser(const vector<Token>& tokens, const string& file_name) {
 }
 
 Token Parser::next_token() {
-    if (index < tokens.size())
-        return tokens[index];
-    else
+    if (index < tokens.size()) {
+        Token t = tokens[index];
+        int n = 0;
+        while (t.type == "comment") {
+            n++;
+            if (index + n >= tokens.size())
+                return Token("EOF", "", file_name, {-1, -1});
+            t = tokens[index + n];
+        }
+        return t;
+    } else
         return Token("EOF", "", file_name, {-1, -1});
 }
 
@@ -25,9 +34,8 @@ void Parser::get_token() {
     if (index < tokens.size()) {
         current_token = tokens[index];
         index++;
-        while (current_token.type == "comment") {
-            current_token = tokens[index];
-            index++;
+        if (current_token.type == "comment") {
+            get_token();
         }
     } else
         current_token = Token("EOF", "", file_name, {-1, -1});
@@ -52,6 +60,7 @@ Node Parser::parse() {
             root.children.push_back(parse_function());
         else
             for (const Node& i : parse_statement()) root.children.push_back(i);
+        get_token();
     }
     return root;
 }
@@ -75,6 +84,9 @@ Node Parser::parse_import() {
         if (current_token.type != "identifier")
             parser_error("Expected identifier");
         import.value["alias"] = current_token.value;
+        get_token();
+        if (current_token != Token("symbol", ";"))
+            parser_error("Expected ';'");
         return import;
     } else
         parser_error("Expected stdlib or string");
@@ -454,7 +466,7 @@ vector<Node> Parser::parse_statement() {
             parser_error("Expected ';'");
         return {t};
     } else if (current_token != Token("keyword", "pass"))
-        parser_error("Expected statement");
+        parser_error("Expected statement, not " + current_token.toString());
     return {};
 }
 

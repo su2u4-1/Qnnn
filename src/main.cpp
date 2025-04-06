@@ -44,8 +44,16 @@ int main(int argc, char* argv[]) {
     }
     source_code_setitem(file_name, source_code);
 
+    vector<Token> tokens;
     try {
-        vector<Token> tokens = lexer(source_code, file_name);
+        tokens = lexer(source_code, file_name);
+    } catch (const runtime_error& e) {
+        cerr << e.what() << endl;
+        return 1;
+    }
+
+    try {
+        Node porgram = Parser(tokens, file_name).parse();
     } catch (const runtime_error& e) {
         cerr << e.what() << endl;
         return 1;
