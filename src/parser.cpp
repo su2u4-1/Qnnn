@@ -276,6 +276,7 @@ Node Parser::parse_function() {
             statements.children.push_back(i);
         get_token();
     }
+    return func;
 }
 
 Node Parser::parse_class() {
