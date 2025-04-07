@@ -179,6 +179,22 @@ Node Parser::parse_type() {
 }
 
 Node Parser::parse_expression() {
+    Node expression("expression");
+    vector<Node> terms_operators;
+    if (is_term(current_token))
+        terms_operators.push_back(parse_term());
+    else
+        parser_error("Expected term, not " + current_token.toString());
+    while (true) {
+        if (current_token == Tokens("symbol", OPERATOR))
+            terms_operators.push_back(Node("operator", {{"value", current_token.value}}));
+        else
+            break;
+        if (is_term(current_token))
+            terms_operators.push_back(parse_term());
+        else
+            parser_error("Expected term, not " + current_token.toString());
+    }
 }
 
 Node Parser::parse_term() {

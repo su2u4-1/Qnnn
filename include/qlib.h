@@ -16,6 +16,7 @@ class Tokens;
 
 extern vector<string> STDLIB;
 extern vector<string> BUILTINTYPE;
+extern vector<string> OPERATOR;
 
 bool is_keyword(const string& word);
 bool is_symbol(const string& word);

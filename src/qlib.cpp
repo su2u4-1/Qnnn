@@ -6,6 +6,7 @@ map<string, vector<string>> source_code_map = map<string, vector<string>>();
 
 vector<string> STDLIB = {"math", "list", "random", "io", "time"};
 vector<string> BUILTINTYPE = {"int", "float", "bool", "char", "str", "void", "dict", "arr", "tuple", "pointer"};
+vector<string> OPERATOR = {"+", "-", "*", "/", "%", "==", "!=", "<", ">", "<=", ">=", "&&", "||", "&", "|", "=", "+=", "-=", "*=", "/=", "%=", "**", "@", "^", "<<", ">>", "!"};
 
 bool is_keyword(const string& word) {
     return keywords.count(word) > 0;
