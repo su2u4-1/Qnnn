@@ -181,26 +181,20 @@ Node Parser::parse_type() {
 Node Parser::parse_expression() {
     Node expression("expression");
     vector<Node> terms_operators;
-    if (is_term(current_token))
-        terms_operators.push_back(parse_term());
-    else
-        parser_error("Expected term, not " + current_token.toString());
+    terms_operators.push_back(parse_term());
     while (true) {
-        if (current_token == Tokens("symbol", OPERATOR))
-            terms_operators.push_back(Node("operator", {{"value", current_token.value}}));
-        else
+        if (current_token != Tokens("symbol", OPERATOR))
             break;
-        if (is_term(current_token))
-            terms_operators.push_back(parse_term());
-        else
-            parser_error("Expected term, not " + current_token.toString());
+        terms_operators.push_back(Node("operator", {{"value", current_token.value}}));
+        get_token();
+        terms_operators.push_back(parse_term());
     }
     vector<Node> stack;
     for (const Node& i : terms_operators) {
         if (i.type == "term")
             expression.children.push_back(i);
         else if (i.type == "operator") {
-            while (!stack.empty() && operator_precedence(stack.back().value["value"]) >= operator_precedence(i.value["value"])) {
+            while (!stack.empty() && operator_precedence(stack.back().value.at("value")) >= operator_precedence(i.value.at("value"))) {
                 expression.children.push_back(stack.back());
                 stack.pop_back();
             }
@@ -215,6 +209,12 @@ Node Parser::parse_expression() {
 }
 
 Node Parser::parse_term() {
+    Node term("term");
+    if (is_term(current_token)) {
+        get_token();  // TODO
+    } else
+        parser_error("Expected term, not " + current_token.toString());
+    return term;
 }
 
 Node Parser::parse_variable() {
