@@ -59,7 +59,7 @@ pass ::= 'pass'
 # P operator         description
 # 1 ! - @ ^ **       logic not, neg, get address, dereference, power
 # 2 * / %            mul, div, rem
-# 3 +  -             add, sub
+# 3 + -              add, sub
 # 4 << >>            left shift, right shift
 # 5 < <= > >=        <, ≤, >, ≥
 # 6 == !=            =, ≠

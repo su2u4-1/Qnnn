@@ -20,6 +20,28 @@ bool is_symbol(char c) {
     return is_symbol(string(1, c));
 }
 
+int operator_precedence(const string& op) {
+    if (op == "!" || op == "-" || op == "@" || op == "^" || op == "**")
+        return 1;
+    else if (op == "*" || op == "/" || op == "%")
+        return 2;
+    else if (op == "+" || op == "-")
+        return 3;
+    else if (op == "<<" || op == ">>")
+        return 4;
+    else if (op == "<" || op == "<=" || op == ">" || op == ">=")
+        return 5;
+    else if (op == "==" || op == "!=")
+        return 6;
+    else if (op == "&" || op == "|")
+        return 7;
+    else if (op == "&&" || op == "||")
+        return 8;
+    else if (op == "=" || op == "+=" || op == "-=" || op == "*=" || op == "/=" || op == "%=")
+        return 9;
+    return -1;
+}
+
 bool is_term(const Token& token) {
     if (token.type == "identifier")
         return true;

@@ -7,7 +7,7 @@ Parser::Parser(const vector<Token>& tokens, const string& file_name) {
         this->tokens = tokens;
         this->file_name = file_name;
         this->index = 0;
-        this->current_token;
+        this->current_token = Token();
         get_token();
     } else {
         cout << "Error: No tokens provided." << endl;
@@ -195,6 +195,23 @@ Node Parser::parse_expression() {
         else
             parser_error("Expected term, not " + current_token.toString());
     }
+    vector<Node> stack;
+    for (const Node& i : terms_operators) {
+        if (i.type == "term")
+            expression.children.push_back(i);
+        else if (i.type == "operator") {
+            while (!stack.empty() && operator_precedence(stack.back().value["value"]) >= operator_precedence(i.value["value"])) {
+                expression.children.push_back(stack.back());
+                stack.pop_back();
+            }
+            stack.push_back(i);
+        }
+    }
+    while (!stack.empty()) {
+        expression.children.push_back(stack.back());
+        stack.pop_back();
+    }
+    return expression;
 }
 
 Node Parser::parse_term() {

@@ -21,6 +21,7 @@ extern vector<string> OPERATOR;
 bool is_keyword(const string& word);
 bool is_symbol(const string& word);
 bool is_symbol(char c);
+int operator_precedence(const string& op);
 bool is_term(const Token& token);
 void error(const string& msg, const string& file_name, pair<int, int> pos, const string& source_code);
 void source_code_setitem(string file_name, vector<string> source_code);
