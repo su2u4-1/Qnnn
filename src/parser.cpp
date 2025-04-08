@@ -211,9 +211,54 @@ Node Parser::parse_expression() {
 Node Parser::parse_term() {
     Node term("term");
     if (is_term(current_token)) {
-        get_token();  // TODO
+        if (current_token == Tokens("symbol", {"^", "@", "-", "!"})) {  // type = one operator
+            if (current_token.value == "^") {
+                term.value["type"] = "dereference";
+            } else if (current_token.value == "@") {
+                term.value["type"] = "address";
+            } else if (current_token.value == "-") {
+                term.value["type"] = "neg";
+            } else if (current_token.value == "!") {
+                term.value["type"] = "logic_not";
+            }
+            get_token();
+            term.children.push_back(parse_term());
+        } else if (current_token == Token("symbol", "(")) {  // type = value or expression
+            get_token();
+            if (current_token == Token("symbol", ")"))
+                parser_error("Expected expression or value, not " + current_token.toString());
+            term.children.push_back(parse_expression());
+            if (current_token != Token("symbol", ")"))
+                parser_error("Expected ')', not " + current_token.toString());
+            term.value["type"] = "expression";
+        } else if (current_token.type == "identifier") {  // type = variable or call
+            string var = current_token.value;
+            get_token();
+            if (next_token() == Tokens("symbol", {"[", "."})) {
+                get_token();
+                Node t = parse_variable();
+                term.value["var"] = var;
+                term.value["type"] = "variable";
+                term.value["state"] = t.value["state"];
+                term.value["name"] = t.value["name"];
+                term.children = t.children;
+            }
+        } else if (current_token == Tokens("keyword", BUILTINTYPE)) {  // type = type
+        } else if (current_token.type == "int") {                      // type = int
+        } else if (current_token.type == "float") {                    // type = float
+        } else if (current_token.type == "bool") {                     // type = bool
+        } else if (current_token.type == "char") {                     // type = char
+        } else if (current_token.type == "str") {                      // type = str
+        } else if (current_token.type == "void") {                     // type = void
+        } else if (current_token.type == "dict") {                     // type = dict
+        } else if (current_token.type == "arr") {                      // type = arr
+        } else if (current_token.type == "tuple") {                    // type = tuple
+        } else if (current_token.type == "pointer") {                  // type = pointer
+        } else {
+            parser_error("Expected term, not " + current_token.toString() + " (1)");
+        }
     } else
-        parser_error("Expected term, not " + current_token.toString());
+        parser_error("Expected term, not " + current_token.toString() + " (0)");
     return term;
 }
 
@@ -225,6 +270,7 @@ Node Parser::parse_variable() {
         variable.children.push_back(parse_expression());
         if (current_token != Token("symbol", "]"))
             parser_error("Expected ']', not " + current_token.toString());
+        variable.value["name"] = "index";
     } else if (current_token == Token("symbol", ".")) {
         variable.value["state"] = "attr";
         get_token();
