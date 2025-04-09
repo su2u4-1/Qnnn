@@ -223,7 +223,7 @@ Node Parser::parse_term() {
             }
             get_token();
             term.children.push_back(parse_term());
-        } else if (current_token == Token("symbol", "(")) {  // type = value or expression
+        } else if (current_token == Token("symbol", "(")) {  // type = value or expression or tuple
             get_token();
             if (current_token == Token("symbol", ")"))
                 parser_error("Expected expression or value, not " + current_token.toString());
@@ -231,29 +231,62 @@ Node Parser::parse_term() {
             if (current_token != Token("symbol", ")"))
                 parser_error("Expected ')', not " + current_token.toString());
             term.value["type"] = "expression";
-        } else if (current_token.type == "identifier") {  // type = variable or call
+            // TODO: parse tuple
+        } else if (current_token == Token("symbol", "[")) {  // type = arr
+            // TODO: parse arr
+        } else if (current_token == Token("symbol", "{")) {  // type = dict
+            // TODO: parse dict
+        } else if (current_token.type == "identifier") {  // type = variable or call or type
             string var = current_token.value;
             get_token();
-            if (next_token() == Tokens("symbol", {"[", "."})) {
-                get_token();
+            term.value["type"] = "variable";
+            if (current_token == Tokens("symbol", {"[", "."})) {
                 Node t = parse_variable();
-                term.value["var"] = var;
-                term.value["type"] = "variable";
-                term.value["state"] = t.value["state"];
-                term.value["name"] = t.value["name"];
+                t.value["var"] = var;
+                term.children.push_back(t);
+            } else
+                term.children.push_back(Node("variable", {{"var", var}, {"state", "false"}, {"name", "var"}}));
+            if (next_token() == Tokens("symbol", {"<", "("})) {
+                get_token();
+                Node t = parse_call(term.children.back());
+                term.value["type"] = "call";
                 term.children = t.children;
             }
         } else if (current_token == Tokens("keyword", BUILTINTYPE)) {  // type = type
-        } else if (current_token.type == "int") {                      // type = int
-        } else if (current_token.type == "float") {                    // type = float
-        } else if (current_token.type == "bool") {                     // type = bool
-        } else if (current_token.type == "char") {                     // type = char
-        } else if (current_token.type == "str") {                      // type = str
-        } else if (current_token.type == "void") {                     // type = void
-        } else if (current_token.type == "dict") {                     // type = dict
-        } else if (current_token.type == "arr") {                      // type = arr
-        } else if (current_token.type == "tuple") {                    // type = tuple
-        } else if (current_token.type == "pointer") {                  // type = pointer
+            term.value["type"] = "type";
+            string type = current_token.value;
+            get_token();
+            term.children.push_back(parse_use_typevar());
+        } else if (current_token.type == "int") {  // type = int
+            term.value["type"] = "int";
+            term.value["value"] = current_token.value;
+        } else if (current_token.type == "float") {  // type = float
+            term.value["type"] = "float";
+            term.value["value"] = current_token.value;
+        } else if (current_token.type == "bool") {  // type = bool
+            term.value["type"] = "bool";
+            term.value["value"] = current_token.value;
+        } else if (current_token.type == "char") {  // type = char
+            term.value["type"] = "char";
+            term.value["value"] = current_token.value;
+        } else if (current_token.type == "str") {  // type = str
+            term.value["type"] = "str";
+            term.value["value"] = current_token.value;
+        } else if (current_token.type == "void") {  // type = void
+            term.value["type"] = "void";
+            term.value["value"] = current_token.value;
+        } else if (current_token.type == "dict") {  // type = dict
+            term.value["type"] = "dict";
+            term.value["value"] = current_token.value;
+        } else if (current_token.type == "arr") {  // type = arr
+            term.value["type"] = "arr";
+            term.value["value"] = current_token.value;
+        } else if (current_token.type == "tuple") {  // type = tuple
+            term.value["type"] = "tuple";
+            term.value["value"] = current_token.value;
+        } else if (current_token.type == "pointer") {  // type = pointer
+            term.value["type"] = "pointer";
+            term.value["value"] = current_token.value;
         } else {
             parser_error("Expected term, not " + current_token.toString() + " (1)");
         }
@@ -321,10 +354,11 @@ Node Parser::parse_declare_typevar() {
 Node Parser::parse_call(const Node& var) {
     Node call("call", {}, var);
     call.children.push_back(parse_use_typevar());
-    if (next_token() == Token("symbol", ")")) {
-        get_token();
+    if (current_token != Token("symbol", "("))
+        parser_error("Expected '(', not " + current_token.toString());
+    get_token();
+    if (current_token == Token("symbol", ")"))
         return call;
-    }
     Node args_call("args_call");
     do {
         get_token();
