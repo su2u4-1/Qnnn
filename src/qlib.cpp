@@ -1,19 +1,19 @@
 #include "../include/qlib.h"
 
-unordered_set<string> keywords = {"arr", "as", "attr", "bool", "break", "char", "class", "constant", "continue", "dict", "elif", "else", "false", "float", "for", "function", "global", "if", "import", "in", "int", "method", "NULL", "pointer", "public", "range", "return", "static", "str", "true", "tuple", "type", "var", "void", "while"};
-unordered_set<string> symbols = {"(", ")", "[", "]", "{", "}", ",", ";", ".", "+", "-", "*", "/", "%", "<", ">", "&", "|", "=", "@", "^", "!", "==", "!=", "<=", ">=", "&&", "||", "+=", "-=", "*=", "/=", "%=", "**", "<<", ">>"};
+unordered_set<string> _KEYWORD = {"arr", "as", "attr", "bool", "break", "char", "class", "constant", "continue", "dict", "elif", "else", "false", "float", "for", "function", "global", "if", "import", "in", "int", "method", "NULL", "pointer", "public", "range", "return", "static", "str", "true", "tuple", "type", "var", "void", "while"};
+unordered_set<string> _SYMBOLS = {"(", ")", "[", "]", "{", "}", ",", ";", ".", "+", "-", "*", "/", "%", "<", ">", "&", "|", "=", "@", "^", "!", "==", "!=", "<=", ">=", "&&", "||", "+=", "-=", "*=", "/=", "%=", "**", "<<", ">>"};
 map<string, vector<string>> source_code_map = map<string, vector<string>>();
 
 vector<string> STDLIB = {"math", "list", "random", "io", "time"};
-vector<string> BUILTINTYPE = {"int", "float", "bool", "char", "str", "void", "dict", "arr", "tuple", "pointer"};
+vector<string> BUILTINTYPE = {"int", "float", "bool", "char", "str", "void", "dict", "arr", "tuple", "pointer", "type", "range"};
 vector<string> OPERATOR = {"+", "-", "*", "/", "%", "==", "!=", "<", ">", "<=", ">=", "&&", "||", "&", "|", "=", "+=", "-=", "*=", "/=", "%=", "**", "@", "^", "<<", ">>", "!"};
 
 bool is_keyword(const string& word) {
-    return keywords.count(word) > 0;
+    return find(_KEYWORD.begin(), _KEYWORD.end(), word) != _KEYWORD.end();
 }
 
 bool is_symbol(const string& word) {
-    return symbols.count(word) > 0;
+    return find(_SYMBOLS.begin(), _SYMBOLS.end(), word) != _SYMBOLS.end();
 }
 
 bool is_symbol(char c) {
@@ -49,9 +49,7 @@ bool is_term(const Token& token) {
         return true;
     else if (token == Tokens("symbol", {"(", "@", "^", "!", "-"}))
         return true;
-    for (const string& i : BUILTINTYPE)
-        if (token.type == i) return true;
-    return false;
+    return find(BUILTINTYPE.begin(), BUILTINTYPE.end(), token.type) != BUILTINTYPE.end();
 }
 
 void error(const string& msg, const string& file_name, pair<int, int> pos, const string& source_code) {

@@ -1,6 +1,7 @@
 #ifndef QLIB_H
 #define QLIB_H
 
+#include <algorithm>
 #include <fstream>
 #include <iostream>
 #include <map>
