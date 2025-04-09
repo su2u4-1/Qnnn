@@ -7,6 +7,7 @@ map<string, vector<string>> source_code_map = map<string, vector<string>>();
 vector<string> STDLIB = {"math", "list", "random", "io", "time"};
 vector<string> BUILTINTYPE = {"int", "float", "bool", "char", "str", "void", "dict", "arr", "tuple", "pointer", "type", "range"};
 vector<string> OPERATOR = {"+", "-", "*", "/", "%", "==", "!=", "<", ">", "<=", ">=", "&&", "||", "&", "|", "=", "+=", "-=", "*=", "/=", "%=", "**", "@", "^", "<<", ">>", "!"};
+vector<string> call_stack = {};
 
 bool is_keyword(const string& word) {
     return find(_KEYWORD.begin(), _KEYWORD.end(), word) != _KEYWORD.end();
@@ -54,10 +55,41 @@ bool is_term(const Token& token) {
 
 void error(const string& msg, const string& file_name, pair<int, int> pos, const string& source_code) {
     ostringstream oss;
+    oss << get_call_stack();
     oss << "File " << file_name << ", line " << pos.first << ", in " << pos.second << "\n"
         << msg << "\n"
         << source_code << string(pos.second, ' ') << "^";
     throw runtime_error(oss.str());
+}
+
+string get_call_stack() {
+    string o = "Call stack (most recent call last):\n";
+    int indent = 0;
+    for (const string& i : call_stack) {
+        if (i.find("(in)") != string::npos)
+            indent++;
+        for (int j = 0; j < indent; j++)
+            o += "    ";
+        o += i + "\n";
+        if (i.find("(out)") != string::npos)
+            indent--;
+    }
+    return o;
+}
+
+void add_call_stack(const string& str, const int mode) {
+    static string t;
+    if (mode == 0)
+        call_stack.push_back("\033[32m(in) \033[0m" + str + "()");
+    else if (mode == 1)
+        call_stack.push_back("\033[34m(out) \033[0m" + str + "()");
+    else if (mode == 2) {
+        if (t == str)
+            return;
+        t = str;
+        call_stack.push_back("(get) " + str);
+    } else
+        call_stack.push_back("(error) " + str);
 }
 
 void source_code_setitem(string file_name, vector<string> source_code) {
@@ -94,7 +126,8 @@ Token::Token() {
 }
 
 string Token::toString() {
-    return "Token(" + type + ", " + value + ", " + to_string(line) + ", " + to_string(column) + ")";
+    return type + "< " + value + " > (" + to_string(line) + ", " + to_string(column) + ")";
+    // return "Token(" + type + ", " + value + ", " + to_string(line) + ", " + to_string(column) + ")";
 }
 
 bool Token::operator==(const Token& other) const {

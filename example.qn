@@ -9,6 +9,10 @@ var int a = 0;  # normal, file, int, example
 constant int b = 1;  # constant, file, int, example
 var global int c = 2;  # normal, global, int, example
 constant global int d = b + c * b - a;  # constant, global, int, example
+var str e = "hello";  # normal, file, str, example
+constant str f = "world";  # constant, file, str, example
+
+print(e, f);
 
 var pointer<int> p = @a;  # normal, file, pointer<int>, example
 var type T = type(pointer, int);  # normal, file, type, example

@@ -129,7 +129,7 @@ vector<Token> lexer(const vector<string>& source_code, const string& file_name) 
                 continue;
             } else if (state == "string") {
                 if (c == '"') {
-                    tokens.push_back(Token("string", "\"" + content + "\"", file_name, pos));
+                    tokens.push_back(Token("str", "\"" + content + "\"", file_name, pos));
                     state = "";
                     content = "";
                 } else

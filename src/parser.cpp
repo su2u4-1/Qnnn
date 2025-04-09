@@ -39,6 +39,7 @@ void Parser::get_token() {
         }
     } else
         current_token = Token("EOF", "", file_name, {-1, -1});
+    add_call_stack(current_token.toString(), 2);
 }
 
 void Parser::parser_error(const string& msg) {
@@ -50,6 +51,7 @@ void Parser::parser_error(const string& msg, const Token& token) {
 }
 
 Node Parser::parse() {
+    add_call_stack("parse", 0);
     Node root("program");
     while (current_token.type != "EOF") {
         if (current_token == Token("keyword", "import"))
@@ -62,10 +64,12 @@ Node Parser::parse() {
             for (const Node& i : parse_statement()) root.children.push_back(i);
         get_token();
     }
+    add_call_stack("parse", 1);
     return root;
 }
 
 Node Parser::parse_import() {
+    add_call_stack("parse_import", 0);
     get_token();
     Node import("import");
     if (current_token == Tokens("identifier", STDLIB)) {
@@ -74,8 +78,9 @@ Node Parser::parse_import() {
         if (current_token != Token("symbol", ";"))
             parser_error("Expected ';', not " + current_token.toString());
         import.value["alias"] = "stdlib";
+        add_call_stack("parse_import", 1);
         return import;
-    } else if (current_token.type == "string") {
+    } else if (current_token.type == "str") {
         import.value["name"] = current_token.value;
         get_token();
         if (current_token != Token("keyword", "as"))
@@ -87,13 +92,16 @@ Node Parser::parse_import() {
         get_token();
         if (current_token != Token("symbol", ";"))
             parser_error("Expected ';', not " + current_token.toString());
+        add_call_stack("parse_import", 1);
         return import;
     } else
         parser_error("Expected stdlib or string, not " + current_token.toString());
+    add_call_stack("parse_import", 3);
     return Node();
 }
 
 vector<Node> Parser::parse_declare(bool attr) {
+    add_call_stack("parse_declare", 0);
     map<string, string> state;
     vector<Node> nodes;
     if (attr) {
@@ -156,10 +164,12 @@ vector<Node> Parser::parse_declare(bool attr) {
     }
     if (current_token != Token("symbol", ";"))
         parser_error("Expected ';', not " + current_token.toString());
+    add_call_stack("parse_declare", 1);
     return nodes;
 }
 
 Node Parser::parse_type() {
+    add_call_stack("parse_type", 0);
     Node type("type");
     if (current_token == Tokens("keyword", BUILTINTYPE) || current_token.type == "identifier")
         type.value["name"] = current_token.value;
@@ -175,10 +185,12 @@ Node Parser::parse_type() {
         if (current_token != Token("symbol", ">"))
             parser_error("Expected '>', not " + current_token.toString());
     }
+    add_call_stack("parse_type", 1);
     return type;
 }
 
 Node Parser::parse_expression() {
+    add_call_stack("parse_expression", 0);
     Node expression("expression");
     vector<Node> terms_operators;
     terms_operators.push_back(parse_term());
@@ -205,10 +217,12 @@ Node Parser::parse_expression() {
         expression.children.push_back(stack.back());
         stack.pop_back();
     }
+    add_call_stack("parse_expression", 1);
     return expression;
 }
 
 Node Parser::parse_term() {
+    add_call_stack("parse_term", 0);
     Node term("term");
     if (is_term(current_token)) {
         if (current_token == Tokens("symbol", {"^", "@", "-", "!"})) {  // type = one operator
@@ -251,6 +265,7 @@ Node Parser::parse_term() {
                 term.children.push_back(Node("variable", {{"var", var}, {"state", "false"}, {"name", "var"}}));
             if (current_token == Tokens("symbol", {"<", "("})) {
                 Node t = parse_call(term.children.back());
+                get_token();
                 term.value["type"] = "call";
                 term.children = t.children;
             }
@@ -302,10 +317,12 @@ Node Parser::parse_term() {
         }
     } else
         parser_error("Expected term, not " + current_token.toString() + " (0)");
+    add_call_stack("parse_term", 1);
     return term;
 }
 
 Node Parser::parse_variable() {
+    add_call_stack("parse_variable", 0);
     Node variable("variable");
     if (current_token == Token("symbol", "[")) {
         variable.value["state"] = "index";
@@ -326,10 +343,12 @@ Node Parser::parse_variable() {
         get_token();
         variable.children.push_back(parse_variable());
     }
+    add_call_stack("parse_variable", 1);
     return variable;
 }
 
 Node Parser::parse_use_typevar() {
+    add_call_stack("parse_use_typevar", 0);
     Node typevar("use_typevar");
     if (current_token == Token("symbol", "<")) {
         do {
@@ -341,10 +360,12 @@ Node Parser::parse_use_typevar() {
             parser_error("Expected '>', not " + current_token.toString());
         get_token();
     }
+    add_call_stack("parse_use_typevar", 1);
     return typevar;
 }
 
 Node Parser::parse_declare_typevar() {
+    add_call_stack("parse_declare_typevar", 0);
     Node typevar("typevar");
     if (current_token == Token("symbol", "<")) {
         do {
@@ -358,30 +379,34 @@ Node Parser::parse_declare_typevar() {
             parser_error("Expected '>', not " + current_token.toString());
         get_token();
     }
+    add_call_stack("parse_declare_typevar", 1);
     return typevar;
 }
 
 Node Parser::parse_call(const Node& var) {
+    add_call_stack("parse_call", 0);
     Node call("call", {}, var);
     call.children.push_back(parse_use_typevar());
     if (current_token != Token("symbol", "("))
         parser_error("Expected '(', not " + current_token.toString());
-    get_token();
-    if (current_token == Token("symbol", ")"))
+    if (next_token() == Token("symbol", ")")) {
+        get_token();
         return call;
+    }
     Node args_call("args_call");
     do {
         get_token();
         args_call.children.push_back(parse_expression());
-        get_token();
     } while (current_token == Token("symbol", ","));
     if (current_token != Token("symbol", ")"))
         parser_error("Expected ')', not " + current_token.toString());
     call.children.push_back(args_call);
+    add_call_stack("parse_call", 1);
     return call;
 }
 
 Node Parser::parse_function() {
+    add_call_stack("parse_function", 0);
     get_token();
     Node func("function");
     if (current_token == Token("keyword", "constant"))
@@ -411,10 +436,12 @@ Node Parser::parse_function() {
             statements.children.push_back(i);
         get_token();
     }
+    add_call_stack("parse_function", 1);
     return func;
 }
 
 Node Parser::parse_class() {
+    add_call_stack("parse_class", 0);
     get_token();
     Node class_node("class");
     if (current_token.type != "identifier")
@@ -433,10 +460,12 @@ Node Parser::parse_class() {
             class_node.children.push_back(parse_method());
         get_token();
     }
+    add_call_stack("parse_class", 1);
     return class_node;
 }
 
 Node Parser::parse_method() {
+    add_call_stack("parse_method", 0);
     get_token();
     Node method("method");
     if (current_token == Token("keyword", "static")) {
@@ -453,7 +482,7 @@ Node Parser::parse_method() {
     if (current_token.type == "identifier") {
         method.value["name"] = current_token.value;
         method.value["operator"] = "false";
-    } else if (current_token.type == "string") {
+    } else if (current_token.type == "str") {
         method.value["name"] = current_token.value;
         method.value["operator"] = "true";
     } else
@@ -478,14 +507,17 @@ Node Parser::parse_method() {
     if (current_token != Token("symbol", "{"))
         parser_error("Expected '{', not " + current_token.toString());
     method.children.push_back(parse_statements());
+    add_call_stack("parse_method", 1);
     return method;
 }
 
 vector<Node> Parser::parse_declare_args() {
+    add_call_stack("parse_declare_args", 0);
     vector<Node> args;
     Node type;
     if (next_token() == Token("symbol", ")")) {
         get_token();
+        add_call_stack("parse_declare_args", 1);
         return {};
     }
     string tuple;
@@ -505,10 +537,12 @@ vector<Node> Parser::parse_declare_args() {
     } while (current_token == Token("symbol", ","));
     if (current_token != Token("symbol", ")"))
         parser_error("Expected ')', not " + current_token.toString());
+    add_call_stack("parse_declare_args", 1);
     return args;
 }
 
 Node Parser::parse_arr() {
+    add_call_stack("parse_arr", 0);
     Node arr("arr");
     get_token();
     while (current_token != Token("symbol", "]")) {
@@ -518,10 +552,12 @@ Node Parser::parse_arr() {
         else if (current_token != Token("symbol", "]"))
             parser_error("Expected ',' or ']', not " + current_token.toString());
     }
+    add_call_stack("parse_arr", 1);
     return arr;
 }
 
 Node Parser::parse_tuple() {
+    add_call_stack("parse_tuple", 0);
     Node tuple("tuple");
     get_token();
     while (current_token != Token("symbol", ")")) {
@@ -534,10 +570,12 @@ Node Parser::parse_tuple() {
             parser_error("Expected ',' or ')', not " + current_token.toString());
     }
     tuple.value["length"] = to_string(tuple.children.size());
+    add_call_stack("parse_tuple", 1);
     return tuple;
 }
 
 Node Parser::parse_dict() {
+    add_call_stack("parse_dict", 0);
     Node dict("dict");
     get_token();
     while (current_token != Token("symbol", "}")) {
@@ -552,16 +590,19 @@ Node Parser::parse_dict() {
         else if (current_token != Token("symbol", ","))
             parser_error("Expected ',' or '}', not " + current_token.toString());
     }
+    add_call_stack("parse_dict", 1);
     return dict;
 }
 
 Node Parser::parse_statements() {
+    add_call_stack("parse_statements", 0);
     Node statements("statements");
     while (current_token != Token("symbol", "}")) {
         for (const Node& i : parse_statement())
             statements.children.push_back(i);
         get_token();
     }
+    add_call_stack("parse_statements", 1);
     return statements;
 }
 
@@ -589,10 +630,12 @@ vector<Node> Parser::parse_statement() {
         return {t};
     } else if (current_token != Token("keyword", "pass"))
         parser_error("Expected statement, not " + current_token.toString());
+    add_call_stack("parse_statement", 2);
     return {};
 }
 
 Node Parser::parse_if() {
+    add_call_stack("parse_if", 0);
     get_token();
     Node if_node("if");
     if (current_token != Token("symbol", "("))
@@ -631,10 +674,12 @@ Node Parser::parse_if() {
         if_node.value["else"] = "true";
     } else
         if_node.value["else"] = "false";
+    add_call_stack("parse_if", 1);
     return if_node;
 }
 
 Node Parser::parse_for() {
+    add_call_stack("parse_for", 0);
     get_token();
     Node for_node("for");
     if (current_token.type == "identifier") {
@@ -672,10 +717,12 @@ Node Parser::parse_for() {
         for_node.value["else"] = "true";
     } else
         for_node.value["else"] = "false";
+    add_call_stack("parse_for", 1);
     return for_node;
 }
 
 Node Parser::parse_while() {
+    add_call_stack("parse_while", 0);
     get_token();
     Node while_node("while");
     if (current_token != Token("symbol", "("))
@@ -699,10 +746,12 @@ Node Parser::parse_while() {
         while_node.value["else"] = "true";
     } else
         while_node.value["else"] = "false";
+    add_call_stack("parse_while", 1);
     return while_node;
 }
 
 Node Parser::parse_break() {
+    add_call_stack("parse_break", 0);
     get_token();
     Node break_node("break");
     if (current_token.type == "identifier") {
@@ -711,10 +760,12 @@ Node Parser::parse_break() {
     }
     if (current_token != Token("symbol", ";"))
         parser_error("Expected ';', not " + current_token.toString());
+    add_call_stack("parse_break", 1);
     return break_node;
 }
 
 Node Parser::parse_return() {
+    add_call_stack("parse_return", 0);
     get_token();
     Node return_node("return");
     if (current_token == Token("symbol", ";"))
@@ -724,5 +775,6 @@ Node Parser::parse_return() {
         if (current_token != Token("symbol", ";"))
             parser_error("Expected ';', not " + current_token.toString());
     }
+    add_call_stack("parse_return", 1);
     return return_node;
 }

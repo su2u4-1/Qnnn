@@ -6,6 +6,7 @@
 #include <iostream>
 #include <map>
 #include <sstream>
+#include <stacktrace>
 #include <string>
 #include <unordered_set>
 #include <vector>
@@ -25,6 +26,8 @@ bool is_symbol(char c);
 int operator_precedence(const string& op);
 bool is_term(const Token& token);
 void error(const string& msg, const string& file_name, pair<int, int> pos, const string& source_code);
+string get_call_stack();
+void add_call_stack(const string& str, const int mode);
 void source_code_setitem(string file_name, vector<string> source_code);
 string source_code_getitem(string file_name, int line);
 
