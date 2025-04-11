@@ -1,0 +1,132 @@
+program({},
+    declare_var(
+        {kind: var, modifier: local, name: a, },
+        type({name: int, }),
+        expression({}, term({type: int, value: 0, }))
+    ),
+    declare_var(
+        {kind: const, modifier: local, name: b, },
+        type({name: A, }, type({name: B, })),
+        expression(
+            {},
+            term(
+                {type: call, },
+                variable({name: var, state: false, var: A, }),
+                use_typevar({}, type({name: B, })),
+                args_call({}, expression({}, term({type: int, value: 1, })))
+            )
+        )
+    ),
+    declare_var(
+        {kind: var, modifier: global, name: c, },
+        type({name: C, }, type({name: D, }), type({name: E, })),
+        expression(
+            {},
+            term(
+                {type: call, },
+                variable({name: var, state: false, var: C, }),
+                use_typevar({}, type({name: D, }), type({name: E, })),
+                args_call({}, expression({}, term({type: int, value: 2, })))
+            )
+        )
+    ),
+    declare_var(
+        {kind: const, modifier: global, name: d, },
+        type({name: arr, }, type({name: int, })),
+        expression(
+            {},
+            term(
+                {type: arr, },
+                arr(
+                    {},
+                    expression({}, term({type: int, value: 3, })),
+                    expression({}, term({type: int, value: 3, })),
+                    expression({}, term({type: int, value: 3, }))
+                )
+            )
+        )
+    ),
+    class(
+        {name: A, },
+        typevar({}, declare_typevar({name: T, })),
+        declare_attr({kind: attr, modifier: local, name: e, }, type({name: T, }), expression({})),
+        declare_attr({kind: static, modifier: local, name: f, }, type({name: T, }), expression({})),
+        declare_attr({kind: attr, modifier: public, name: g, }, type({name: T, }), expression({})),
+        declare_attr({kind: static, modifier: public, name: h, }, type({name: T, }), expression({})),
+        method(
+            {modifier: public, name: init, operator: false, self: true, static: false, },
+            type({name: A, }),
+            typevar({}),
+            args({}, declare_arg({name: i, tuple: false, }, type({name: int, }))),
+            statements(
+                {},
+                expression(
+                    {},
+                    term({type: variable, }, variable({name: e, state: attr, }, variable({name: var, state: false, var: self, }))),
+                    term(
+                        {type: call, },
+                        variable({name: var, state: false, var: T, }),
+                        use_typevar({}),
+                        args_call({}, expression({}, term({type: variable, }, variable({name: var, state: false, var: i, }))))
+                    ),
+                    operator({value: =, })
+                ),
+                expression(
+                    {},
+                    term({type: variable, }, variable({name: f, state: attr, }, variable({name: var, state: false, var: self, }))),
+                    term(
+                        {type: call, },
+                        variable({name: var, state: false, var: T, }),
+                        use_typevar({}),
+                        args_call(
+                            {},
+                            expression(
+                                {},
+                                term({type: variable, }, variable({name: var, state: false, var: i, })),
+                                term({type: int, value: 1, }),
+                                operator({value: +, })
+                            )
+                        )
+                    ),
+                    operator({value: =, })),
+                expression(
+                    {},
+                    term({type: variable, }, variable({name: g, state: attr, }, variable({name: var, state: false, var: self, }))),
+                    term(
+                        {type: call, },
+                        variable({name: var, state: false, var: T, }),
+                        use_typevar({}),
+                        args_call(
+                            {},
+                            expression(
+                                {},
+                                term({type: variable, }, variable({name: var, state: false, var: i, })),
+                                term({type: int, value: 2, }),
+                                operator({value: +, })
+                            )
+                        )
+                    ),
+                    operator({value: =, })),
+                expression(
+                    {},
+                    term({type: variable, }, variable({name: h, state: attr, }, variable({name: var, state: false, var: self, }))),
+                    term(
+                        {type: call, },
+                        variable({name: var, state: false, var: T, }),
+                        use_typevar({}),
+                        args_call(
+                            {},
+                            expression(
+                                {},
+                                term({type: variable, }, variable({name: var, state: false, var: i, })),
+                                term({type: int, value: 3, }),
+                                operator({value: +, })
+                            )
+                        )
+                    ),
+                    operator({value: =, })),
+                return({}, expression({}, term({type: variable, }, variable({name: var, state: false, var: self, }))))
+            )
+        )
+    )
+)

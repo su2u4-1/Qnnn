@@ -15,6 +15,8 @@ vector<Token> lexer(const vector<string>& source_code, const string& file_name) 
                 content += c;
                 if (p == '*' && c == '/') {
                     tokens.push_back(Token("comment", content, file_name, pos));
+                    state = "";
+                    content = "";
                 }
                 continue;
             }

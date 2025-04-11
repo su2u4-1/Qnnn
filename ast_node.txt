@@ -6,7 +6,7 @@ children = [
     Node("if") or
     Node("for") or
     Node("while") or
-    Node("function") or
+    Node("func") or
     Node("class") or
     Node("expression") or
     Node("pass"), *n
@@ -111,15 +111,15 @@ children = [
     Node("break") or
     Node("return") or
     Node("continue") or
-    Node("function") or
+    Node("func") or
     Node("class") or
     Node("expression") or
     Node("pass"), *n
 ]
 
-type = "function"
+type = "func"
 value = {
-    "constant": "true" or "false",
+    "const": "true" or "false",
     "name": identifier,
 }
 children = [
@@ -141,7 +141,7 @@ value = {
     "name" : "class_name"
 }
 children = [
-    Node("function") or Node("method") or Node("declare_attr"), *n
+    Node("func") or Node("method") or Node("declare_attr"), *n
 ]
 
 type = "method"

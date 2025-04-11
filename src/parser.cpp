@@ -58,7 +58,7 @@ Node Parser::parse() {
             root.children.push_back(parse_import());
         else if (current_token == Token("keyword", "class"))
             root.children.push_back(parse_class());
-        else if (current_token == Token("keyword", "function"))
+        else if (current_token == Token("keyword", "func"))
             root.children.push_back(parse_function());
         else
             for (const Node& i : parse_statement()) root.children.push_back(i);
@@ -120,10 +120,10 @@ vector<Node> Parser::parse_declare(bool attr) {
     } else {
         if (current_token == Token("keyword", "var"))
             state["kind"] = "var";
-        else if (current_token == Token("keyword", "constant"))
-            state["kind"] = "constant";
+        else if (current_token == Token("keyword", "const"))
+            state["kind"] = "const";
         else
-            parser_error("Expected 'var' or 'constant', not " + current_token.toString());
+            parser_error("Expected 'var' or 'const', not " + current_token.toString());
         get_token();
         if (current_token == Token("keyword", "global")) {
             state["modifier"] = "global";
@@ -402,12 +402,12 @@ Node Parser::parse_call(const Node& var) {
 Node Parser::parse_function() {
     add_call_stack("parse_function", 0);
     get_token();
-    Node func("function");
-    if (current_token == Token("keyword", "constant")) {
-        func.value["constant"] = "true";
+    Node func("func");
+    if (current_token == Token("keyword", "const")) {
+        func.value["const"] = "true";
         get_token();
     } else
-        func.value["constant"] = "false";
+        func.value["const"] = "false";
     func.children.push_back(parse_type());
     get_token();
     if (current_token.type != "identifier")
@@ -438,13 +438,14 @@ Node Parser::parse_class() {
         parser_error("Expected identifier, not " + current_token.toString());
     class_node.value["name"] = current_token.value;
     get_token();
+    class_node.children.push_back(parse_declare_typevar());
     if (current_token != Token("symbol", "{"))
         parser_error("Expected '{', not " + current_token.toString());
     while (current_token != Token("symbol", "}")) {
         if (current_token == Tokens("keyword", {"attr", "static"})) {
             for (const Node& i : parse_statement())
                 class_node.children.push_back(i);
-        } else if (current_token == Token("keyword", "function"))
+        } else if (current_token == Token("keyword", "func"))
             class_node.children.push_back(parse_function());
         else if (current_token == Token("keyword", "method"))
             class_node.children.push_back(parse_method());
@@ -615,7 +616,7 @@ vector<Node> Parser::parse_statement() {
         return {parse_return()};
     else if (current_token == Token("keyword", "continue"))
         return {Node("continue")};
-    else if (current_token == Tokens("keyword", {"var", "constant"}))
+    else if (current_token == Tokens("keyword", {"var", "const"}))
         return parse_declare(false);
     else if (current_token == Tokens("keyword", {"attr", "static"}))
         return parse_declare(true);

@@ -1,16 +1,16 @@
-# identifier: constant(normal, constant), scope(global, file, class, subroutine), type, parent
+# identifier: const(normal, const), scope(global, file, class, subroutine), type, parent
 
 import list;  # import stdlib
-#      ^ constant, file, lib, example
+#      ^ const, file, lib, example
 import "<path>/userlib" as userlib;  # import userlib
-#                          ^ constant, file, lib, example
+#                          ^ const, file, lib, example
 
 var int a = 0;  # normal, file, int, example
-constant int b = 1;  # constant, file, int, example
+const int b = 1;  # const, file, int, example
 var global int c = 2;  # normal, global, int, example
-constant global int d = b + c * b - a;  # constant, global, int, example
+const global int d = b + c * b - a;  # const, global, int, example
 var str e = "hello";  # normal, file, str, example
-constant str f = "world";  # constant, file, str, example
+const str f = "world";  # const, file, str, example
 
 print(e, f);
 
@@ -21,19 +21,19 @@ var T p2 = @b;  # normal, file, T, example
 var arr<T> p_arr = [p, p2];  # normal, file, arr<T>, example
 # arr<T> == arr<pointer<int>>
 
-function int main<T>(T a) {  # constant, file, function, example
+func int main<T>(T a) {  # const, file, func, example
     var int e = 4;  # normal, subroutine, int, example.main
-    constant int f = 5;  # constant, subroutine, int, example.main
+    const int f = 5;  # const, subroutine, int, example.main
 
     var global int g = 6;  # error
-    constant global int h = 7;  # error
+    const global int h = 7;  # error
 
     var pointer<T> p3 = @a;  # normal, subroutine, pointer<T>, example.main
 
     return 0;
 }
 
-class A {  # constant, file, class, example
+class A {  # const, file, class, example
     attr int i = 0;  # normal, class.private, int, example.A
     static int j = 1;  # static, class.private, int, example.A
 
@@ -43,19 +43,19 @@ class A {  # constant, file, class, example
     attr public int i = 0;  # normal, class.public, int, example.A
     static public int j = 1;  # static, class.public, int, example.A
 
-    method public A init(self, int m) {  # constant, class.public, A, example.A
+    method public A init(self, int m) {  # const, class.public, A, example.A
         #                          ^ normal, subroutine, int, example.A.init
 
         var int n = 4;  # normal, subroutine, int, example.A.init
-        constant int o = 5;  # constant, subroutine, int, example.A.init
+        const int o = 5;  # const, subroutine, int, example.A.init
 
         var global int p = 6;  # error
-        constant global int q = 7;  # error
+        const global int q = 7;  # error
 
         return self;
     }
 
-    method A _init(self) {  # constant, class.private, A, example.A
+    method A _init(self) {  # const, class.private, A, example.A
         return self;
     }
 }

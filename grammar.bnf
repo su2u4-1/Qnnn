@@ -1,7 +1,8 @@
 # qnnn grammar
 code ::= [{<import> | <statement> | <function> | <class> | <comment_0> | <comment_1>}]
-declare ::= (('var' | 'constant') ['global'] | ('attr' | 'static') ['public']) <type> <identifier'var_name'> ['=' <expression>] [{',' <identifier'var_name'> ['=' <expression>]}] ';'
+declare ::= (('var' | 'const') ['global'] | ('attr' | 'static') ['public']) <type> <identifier'var_name'> ['=' <expression>] [{',' <identifier'var_name'> ['=' <expression>]}] ';'
 declare_args ::= ['*'] <type> <identifier'var_name'> [{',' ['*'] <type> <identifier'var_name'>}]
+declare_typevar ::= '<' <identifier'type_name'> [{',' <identifier'type_name'>}] '>'
 type ::= <builtin_type> | <identifier'class_name'> | <type> '<' <type> [{',' <type>}] '>'
 expression ::= <term> {<operator> <term>}
 term ::= ('^' | '@' | '-' | '!') <term> | <call> | <variable> | <value> | '(' <expression> ')'
@@ -13,9 +14,9 @@ pointer ::= '@' <variable>
 dict ::= '{' [<built_in_types_non_container> ':' <expression> [{',' <expression'built_in_types_non_container'> ':' <expression>}]] '}'
 built_in_types_non_container ::= 'int' | 'char' | 'bool' | 'str' | 'float'
 tuple ::= '(' <expression> [{',' <expression>}] ')'
-function ::= 'function' ['constant'] <type> <identifier'func_name'> ['<' <identifier'type_name'> [{',' <identifier'type_name'>}] '>'] '(' [<declare_args>] ')' '{' {(<statement>)} '}'
-class ::= 'class' <identifier'class_name'> '{' [{<declare'attr'> | <method> | <function>}] '}'
-method ::= 'method' ['static'] ['public'] <type> (<identifier'method_name'> | <str'operator'>) ['<' <identifier'type_name'> [{',' <identifier'type_name'>}] '>'] '(' [<identifier'self'>] [',' <declare_args>] ')' '{' {<statement>} '}'
+function ::= 'func' ['const'] <type> <identifier'func_name'> [<declare_typevar>] '(' [<declare_args>] ')' '{' {(<statement>)} '}'
+class ::= 'class' <identifier'class_name'> [<declare_typevar>] '{' [{<declare'attr'> | <method> | <func>}] '}'
+method ::= 'method' ['static'] ['public'] <type> (<identifier'method_name'> | <str'operator'>) [<declare_typevar>] '(' [<identifier'self'>] [',' <declare_args>] ')' '{' {<statement>} '}'
 statement ::= <if> | <for> | <while> | <return> | <expression> ';' | <break> | <continue> | <pass> | <declare>
 if ::= 'if' '(' <expression> ')' '{' {<statement>} '}' [{'elif' '(' <expression> ')' '{' {<statement>} '}'}] ['else' '{' {<statement>} '}']
 for ::= 'for' [<identifier'label'>] '(' <type> <identifier'var_name'> 'in' <iterator> ')' '{' {<statement>} '}' ['else' '{' {<statement>} '}']
@@ -34,8 +35,8 @@ char ::= "'" <unicode_character> "'"
 string ::= '"' [{<unicode_character>}] '"'
 float ::= ['-'] <digit> [{<digit>}] '.' <digit> [{<digit>}]
 keyword ::= <bool> | <void> | <null> | <pass> | <builtin_type> | 'if' | 'elif' | 'else'
-        | 'for' | 'in' | 'while' | 'return' | 'break' | 'continue' | 'import' | 'constant'
-        | 'global' | 'public' | 'function' | 'method' | 'class' | 'var' | 'as'
+        | 'for' | 'in' | 'while' | 'return' | 'break' | 'continue' | 'import' | 'const'
+        | 'global' | 'public' | 'func' | 'method' | 'class' | 'var' | 'as'
 comment_0 ::= ('#' | "//") [{<unicode_character>}] '\n'
 comment_1 ::= '/*' [{<unicode_character> | '\n'}] '*/'
 

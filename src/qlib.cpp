@@ -1,6 +1,6 @@
 #include "../include/qlib.h"
 
-unordered_set<string> _KEYWORD = {"arr", "as", "attr", "bool", "break", "char", "class", "constant", "continue", "dict", "elif", "else", "false", "float", "for", "function", "global", "if", "import", "in", "int", "method", "NULL", "pointer", "public", "range", "return", "static", "str", "true", "tuple", "type", "var", "void", "while"};
+unordered_set<string> _KEYWORD = {"arr", "as", "attr", "bool", "break", "char", "class", "const", "continue", "dict", "elif", "else", "false", "float", "for", "func", "global", "if", "import", "in", "int", "method", "NULL", "pointer", "public", "range", "return", "static", "str", "true", "tuple", "type", "var", "void", "while"};
 unordered_set<string> _SYMBOLS = {"(", ")", "[", "]", "{", "}", ",", ";", ".", "+", "-", "*", "/", "%", "<", ">", "&", "|", "=", "@", "^", "!", "==", "!=", "<=", ">=", "&&", "||", "+=", "-=", "*=", "/=", "%=", "**", "<<", ">>"};
 map<string, vector<string>> source_code_map = map<string, vector<string>>();
 
