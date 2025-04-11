@@ -229,48 +229,42 @@ Node Parser::parse_term() {
             if (current_token.value == "^") {
                 term.value["type"] = "dereference";
             } else if (current_token.value == "@") {
-                term.value["type"] = "address";
+                term.value["type"] = "pointer";
             } else if (current_token.value == "-") {
                 term.value["type"] = "neg";
             } else if (current_token.value == "!") {
-                term.value["type"] = "logic_not";
+                term.value["type"] = "not";
             }
             get_token();
             term.children.push_back(parse_term());
         } else if (current_token == Token("symbol", "(")) {  // type = value or expression or tuple
-            get_token();
-            if (current_token == Token("symbol", ")"))
-                parser_error("Expected expression or value, not " + current_token.toString());
-            term.children.push_back(parse_expression());
-            if (current_token == Token("symbol", ",")) {
-                // TODO: parse tuple
-            } else if (current_token != Token("symbol", ")"))
-                parser_error("Expected ')', not " + current_token.toString());
-            term.value["type"] = "expression";
+            term.children.push_back(parse_tuple());
+            term.value["type"] = term.children.back().type;
             get_token();
         } else if (current_token == Token("symbol", "[")) {  // type = arr
-            // TODO: parse arr
+            term.children.push_back(parse_arr());
+            term.value["type"] = "arr";
+            get_token();
         } else if (current_token == Token("symbol", "{")) {  // type = dict
-            // TODO: parse dict
+            term.children.push_back(parse_dict());
+            term.value["type"] = "dict";
+            get_token();
         } else if (current_token.type == "identifier" || current_token == Tokens("keyword", BUILTINTYPE)) {  // type = variable or call or type
-            string var = current_token.value;
+            Node var("variable", {{"var", current_token.value}, {"state", "false"}, {"name", "var"}});
             get_token();
             term.value["type"] = "variable";
             if (current_token == Tokens("symbol", {"[", "."})) {
-                Node t = parse_variable();
-                t.value["var"] = var;
+                Node t = parse_variable(var);
+                term.value["type"] = t.type;
                 term.children.push_back(t);
                 get_token();
             } else
-                term.children.push_back(Node("variable", {{"var", var}, {"state", "false"}, {"name", "var"}}));
+                term.children.push_back(var);
             if (current_token == Tokens("symbol", {"<", "("})) {
                 Node t = parse_call(term.children.back());
                 get_token();
                 term.value["type"] = "call";
                 term.children = t.children;
-            }
-            if (term.value["type"] == "variable" && find(BUILTINTYPE.begin(), BUILTINTYPE.end(), var) != BUILTINTYPE.end()) {
-                term.value["type"] = "type";
             }
         } else if (current_token.type == "int") {  // type = int
             term.value["type"] = "int";
@@ -280,7 +274,7 @@ Node Parser::parse_term() {
             term.value["type"] = "float";
             term.value["value"] = current_token.value;
             get_token();
-        } else if (current_token.type == "bool") {  // type = bool
+        } else if (current_token == Tokens("keyword", {"true", "false"})) {  // type = bool
             term.value["type"] = "bool";
             term.value["value"] = current_token.value;
             get_token();
@@ -292,24 +286,12 @@ Node Parser::parse_term() {
             term.value["type"] = "str";
             term.value["value"] = current_token.value;
             get_token();
-        } else if (current_token.type == "void") {  // type = void
+        } else if (current_token == Token("keyword", "void")) {  // type = void
             term.value["type"] = "void";
             term.value["value"] = current_token.value;
             get_token();
-        } else if (current_token.type == "dict") {  // type = dict
-            term.value["type"] = "dict";
-            term.value["value"] = current_token.value;
-            get_token();
-        } else if (current_token.type == "arr") {  // type = arr
-            term.value["type"] = "arr";
-            term.value["value"] = current_token.value;
-            get_token();
-        } else if (current_token.type == "tuple") {  // type = tuple
-            term.value["type"] = "tuple";
-            term.value["value"] = current_token.value;
-            get_token();
-        } else if (current_token.type == "pointer") {  // type = pointer
-            term.value["type"] = "pointer";
+        } else if (current_token == Token("keyword", "null")) {  // type = null
+            term.value["type"] = "null";
             term.value["value"] = current_token.value;
             get_token();
         } else {
@@ -321,9 +303,9 @@ Node Parser::parse_term() {
     return term;
 }
 
-Node Parser::parse_variable() {
+Node Parser::parse_variable(const Node& var) {
     add_call_stack("parse_variable", 0);
-    Node variable("variable");
+    Node variable("variable", {}, var);
     if (current_token == Token("symbol", "[")) {
         variable.value["state"] = "index";
         get_token();
@@ -341,7 +323,11 @@ Node Parser::parse_variable() {
         parser_error("Expected '[' or '.', not " + current_token.toString());
     if (next_token() == Tokens("symbol", {".", "["})) {
         get_token();
-        variable.children.push_back(parse_variable());
+        variable = parse_variable(variable);
+    }
+    if (next_token() == Tokens("symbol", {"<", "("})) {
+        get_token();
+        variable = parse_call(variable);
     }
     add_call_stack("parse_variable", 1);
     return variable;
@@ -401,6 +387,14 @@ Node Parser::parse_call(const Node& var) {
     if (current_token != Token("symbol", ")"))
         parser_error("Expected ')', not " + current_token.toString());
     call.children.push_back(args_call);
+    if (next_token() == Tokens("symbol", {".", "["})) {
+        get_token();
+        call = parse_variable(call);
+    }
+    if (next_token() == Tokens("symbol", {"<", "("})) {
+        get_token();
+        call = parse_call(call);
+    }
     add_call_stack("parse_call", 1);
     return call;
 }
@@ -409,11 +403,11 @@ Node Parser::parse_function() {
     add_call_stack("parse_function", 0);
     get_token();
     Node func("function");
-    if (current_token == Token("keyword", "constant"))
+    if (current_token == Token("keyword", "constant")) {
         func.value["constant"] = "true";
-    else
+        get_token();
+    } else
         func.value["constant"] = "false";
-    get_token();
     func.children.push_back(parse_type());
     get_token();
     if (current_token.type != "identifier")
@@ -430,12 +424,8 @@ Node Parser::parse_function() {
     get_token();
     if (current_token != Token("symbol", "{"))
         parser_error("Expected '{', not " + current_token.toString());
-    Node statements("statements");
-    while (current_token != Token("symbol", "}")) {
-        for (const Node& i : parse_statement())
-            statements.children.push_back(i);
-        get_token();
-    }
+    get_token();
+    func.children.push_back(parse_statements());
     add_call_stack("parse_function", 1);
     return func;
 }
@@ -479,6 +469,7 @@ Node Parser::parse_method() {
     } else
         method.value["modifier"] = "local";
     method.children.push_back(parse_type());
+    get_token();
     if (current_token.type == "identifier") {
         method.value["name"] = current_token.value;
         method.value["operator"] = "false";
@@ -506,6 +497,7 @@ Node Parser::parse_method() {
     get_token();
     if (current_token != Token("symbol", "{"))
         parser_error("Expected '{', not " + current_token.toString());
+    get_token();
     method.children.push_back(parse_statements());
     add_call_stack("parse_method", 1);
     return method;
@@ -568,6 +560,10 @@ Node Parser::parse_tuple() {
             break;
         else
             parser_error("Expected ',' or ')', not " + current_token.toString());
+    }
+    if (tuple.children.size() == 1) {
+        add_call_stack("parse_tuple", 1);
+        return tuple.children[0];
     }
     tuple.value["length"] = to_string(tuple.children.size());
     add_call_stack("parse_tuple", 1);
@@ -644,6 +640,7 @@ Node Parser::parse_if() {
     if_node.children.push_back(parse_expression());
     if (current_token != Token("symbol", ")"))
         parser_error("Expected ')', not " + current_token.toString());
+    get_token();
     if (current_token != Token("symbol", "{"))
         parser_error("Expected '{', not " + current_token.toString());
     get_token();
@@ -651,12 +648,14 @@ Node Parser::parse_if() {
     int n = 0;
     while (next_token() == Token("keyword", "elif")) {
         get_token();
+        get_token();
         if (current_token != Token("symbol", "("))
             parser_error("Expected '(', not " + current_token.toString());
         get_token();
         if_node.children.push_back(parse_expression());
         if (current_token != Token("symbol", ")"))
             parser_error("Expected ')', not " + current_token.toString());
+        get_token();
         if (current_token != Token("symbol", "{"))
             parser_error("Expected '{', not " + current_token.toString());
         get_token();
@@ -696,7 +695,7 @@ Node Parser::parse_for() {
         parser_error("Expected identifier, not " + current_token.toString());
     for_node.value["name"] = current_token.value;
     get_token();
-    if (current_token != Token("symbol", "in"))
+    if (current_token != Token("keyword", "in"))
         parser_error("Expected 'in', not " + current_token.toString());
     get_token();
     for_node.children.push_back(parse_expression());

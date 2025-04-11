@@ -35,13 +35,13 @@ function int main<T>(T a) {  # constant, file, function, example
 
 class A {  # constant, file, class, example
     attr int i = 0;  # normal, class.private, int, example.A
-    static int j = 1;  # constant, class.private, int, example.A
+    static int j = 1;  # static, class.private, int, example.A
 
-    attr global int k = 2;  # error
-    static global int l = 3;  # error
+    // attr global int k = 2;  # error
+    // static global int l = 3;  # error
 
     attr public int i = 0;  # normal, class.public, int, example.A
-    attr public constant int j = 1;  # constant, class.public, int, example.A
+    static public int j = 1;  # static, class.public, int, example.A
 
     method public A init(self, int m) {  # constant, class.public, A, example.A
         #                          ^ normal, subroutine, int, example.A.init
@@ -65,7 +65,7 @@ for label (int i in range(0, 10, 1)) {
     #^ normal, block, int, loop_0
     print(i);
     while (true) {
-        str t = input("stop?: ");  # normal, block, int, loop_1
+        var str t = input("stop?: ");  # normal, block, int, loop_1
         if (t[0] == 'Y' || t[0] == 'y') {
             break label;
         } elif (t.length == 1) {

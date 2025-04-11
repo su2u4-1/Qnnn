@@ -48,9 +48,16 @@ bool is_term(const Token& token) {
         return true;
     else if (token == Tokens("keyword", BUILTINTYPE))
         return true;
-    else if (token == Tokens("symbol", {"(", "@", "^", "!", "-"}))
+    else if (token == Tokens("symbol", {"(", "[", "{", "@", "^", "!", "-"}))
         return true;
-    return find(BUILTINTYPE.begin(), BUILTINTYPE.end(), token.type) != BUILTINTYPE.end();
+    else if (token == Tokens("keyword", {"true", "false", "NULL"}))
+        return true;
+    else if (token.type == "int" || token.type == "float" || token.type == "char" || token.type == "str")
+        return true;
+    else if (token == Tokens("keyword", {"arr", "dict", "tuple", "pointer", "type", "range"}))
+        return true;
+    else
+        return false;
 }
 
 void error(const string& msg, const string& file_name, pair<int, int> pos, const string& source_code) {
