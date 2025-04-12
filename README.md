@@ -11,7 +11,7 @@ $ g++ ./src/lexer.cpp ./src/main.cpp ./src/parser.cpp ./src/qlib.cpp -o .\build\
 $ .\build\app.exe .\example.qn
 0. check args
 1. check file extension.\example.qn
-2. start read sourece code
+2. start read source code
 3. read completed, start lexing
 4. tokens generated, start parsing
 5. parsing completed, start compile

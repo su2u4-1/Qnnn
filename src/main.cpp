@@ -40,7 +40,7 @@ int main(int argc, char* argv[]) {
             return 1;
         }
 
-        cout << "2. start read sourece code" << endl;
+        cout << "2. start read source code" << endl;
         vector<string> source_code;
         try {
             source_code = read_file(file_name);
