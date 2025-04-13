@@ -4,6 +4,19 @@
 
 using namespace std;
 
+struct arguments {
+    string program_name = "";
+    string source_code_file = "";
+    vector<string> flags = {};
+    string output_ast_file = "";
+    int output_ast_type = -1;
+    /*
+    no output ast = -1
+    .ast = 0
+    _ast.json = 1
+    */
+};
+
 vector<string> read_file(string file_name) {
     ifstream input;
     input.open(file_name);
@@ -24,58 +37,84 @@ vector<string> read_file(string file_name) {
     return source_code;
 }
 
+arguments parse_arguments(int argc, char* argv[]) {
+    arguments args;
+    if (argc < 2) {
+        cerr << "Usage: " << argv[0] << " <filename>" << endl;
+        exit(1);
+    }
+    args.source_code_file = argv[1];
+    if (args.source_code_file.find(".qn") == string::npos) {
+        cerr << "Error: File name must end with .qn" << endl;
+        exit(1);
+    }
+    args.program_name = args.source_code_file.substr(0, args.source_code_file.find_last_of('.'));
+    for (int i = 2; i < argc; i++) {
+        if (argv[i][0] == '-') {
+            args.flags.push_back(argv[i]);
+            if (argv[i] == "--output-ast" || argv[i] == "-oa") {
+                args.output_ast_type = 0;
+                args.output_ast_file = args.program_name + ".ast";
+            } else if (argv[i] == "--output-ast-json" || argv[i] == "-oaj") {
+                args.output_ast_type = 1;
+                args.output_ast_file = args.program_name + "_ast.json";
+            } else if (argv[i] == "--output-ast-none" || argv[i] == "-oan") {
+                args.output_ast_type = -1;
+            } else if (argv[i] == "--help" || argv[i] == "-h") {
+                cout << HELP_DOCS;
+                exit(0);
+            }
+        }
+    }
+    return args;
+}
+
 int main(int argc, char* argv[]) {
     try {
-        cout << "0. check args" << endl;
-        if (argc < 2) {
-            cerr << "Usage: " << argv[0] << " <filename>" << endl;
-            return 1;
-        }
-        string file_name = argv[1];
-        string output_name = file_name.substr(0, file_name.find_last_of('.')) + ".out";
+        cout << "prase arguments" << endl;
+        arguments args = parse_arguments(argc, argv);
 
-        cout << "1. check file extension " << file_name << endl;
-        if (file_name.find(".qn") == string::npos) {
-            cerr << "Error: File must have .qn extension" << endl;
-            return 1;
-        }
-
-        cout << "2. start read source code" << endl;
+        cout << "read source code [" << args.source_code_file << "]" << endl;
         vector<string> source_code;
         try {
-            source_code = read_file(file_name);
+            source_code = read_file(args.source_code_file);
         } catch (const runtime_error& e) {
             cerr << e.what() << endl;
             return 1;
         }
-        // for (const string& line : source_code)
-        //     cout << line;
-        source_code_setitem(file_name, source_code);
+        source_code_setitem(args.source_code_file, source_code);
 
-        cout << "3. read completed, start lexing" << endl;
+        cout << "lexing [" << args.source_code_file << "]" << endl;
         vector<Token> tokens;
         try {
-            tokens = lexer(source_code, file_name);
+            tokens = lexer(source_code, args.source_code_file);
         } catch (const runtime_error& e) {
             cerr << e.what() << endl;
             return 1;
         }
-        // for (Token& token : tokens)
-        //     cout << token.toString() << endl;
 
-        cout << "4. tokens generated, start parsing" << endl;
+        cout << "parsing [" << args.source_code_file << "]" << endl;
         Node ast;
         try {
-            ast = Parser(tokens, file_name).parse();
+            ast = Parser(tokens, args.source_code_file).parse();
         } catch (const runtime_error& e) {
             cerr << e.what() << endl;
             return 1;
         }
-        ofstream output_file(output_name);
-        output_file << ast.toString();
-        output_file.close();
 
-        cout << "5. parsing completed, start compile" << endl;
+        if (args.output_ast_type > -1) {
+            cout << "outputting AST to ";
+            if (args.output_ast_type == 0)
+                cout << "ast file";
+            else if (args.output_ast_type == 1)
+                cout << "json file";
+            cout << " [" << args.output_ast_file << "]" << endl;
+            ofstream output_file(args.output_ast_file);
+            output_file << ast.toString();
+            output_file.close();
+        }
+
+        cout << "compiling [" << args.source_code_file << "]" << endl;
     } catch (const exception& e) {
         cerr << "Error: " << e.what() << endl;
         return 1;

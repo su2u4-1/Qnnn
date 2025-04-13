@@ -3,6 +3,13 @@
 unordered_set<string> _KEYWORD = {"arr", "as", "attr", "bool", "break", "char", "class", "const", "continue", "dict", "elif", "else", "false", "float", "for", "func", "global", "if", "import", "in", "int", "method", "NULL", "pointer", "public", "range", "return", "static", "str", "true", "tuple", "type", "var", "void", "while"};
 unordered_set<string> _SYMBOLS = {"(", ")", "[", "]", "{", "}", ",", ";", ".", "+", "-", "*", "/", "%", "<", ">", "&", "|", "=", "@", "^", "!", "==", "!=", "<=", ">=", "&&", "||", "+=", "-=", "*=", "/=", "%=", "**", "<<", ">>"};
 map<string, vector<string>> source_code_map = map<string, vector<string>>();
+string HELP_DOCS =
+    "Usage: qlib <filename> [options]\n"
+    "Options:\n"
+    "  -oa, --output-ast         Output AST to file\n"
+    "  -oaj, --output-ast-json   Output AST to JSON file\n"
+    "  -oan, --output-ast-none   No output AST\n"
+    "  -h, --help               Show this help message\n";
 
 vector<string> STDLIB = {"math", "list", "random", "io", "time"};
 vector<string> BUILTINTYPE = {"int", "float", "bool", "char", "str", "void", "dict", "arr", "tuple", "pointer", "type", "range"};

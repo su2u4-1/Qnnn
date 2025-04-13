@@ -1,25 +1,54 @@
-from os import system, listdir
+from os import mkdir, system, listdir
 from os.path import isfile, isdir, abspath, split
-from sys import argv
+from sys import argv, platform
 
-if len(argv) > 2:
-    bat_path = abspath("./build/run.bat")
-    files: list[str] = []
-    for i in argv[1:-2]:
-        if isfile(i) and (i.endswith(".cpp") or i.endswith(".h")):
-            files.append(i)
-        elif isdir(i):
-            for j in listdir(i):
-                if j.endswith(".cpp") or j.endswith(".h"):
-                    files.append(f"{i}/{j}")
-    output = abspath(argv[-2])
-    runfile = abspath(argv[-1])
-    output_dir = abspath(split(output)[0])
+if len(argv) < 3:
+    print("Usage: python build.py {(<file> | <dir>)} [-o <output>] [-a {<arg>}]")
+    exit(1)
+
+state = -1
+args: list[str] = []
+files: list[str] = []
+output_file = "o.exe"
+
+for i in argv[1:]:
+    if state == 0:
+        output_file = i
+        state = -1
+    elif state == 1:
+        args.append(i)
+    elif i == "-o":
+        state = 0
+    elif i == "-a":
+        state = 1
+    elif isfile(i):
+        files.append(i)
+    elif isdir(i):
+        for j in listdir(i):
+            j = i + "/" + j
+            if isfile(j):
+                files.append(j)
+            else:
+                print(f"{j} is not file")
+                exit(1)
+    else:
+        print(f"{i} is not file or directory")
+        exit(1)
+
+output_file = output_file
+output_dir = split(output_file)[0]
+bat_path = output_dir + "/run.bat"
+sh_path = output_dir + "/run.sh"
+
+if not isdir(output_dir):
+    mkdir(output_dir)
+if platform == "win32" or platform == "cygwin":
     with open(bat_path, "w") as f:
-        if not isdir(output_dir):
-            f.write(f"mkdir {output_dir}\n")
-        f.write(f"g++ {' '.join(files)} -o {output}\n")
-        f.write(f"{output} {runfile}\n")
-    system(bat_path)
+        f.write(f"g++ {' '.join(files)} -o {output_file}\n")
+        f.write(f"{abspath(output_file).replace('/', '\\')} {' '.join(args)}\n")
+    system(abspath(output_dir + "/run.bat"))
 else:
-    print("Usage: python build.py <file1> <file2> ... <output> <arg>")
+    with open(sh_path, "w") as f:
+        f.write(f"g++ {' '.join(files)} -o {output_file}\n")
+        f.write(f"{output_file} {' '.join(args)}\n")
+    system(sh_path)
