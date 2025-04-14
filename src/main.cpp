@@ -100,7 +100,7 @@ string remove_json_trailing_comma(const string& json) {
             result += n;
     }
     if (result[result.size() - 1] == ',')
-        result.pop_back();
+        result[result.size() - 1] = ' ';
     return result;
 }
 
