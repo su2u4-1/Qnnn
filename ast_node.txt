@@ -52,14 +52,43 @@ children = []
 
 type = "term"
 value = {
-    "modifier": "@" or "^" or "!" or "-"
+    "type": "str" or
+            "int" or
+            "bool" or
+            "float" or
+            "arr" or
+            "dict" or
+            "tuple" or
+            "pointer" or
+            "dereference" or
+            "neg" or
+            "not" or
+            "expression" or
+            "tuple" or
+            "call" or
+            "variable" or
+            "null" or
+            "void" or
+            "char"
+    "value": int or char or bool or null or string or float or arr or pointer or dict or tuple
 }
 children = [
     Node("variable") or
-    Node("call") or
     Node("term") or
     Node("expression") or
-    Node("value")
+    Node("tuple") or
+    Node("arr") or
+    Node("dict") or
+    Node("variable"), Node("typevar"), Node("args_call")
+]
+
+type = "variable"
+value = {
+    "state": "index" or "attr",
+    "name": identifier or string,
+}
+children = [
+    Node("call") or Node("variable")
 ]
 
 type = "value"
@@ -129,6 +158,12 @@ children = [
     Node("statements")
 ]
 
+type = "args_declare"
+value = {}
+children = [
+    Node("declare_arg"), *n
+]
+
 type = "declare_arg"
 value = {
     "name": identifier,
@@ -154,14 +189,8 @@ value = {
 }
 children = [
     Node("typevar"),
-    Node("args"),
+    Node("args_declare"),
     Node("statements")
-]
-
-type = "args"
-value = {}
-children = [
-    Node("declare_arg"), *n
 ]
 
 type = "arr"

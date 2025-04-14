@@ -253,19 +253,21 @@ Node Parser::parse_term() {
             Node var("variable", {{"var", current_token.value}, {"state", "false"}, {"name", "var"}});
             get_token();
             term.value["type"] = "variable";
+            Node t;
             if (current_token == Tokens("symbol", {"[", "."})) {
-                Node t = parse_variable(var);
+                t = parse_variable(var);
                 term.value["type"] = t.type;
                 term.children.push_back(t);
                 get_token();
             } else
                 term.children.push_back(var);
             if (current_token == Tokens("symbol", {"<", "("})) {
-                Node t = parse_call(term.children.back());
+                t = parse_call(term.children.back());
                 get_token();
                 term.value["type"] = "call";
-                term.children = t.children;
             }
+            if (term.value["type"] == "call")
+                term.children = t.children;
         } else if (current_token.type == "int") {  // type = int
             term.value["type"] = "int";
             term.value["value"] = current_token.value;
@@ -488,13 +490,13 @@ Node Parser::parse_method() {
         method.value["self"] = "true";
         get_token();
     }
-    Node args("args");
+    Node args_declare("args_declare");
     if (current_token == Token("symbol", ",")) {
         for (const Node& i : parse_declare_args())
-            args.children.push_back(i);
+            args_declare.children.push_back(i);
     } else if (current_token != Token("symbol", ")"))
         parser_error("Expected ',' or ')', not " + current_token.toString());
-    method.children.push_back(args);
+    method.children.push_back(args_declare);
     get_token();
     if (current_token != Token("symbol", "{"))
         parser_error("Expected '{', not " + current_token.toString());
