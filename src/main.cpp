@@ -52,21 +52,56 @@ arguments parse_arguments(int argc, char* argv[]) {
     for (int i = 2; i < argc; i++) {
         if (argv[i][0] == '-') {
             args.flags.push_back(argv[i]);
-            if (argv[i] == "--output-ast" || argv[i] == "-oa") {
+            if (string(argv[i]) == "--output-ast" || string(argv[i]) == "-oa") {
                 args.output_ast_type = 0;
                 args.output_ast_file = args.program_name + ".ast";
-            } else if (argv[i] == "--output-ast-json" || argv[i] == "-oaj") {
+            } else if (string(argv[i]) == "--output-ast-json" || string(argv[i]) == "-oaj") {
                 args.output_ast_type = 1;
                 args.output_ast_file = args.program_name + "_ast.json";
-            } else if (argv[i] == "--output-ast-none" || argv[i] == "-oan") {
+            } else if (string(argv[i]) == "--output-ast-none" || string(argv[i]) == "-oan") {
                 args.output_ast_type = -1;
-            } else if (argv[i] == "--help" || argv[i] == "-h") {
+            } else if (string(argv[i]) == "--help" || string(argv[i]) == "-h") {
                 cout << HELP_DOCS;
                 exit(0);
             }
         }
     }
     return args;
+}
+
+string ast_to_json(const Node& node) {
+    stringstream output_file;
+    output_file << "{";
+    output_file << "\"type\":\"" << node.type << "\",";
+    output_file << "\"value\":{";
+    for (const auto& [k, v] : node.value)
+        output_file << '"' << k << "\":\"" << v << "\",";
+    output_file << "},";
+    output_file << "\"children\":[";
+    for (const auto& child : node.children)
+        output_file << ast_to_json(child);
+    output_file << "]";
+    output_file << "},";
+    return output_file.str();
+}
+
+string remove_json_trailing_comma(const string& json) {
+    char n, p;
+    bool str = false;
+    string result;
+    for (int i = 0; i < json.size(); i++) {
+        p = n;
+        n = json[i];
+        if (n == '"')
+            str = !str;
+        if (!str && p == ',' && (n == '}' || n == ']'))
+            result[result.size() - 1] = n;
+        else
+            result += n;
+    }
+    if (result[result.size() - 1] == ',')
+        result.pop_back();
+    return result;
 }
 
 int main(int argc, char* argv[]) {
@@ -104,13 +139,17 @@ int main(int argc, char* argv[]) {
 
         if (args.output_ast_type > -1) {
             cout << "outputting AST to ";
-            if (args.output_ast_type == 0)
-                cout << "ast file";
-            else if (args.output_ast_type == 1)
-                cout << "json file";
-            cout << " [" << args.output_ast_file << "]" << endl;
+            string output;
+            if (args.output_ast_type == 0) {
+                cout << "ast file [" << args.output_ast_file << "]" << endl;
+            } else if (args.output_ast_type == 1) {
+                cout << "json file [" << args.output_ast_file << "]" << endl;
+                output = remove_json_trailing_comma(ast_to_json(ast));
+            }
             ofstream output_file(args.output_ast_file);
-            output_file << ast.toString();
+            if (output_file.fail())
+                throw runtime_error("Error: Could not open file " + args.output_ast_file);
+            output_file << output;
             output_file.close();
         }
 
