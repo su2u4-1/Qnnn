@@ -10,6 +10,7 @@ state = -1
 args: list[str] = []
 files: list[str] = []
 output_file = "o.exe"
+compiler_path = "g++"
 
 for i in argv[1:]:
     if state == 0:
@@ -44,11 +45,11 @@ if not isdir(output_dir):
     mkdir(output_dir)
 if platform == "win32" or platform == "cygwin":
     with open(bat_path, "w") as f:
-        f.write(f"g++ {' '.join(files)} -o {output_file}\n")
+        f.write(f"{compiler_path} {' '.join(files)} -o {output_file}\n")
         f.write(f"{abspath(output_file).replace('/', '\\')} {' '.join(args)}\n")
     system(abspath(output_dir + "/run.bat"))
 else:
     with open(sh_path, "w") as f:
-        f.write(f"g++ {' '.join(files)} -o {output_file}\n")
+        f.write(f"{compiler_path} {' '.join(files)} -o {output_file}\n")
         f.write(f"{output_file} {' '.join(args)}\n")
     system(sh_path)

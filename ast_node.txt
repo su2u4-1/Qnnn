@@ -84,12 +84,18 @@ children = [
 
 type = "variable"
 value = {
-    "state": "index" or "attr",
-    "name": identifier or string,
+    "state": "index" or "attr"
 }
 children = [
-    Node("call") or Node("variable")
+    Node("call") or Node("variable") or Node("name"),
+    Node("call") or Node("variable") or Node("name")
 ]
+
+type = "name"
+value = {
+    "name": identifier or string
+}
+children = []
 
 type = "value"
 value = {

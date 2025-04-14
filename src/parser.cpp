@@ -250,7 +250,7 @@ Node Parser::parse_term() {
             term.value["type"] = "dict";
             get_token();
         } else if (current_token.type == "identifier" || current_token == Tokens("keyword", BUILTINTYPE)) {  // type = variable or call or type
-            Node var("variable", {{"var", current_token.value}, {"state", "false"}, {"name", "var"}});
+            Node var("variable", {{"state", "false"}}, Node("name", {{"name", current_token.value}}));
             get_token();
             term.value["type"] = "variable";
             Node t;
@@ -307,7 +307,7 @@ Node Parser::parse_term() {
 
 Node Parser::parse_variable(const Node& var) {
     add_call_stack("parse_variable", 0);
-    Node variable("variable", {}, var);
+    Node variable("variable", {{"state", "false"}}, var);
     if (current_token == Token("symbol", "[")) {
         variable.value["state"] = "index";
         get_token();
@@ -320,7 +320,7 @@ Node Parser::parse_variable(const Node& var) {
         get_token();
         if (current_token.type != "identifier")
             parser_error("Expected identifier, not " + current_token.toString());
-        variable.value["name"] = current_token.value;
+        variable.children.push_back(Node("name", {{"name", current_token.value}}));
     } else
         parser_error("Expected '[' or '.', not " + current_token.toString());
     if (next_token() == Tokens("symbol", {".", "["})) {

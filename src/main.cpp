@@ -70,19 +70,19 @@ arguments parse_arguments(int argc, char* argv[]) {
 }
 
 string ast_to_json(const Node& node) {
-    stringstream output_file;
-    output_file << "{";
-    output_file << "\"type\":\"" << node.type << "\",";
-    output_file << "\"value\":{";
+    stringstream output;
+    output << "{";
+    output << "\"type\":\"" << node.type << "\",";
+    output << "\"value\":{";
     for (const auto& [k, v] : node.value)
-        output_file << '"' << k << "\":\"" << v << "\",";
-    output_file << "},";
-    output_file << "\"children\":[";
+        output << '"' << k << "\":\"" << v << "\",";
+    output << "},";
+    output << "\"children\":[";
     for (const auto& child : node.children)
-        output_file << ast_to_json(child);
-    output_file << "]";
-    output_file << "},";
-    return output_file.str();
+        output << ast_to_json(child);
+    output << "]";
+    output << "},";
+    return output.str();
 }
 
 string remove_json_trailing_comma(const string& json) {
@@ -102,6 +102,27 @@ string remove_json_trailing_comma(const string& json) {
     if (result[result.size() - 1] == ',')
         result[result.size() - 1] = ' ';
     return result;
+}
+
+string output_ast(const Node& node, int ident) {
+    stringstream output;
+    output << string(ident * 4, ' ') << node.type << " (";
+    for (const auto& [k, v] : node.value) {
+        output << k << ": " << v << ", ";
+    }
+    if (node.children.size() == 0)
+        output << ") {}" << endl;
+    else {
+        output << ")" << endl;
+        output << string(ident * 4, ' ') << "{" << endl;
+        ident++;
+        for (const auto& child : node.children) {
+            output << output_ast(child, ident);
+        }
+        ident--;
+        output << string(ident * 4, ' ') << "}" << endl;
+    }
+    return output.str();
 }
 
 int main(int argc, char* argv[]) {
@@ -142,6 +163,7 @@ int main(int argc, char* argv[]) {
             string output;
             if (args.output_ast_type == 0) {
                 cout << "ast file [" << args.output_ast_file << "]" << endl;
+                output = output_ast(ast, 0);
             } else if (args.output_ast_type == 1) {
                 cout << "json file [" << args.output_ast_file << "]" << endl;
                 output = remove_json_trailing_comma(ast_to_json(ast));
