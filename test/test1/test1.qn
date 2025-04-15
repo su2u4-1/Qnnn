@@ -11,11 +11,11 @@ class A<T> {
     attr public T g;
     static public T h;
 
-    method public A init(self, int i) {
+    method public void _init(self, int i) {
         self.e = T(i);
         self.f = T(i + 1);
         self.g = T(i + 2);
         self.h = T(i + 3);
-        return self;
+        return;
     }
 }

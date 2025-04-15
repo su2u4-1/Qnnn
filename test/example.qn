@@ -43,7 +43,7 @@ class A {  # const, file, class, example
     attr public int i = 0;  # normal, class.public, int, example.A
     static public int j = 1;  # static, class.public, int, example.A
 
-    method public A init(self, int m) {  # const, class.public, A, example.A
+    method public void _init(self, int m) {  # const, class.public, A, example.A
         #                          ^ normal, subroutine, int, example.A.init
 
         var int n = 4;  # normal, subroutine, int, example.A.init
@@ -51,8 +51,6 @@ class A {  # const, file, class, example
 
         var global int p = 6;  # error
         const global int q = 7;  # error
-
-        return self;
     }
 
     method A _init(self) {  # const, class.private, A, example.A
