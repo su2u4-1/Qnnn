@@ -120,9 +120,9 @@ program ()
             type (name: T, ) {}
             expression () {}
         }
-        method (modifier: public, name: init, operator: false, self: true, static: false, )
+        method (modifier: public, name: _init, operator: false, self: true, static: false, )
         {
-            type (name: A, ) {}
+            type (name: void, ) {}
             typevar () {}
             args_declare ()
             {
@@ -283,19 +283,7 @@ program ()
                     }
                     operator (value: =, ) {}
                 }
-                return ()
-                {
-                    expression ()
-                    {
-                        term (type: variable, )
-                        {
-                            variable (state: false, )
-                            {
-                                name (name: self, ) {}
-                            }
-                        }
-                    }
-                }
+                return () {}
             }
         }
     }
