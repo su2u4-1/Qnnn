@@ -6,10 +6,10 @@ map<string, vector<string>> source_code_map = map<string, vector<string>>();
 string HELP_DOCS =
     "Usage: qlib <filename> [options]\n"
     "Options:\n"
-    "  -oa, --output-ast         Output AST to file\n"
+    "  -oa,  --output-ast        Output AST to file\n"
     "  -oaj, --output-ast-json   Output AST to JSON file\n"
     "  -oan, --output-ast-none   No output AST\n"
-    "  -h, --help               Show this help message\n";
+    "  -h,   --help              Show this help message\n";
 
 vector<string> STDLIB = {"math", "list", "random", "io", "time"};
 vector<string> BUILTINTYPE = {"int", "float", "bool", "char", "str", "void", "dict", "arr", "tuple", "pointer", "type", "range"};

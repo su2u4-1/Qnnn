@@ -66,11 +66,11 @@ arguments parse_arguments(int argc, char* argv[]) {
         cerr << "Usage: " << argv[0] << " <filename>" << endl;
         exit(1);
     }
-    args.source_code_file = argv[1];
-    if (args.source_code_file.find(".qn") == string::npos) {
-        cerr << "Error: File name must end with .qn" << endl;
-        exit(1);
+    if (string(argv[1]) == "--help" || string(argv[1]) == "-h") {
+        cout << HELP_DOCS;
+        exit(0);
     }
+    args.source_code_file = argv[1];
     args.program_name = args.source_code_file.substr(0, args.source_code_file.find_last_of('.'));
     for (int i = 2; i < argc; i++) {
         if (argv[i][0] == '-') {
@@ -88,6 +88,10 @@ arguments parse_arguments(int argc, char* argv[]) {
                 exit(0);
             }
         }
+    }
+    if (args.source_code_file.find(".qn") == string::npos) {
+        cerr << "Error: File name must end with .qn" << endl;
+        exit(1);
     }
     return args;
 }
