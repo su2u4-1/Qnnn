@@ -1,6 +1,6 @@
 #include "../include/qlib.h"
 
-unordered_set<string> _KEYWORD = {"arr", "as", "attr", "bool", "break", "char", "class", "const", "continue", "dict", "elif", "else", "false", "float", "for", "func", "global", "if", "import", "in", "int", "method", "NULL", "pointer", "public", "range", "return", "static", "str", "true", "tuple", "type", "var", "void", "while"};
+unordered_set<string> _KEYWORD = {"arr", "as", "attr", "break", "class", "const", "continue", "elif", "else", "false", "for", "func", "global", "if", "import", "in", "int", "method", "NULL", "public", "return", "static", "true", "type", "var", "void", "while"};
 unordered_set<string> _SYMBOLS = {"(", ")", "[", "]", "{", "}", ",", ";", ".", "+", "-", "*", "/", "%", "<", ">", "&", "|", "=", "@", "^", "!", "==", "!=", "<=", ">=", "&&", "||", "+=", "-=", "*=", "/=", "%=", "**", "<<", ">>"};
 map<string, vector<string>> source_code_map = map<string, vector<string>>();
 string HELP_DOCS =
@@ -12,7 +12,7 @@ string HELP_DOCS =
     "  -h,   --help              Show this help message\n";
 
 vector<string> STDLIB = {"math", "list", "random", "io", "time"};
-vector<string> BUILTINTYPE = {"int", "float", "bool", "char", "str", "void", "dict", "arr", "tuple", "pointer", "type", "range"};
+vector<string> BUILTINTYPE = {"int", "void", "NULL", "arr", "type"};
 vector<string> OPERATOR = {"+", "-", "*", "/", "%", "==", "!=", "<", ">", "<=", ">=", "&&", "||", "&", "|", "=", "+=", "-=", "*=", "/=", "%=", "**", "@", "^", "<<", ">>", "!"};
 vector<string> call_stack = {};
 

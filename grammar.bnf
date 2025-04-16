@@ -16,7 +16,7 @@ built_in_types_non_container ::= 'int' | 'char' | 'bool' | 'str' | 'float'
 tuple ::= '(' <expression> [{',' <expression>}] ')'
 function ::= 'func' ['const'] <type> <identifier'func_name'> [<declare_typevar>] '(' [<declare_args>] ')' '{' {(<statement>)} '}'
 class ::= 'class' <identifier'class_name'> [<declare_typevar>] '{' [{<declare'attr'> | <method> | <func>}] '}'
-method ::= 'method' ['static'] ['public'] <type> (<identifier'method_name'> | <str'operator'>) [<declare_typevar>] '(' [<identifier'self'>] [',' <declare_args>] ')' '{' {<statement>} '}'
+method ::= 'method' ['static'] ['public'] <type> <identifier'method_name'> [<declare_typevar>] '(' [<identifier'self'>] [',' <declare_args>] ')' '{' {<statement>} '}'
 statement ::= <if> | <for> | <while> | <return> | <expression> ';' | <break> | <continue> | <pass> | <declare>
 if ::= 'if' '(' <expression> ')' '{' {<statement>} '}' [{'elif' '(' <expression> ')' '{' {<statement>} '}'}] ['else' '{' {<statement>} '}']
 for ::= 'for' [<identifier'label'>] '(' <type> <identifier'var_name'> 'in' <iterator> ')' '{' {<statement>} '}' ['else' '{' {<statement>} '}']
@@ -34,7 +34,7 @@ int ::= ['-'] <digit> [{<digit>}]
 char ::= "'" <unicode_character> "'"
 string ::= '"' [{<unicode_character>}] '"'
 float ::= ['-'] <digit> [{<digit>}] '.' <digit> [{<digit>}]
-keyword ::= <bool> | <void> | <null> | <pass> | <builtin_type> | 'if' | 'elif' | 'else'
+keyword ::= <bool> | <void> | <null> | <pass> | 'if' | 'elif' | 'else'
         | 'for' | 'in' | 'while' | 'return' | 'break' | 'continue' | 'import' | 'const'
         | 'global' | 'public' | 'func' | 'method' | 'class' | 'var' | 'as'
 comment_0 ::= ('#' | "//") [{<unicode_character>}] '\n'

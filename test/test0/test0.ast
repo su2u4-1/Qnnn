@@ -1,0 +1,889 @@
+program ()
+{
+    import (alias: stdlib, name: list, ) {}
+    import (alias: userlib, name: "<path>/userlib", ) {}
+    declare_var (kind: var, modifier: local, name: a, )
+    {
+        type (name: int, ) {}
+        expression ()
+        {
+            term (type: int, value: 0, ) {}
+        }
+    }
+    declare_var (kind: const, modifier: local, name: b, )
+    {
+        type (name: int, ) {}
+        expression ()
+        {
+            term (type: int, value: 1, ) {}
+        }
+    }
+    declare_var (kind: var, modifier: global, name: c, )
+    {
+        type (name: int, ) {}
+        expression ()
+        {
+            term (type: int, value: 2, ) {}
+        }
+    }
+    declare_var (kind: const, modifier: global, name: d, )
+    {
+        type (name: int, ) {}
+        expression ()
+        {
+            term (type: variable, )
+            {
+                variable (state: false, )
+                {
+                    name (name: b, ) {}
+                }
+            }
+            term (type: variable, )
+            {
+                variable (state: false, )
+                {
+                    name (name: c, ) {}
+                }
+            }
+            operator (value: +, ) {}
+            term (type: variable, )
+            {
+                variable (state: false, )
+                {
+                    name (name: b, ) {}
+                }
+            }
+            operator (value: *, ) {}
+            term (type: variable, )
+            {
+                variable (state: false, )
+                {
+                    name (name: a, ) {}
+                }
+            }
+            operator (value: -, ) {}
+        }
+    }
+    declare_var (kind: var, modifier: local, name: e, )
+    {
+        type (name: str, ) {}
+        expression ()
+        {
+            term (type: str, value: "hello", ) {}
+        }
+    }
+    declare_var (kind: const, modifier: local, name: f, )
+    {
+        type (name: str, ) {}
+        expression ()
+        {
+            term (type: str, value: "world", ) {}
+        }
+    }
+    expression ()
+    {
+        term (type: call, )
+        {
+            variable (state: false, )
+            {
+                name (name: print, ) {}
+            }
+            use_typevar () {}
+            args_call ()
+            {
+                expression ()
+                {
+                    term (type: variable, )
+                    {
+                        variable (state: false, )
+                        {
+                            name (name: e, ) {}
+                        }
+                    }
+                }
+                expression ()
+                {
+                    term (type: variable, )
+                    {
+                        variable (state: false, )
+                        {
+                            name (name: f, ) {}
+                        }
+                    }
+                }
+            }
+        }
+    }
+    declare_var (kind: var, modifier: local, name: p, )
+    {
+        type (name: pointer, )
+        {
+            type (name: int, ) {}
+        }
+        expression ()
+        {
+            term (type: pointer, )
+            {
+                term (type: variable, )
+                {
+                    variable (state: false, )
+                    {
+                        name (name: a, ) {}
+                    }
+                }
+            }
+        }
+    }
+    declare_var (kind: var, modifier: local, name: T, )
+    {
+        type (name: type, ) {}
+        expression ()
+        {
+            term (type: call, )
+            {
+                variable (state: false, )
+                {
+                    name (name: type, ) {}
+                }
+                use_typevar () {}
+                args_call ()
+                {
+                    expression ()
+                    {
+                        term (type: variable, )
+                        {
+                            variable (state: false, )
+                            {
+                                name (name: pointer, ) {}
+                            }
+                        }
+                    }
+                    expression ()
+                    {
+                        term (type: variable, )
+                        {
+                            variable (state: false, )
+                            {
+                                name (name: int, ) {}
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    declare_var (kind: var, modifier: local, name: p2, )
+    {
+        type (name: T, ) {}
+        expression ()
+        {
+            term (type: pointer, )
+            {
+                term (type: variable, )
+                {
+                    variable (state: false, )
+                    {
+                        name (name: b, ) {}
+                    }
+                }
+            }
+        }
+    }
+    declare_var (kind: var, modifier: local, name: p_arr, )
+    {
+        type (name: arr, )
+        {
+            type (name: T, ) {}
+        }
+        expression ()
+        {
+            term (type: arr, )
+            {
+                arr ()
+                {
+                    expression ()
+                    {
+                        term (type: variable, )
+                        {
+                            variable (state: false, )
+                            {
+                                name (name: p, ) {}
+                            }
+                        }
+                    }
+                    expression ()
+                    {
+                        term (type: variable, )
+                        {
+                            variable (state: false, )
+                            {
+                                name (name: p2, ) {}
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    func (const: false, name: main, )
+    {
+        type (name: int, ) {}
+        typevar ()
+        {
+            declare_typevar (name: T, ) {}
+        }
+        args_declare ()
+        {
+            declare_arg (name: a, tuple: false, )
+            {
+                type (name: T, ) {}
+            }
+        }
+        statements ()
+        {
+            declare_var (kind: var, modifier: local, name: e, )
+            {
+                type (name: int, ) {}
+                expression ()
+                {
+                    term (type: int, value: 4, ) {}
+                }
+            }
+            declare_var (kind: const, modifier: local, name: f, )
+            {
+                type (name: int, ) {}
+                expression ()
+                {
+                    term (type: int, value: 5, ) {}
+                }
+            }
+            declare_var (kind: var, modifier: global, name: g, )
+            {
+                type (name: int, ) {}
+                expression ()
+                {
+                    term (type: int, value: 6, ) {}
+                }
+            }
+            declare_var (kind: const, modifier: global, name: h, )
+            {
+                type (name: int, ) {}
+                expression ()
+                {
+                    term (type: int, value: 7, ) {}
+                }
+            }
+            declare_var (kind: var, modifier: local, name: p3, )
+            {
+                type (name: pointer, )
+                {
+                    type (name: T, ) {}
+                }
+                expression ()
+                {
+                    term (type: pointer, )
+                    {
+                        term (type: variable, )
+                        {
+                            variable (state: false, )
+                            {
+                                name (name: a, ) {}
+                            }
+                        }
+                    }
+                }
+            }
+            return ()
+            {
+                expression ()
+                {
+                    term (type: int, value: 0, ) {}
+                }
+            }
+        }
+    }
+    class (name: A, )
+    {
+        typevar () {}
+        declare_attr (kind: attr, modifier: local, name: i, )
+        {
+            type (name: int, ) {}
+            expression ()
+            {
+                term (type: int, value: 0, ) {}
+            }
+        }
+        declare_attr (kind: static, modifier: local, name: j, )
+        {
+            type (name: int, ) {}
+            expression ()
+            {
+                term (type: int, value: 1, ) {}
+            }
+        }
+        declare_attr (kind: attr, modifier: public, name: i, )
+        {
+            type (name: int, ) {}
+            expression ()
+            {
+                term (type: int, value: 0, ) {}
+            }
+        }
+        declare_attr (kind: static, modifier: public, name: j, )
+        {
+            type (name: int, ) {}
+            expression ()
+            {
+                term (type: int, value: 1, ) {}
+            }
+        }
+        method (modifier: public, name: _init, operator: false, self: true, static: false, )
+        {
+            type (name: void, ) {}
+            typevar () {}
+            args_declare ()
+            {
+                declare_arg (name: m, tuple: false, )
+                {
+                    type (name: int, ) {}
+                }
+            }
+            statements ()
+            {
+                declare_var (kind: var, modifier: local, name: n, )
+                {
+                    type (name: int, ) {}
+                    expression ()
+                    {
+                        term (type: int, value: 4, ) {}
+                    }
+                }
+                declare_var (kind: const, modifier: local, name: o, )
+                {
+                    type (name: int, ) {}
+                    expression ()
+                    {
+                        term (type: int, value: 5, ) {}
+                    }
+                }
+                declare_var (kind: var, modifier: global, name: p, )
+                {
+                    type (name: int, ) {}
+                    expression ()
+                    {
+                        term (type: int, value: 6, ) {}
+                    }
+                }
+                declare_var (kind: const, modifier: global, name: q, )
+                {
+                    type (name: int, ) {}
+                    expression ()
+                    {
+                        term (type: int, value: 7, ) {}
+                    }
+                }
+            }
+        }
+        method (modifier: local, name: _init, operator: false, self: true, static: false, )
+        {
+            type (name: A, ) {}
+            typevar () {}
+            args_declare () {}
+            statements ()
+            {
+                return ()
+                {
+                    expression ()
+                    {
+                        term (type: variable, )
+                        {
+                            variable (state: false, )
+                            {
+                                name (name: self, ) {}
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    for (else: true, label: label, name: i, )
+    {
+        type (name: int, ) {}
+        expression ()
+        {
+            term (type: call, )
+            {
+                variable (state: false, )
+                {
+                    name (name: range, ) {}
+                }
+                use_typevar () {}
+                args_call ()
+                {
+                    expression ()
+                    {
+                        term (type: int, value: 0, ) {}
+                    }
+                    expression ()
+                    {
+                        term (type: int, value: 10, ) {}
+                    }
+                    expression ()
+                    {
+                        term (type: int, value: 1, ) {}
+                    }
+                }
+            }
+        }
+        statements ()
+        {
+            expression ()
+            {
+                term (type: call, )
+                {
+                    variable (state: false, )
+                    {
+                        name (name: print, ) {}
+                    }
+                    use_typevar () {}
+                    args_call ()
+                    {
+                        expression ()
+                        {
+                            term (type: variable, )
+                            {
+                                variable (state: false, )
+                                {
+                                    name (name: i, ) {}
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            while (else: false, )
+            {
+                expression ()
+                {
+                    term (type: bool, value: true, ) {}
+                }
+                statements ()
+                {
+                    declare_var (kind: var, modifier: local, name: t, )
+                    {
+                        type (name: str, ) {}
+                        expression ()
+                        {
+                            term (type: call, )
+                            {
+                                variable (state: false, )
+                                {
+                                    name (name: input, ) {}
+                                }
+                                use_typevar () {}
+                                args_call ()
+                                {
+                                    expression ()
+                                    {
+                                        term (type: str, value: "stop?: ", ) {}
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    if (elif_n: 1, else: true, )
+                    {
+                        expression ()
+                        {
+                            term (type: variable, )
+                            {
+                                variable (name: index, state: index, )
+                                {
+                                    variable (state: false, )
+                                    {
+                                        name (name: t, ) {}
+                                    }
+                                    expression ()
+                                    {
+                                        term (type: int, value: 0, ) {}
+                                    }
+                                }
+                            }
+                            term (type: char, value: 'Y', ) {}
+                            term (type: variable, )
+                            {
+                                variable (name: index, state: index, )
+                                {
+                                    variable (state: false, )
+                                    {
+                                        name (name: t, ) {}
+                                    }
+                                    expression ()
+                                    {
+                                        term (type: int, value: 0, ) {}
+                                    }
+                                }
+                            }
+                            operator (value: ||, ) {}
+                            operator (value: ==, ) {}
+                            term (type: char, value: 'y', ) {}
+                            operator (value: ==, ) {}
+                        }
+                        statements ()
+                        {
+                            break (label: label, ) {}
+                        }
+                        expression ()
+                        {
+                            term (type: variable, )
+                            {
+                                variable (state: attr, )
+                                {
+                                    variable (state: false, )
+                                    {
+                                        name (name: t, ) {}
+                                    }
+                                    name (name: length, ) {}
+                                }
+                            }
+                            term (type: int, value: 1, ) {}
+                            operator (value: ==, ) {}
+                        }
+                        statements ()
+                        {
+                            break () {}
+                        }
+                        statements ()
+                        {
+                            expression ()
+                            {
+                                term (type: call, )
+                                {
+                                    variable (state: false, )
+                                    {
+                                        name (name: print, ) {}
+                                    }
+                                    use_typevar () {}
+                                    args_call ()
+                                    {
+                                        expression ()
+                                        {
+                                            term (type: variable, )
+                                            {
+                                                variable (state: false, )
+                                                {
+                                                    name (name: i, ) {}
+                                                }
+                                            }
+                                        }
+                                        expression ()
+                                        {
+                                            term (type: variable, )
+                                            {
+                                                variable (state: false, )
+                                                {
+                                                    name (name: i, ) {}
+                                                }
+                                            }
+                                        }
+                                        expression ()
+                                        {
+                                            term (type: variable, )
+                                            {
+                                                variable (state: false, )
+                                                {
+                                                    name (name: i, ) {}
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        statements ()
+        {
+            expression ()
+            {
+                term (type: call, )
+                {
+                    variable (state: false, )
+                    {
+                        name (name: print, ) {}
+                    }
+                    use_typevar () {}
+                    args_call ()
+                    {
+                        expression ()
+                        {
+                            term (type: str, value: "done", ) {}
+                        }
+                    }
+                }
+            }
+        }
+    }
+    declare_var (kind: var, modifier: local, name: t, )
+    {
+        type (name: char, ) {}
+        expression ()
+        {
+            term (type: call, )
+            {
+                call ()
+                {
+                    variable (state: false, )
+                    {
+                        name (name: input, ) {}
+                    }
+                    use_typevar () {}
+                    args_call ()
+                    {
+                        expression ()
+                        {
+                            term (type: str, value: ": ", ) {}
+                        }
+                    }
+                }
+                expression ()
+                {
+                    term (type: int, value: 0, ) {}
+                }
+            }
+        }
+    }
+    if (elif_n: 1, else: true, )
+    {
+        expression ()
+        {
+            term (type: variable, )
+            {
+                variable (state: false, )
+                {
+                    name (name: t, ) {}
+                }
+            }
+            term (type: char, value: 'a', ) {}
+            operator (value: ==, ) {}
+        }
+        statements ()
+        {
+            expression ()
+            {
+                term (type: call, )
+                {
+                    variable (state: false, )
+                    {
+                        name (name: print, ) {}
+                    }
+                    use_typevar () {}
+                    args_call ()
+                    {
+                        expression ()
+                        {
+                            term (type: str, value: "aaa", ) {}
+                        }
+                    }
+                }
+            }
+        }
+        expression ()
+        {
+            term (type: variable, )
+            {
+                variable (state: false, )
+                {
+                    name (name: t, ) {}
+                }
+            }
+            term (type: char, value: 'b', ) {}
+            operator (value: ==, ) {}
+        }
+        statements ()
+        {
+            expression ()
+            {
+                term (type: call, )
+                {
+                    variable (state: false, )
+                    {
+                        name (name: print, ) {}
+                    }
+                    use_typevar () {}
+                    args_call ()
+                    {
+                        expression ()
+                        {
+                            term (type: str, value: "bbb", ) {}
+                        }
+                    }
+                }
+            }
+        }
+        statements ()
+        {
+            expression ()
+            {
+                term (type: call, )
+                {
+                    variable (state: false, )
+                    {
+                        name (name: print, ) {}
+                    }
+                    use_typevar () {}
+                    args_call ()
+                    {
+                        expression ()
+                        {
+                            term (type: str, value: "???", ) {}
+                        }
+                    }
+                }
+            }
+        }
+    }
+    declare_var (kind: var, modifier: local, name: r, )
+    {
+        type (name: bool, ) {}
+        expression ()
+        {
+            term (type: dereference, )
+            {
+                term (type: expression, )
+                {
+                    expression ()
+                    {
+                        term (type: pointer, )
+                        {
+                            term (type: expression, )
+                            {
+                                expression ()
+                                {
+                                    term (type: not, )
+                                    {
+                                        term (type: expression, )
+                                        {
+                                            expression ()
+                                            {
+                                                term (type: int, value: 1, ) {}
+                                                term (type: int, value: 1, ) {}
+                                                operator (value: +, ) {}
+                                                term (type: int, value: 1, ) {}
+                                                term (type: int, value: 1, ) {}
+                                                operator (value: *, ) {}
+                                                term (type: int, value: 1, ) {}
+                                                operator (value: /, ) {}
+                                                term (type: int, value: 1, ) {}
+                                                term (type: int, value: 1, ) {}
+                                                operator (value: ==, ) {}
+                                                term (type: int, value: 1, ) {}
+                                                operator (value: !=, ) {}
+                                                term (type: int, value: 1, ) {}
+                                                operator (value: <, ) {}
+                                                term (type: int, value: 1, ) {}
+                                                operator (value: >, ) {}
+                                                term (type: int, value: 1, ) {}
+                                                operator (value: <=, ) {}
+                                                term (type: int, value: 1, ) {}
+                                                term (type: int, value: 1, ) {}
+                                                operator (value: &&, ) {}
+                                                term (type: int, value: 1, ) {}
+                                                operator (value: ||, ) {}
+                                                term (type: int, value: 1, ) {}
+                                                operator (value: &, ) {}
+                                                term (type: int, value: 1, ) {}
+                                                term (type: int, value: 1, ) {}
+                                                operator (value: =, ) {}
+                                                term (type: int, value: 1, ) {}
+                                                operator (value: +=, ) {}
+                                                term (type: int, value: 1, ) {}
+                                                operator (value: -=, ) {}
+                                                term (type: int, value: 1, ) {}
+                                                operator (value: *=, ) {}
+                                                term (type: int, value: 1, ) {}
+                                                operator (value: /=, ) {}
+                                                term (type: int, value: 1, ) {}
+                                                operator (value: %=, ) {}
+                                                operator (value: |, ) {}
+                                                operator (value: >=, ) {}
+                                                operator (value: %, ) {}
+                                                operator (value: -, ) {}
+                                                term (type: int, value: 1, ) {}
+                                                term (type: int, value: 1, ) {}
+                                                operator (value: <<, ) {}
+                                                term (type: int, value: 1, ) {}
+                                                operator (value: >>, ) {}
+                                                operator (value: **, ) {}
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    declare_var (kind: var, modifier: local, name: a1, )
+    {
+        type (name: int, ) {}
+        expression () {}
+    }
+    declare_var (kind: var, modifier: local, name: a2, )
+    {
+        type (name: int, ) {}
+        expression ()
+        {
+            term (type: int, value: 0, ) {}
+        }
+    }
+    declare_var (kind: var, modifier: local, name: a3, )
+    {
+        type (name: int, ) {}
+        expression () {}
+    }
+    declare_var (kind: var, modifier: local, name: a4, )
+    {
+        type (name: int, ) {}
+        expression ()
+        {
+            term (type: int, value: 0, ) {}
+        }
+    }
+    declare_var (kind: var, modifier: local, name: a5, )
+    {
+        type (name: int, ) {}
+        None () {}
+    }
+    declare_var (kind: var, modifier: local, name: a6, )
+    {
+        type (name: int, ) {}
+        expression () {}
+    }
+    declare_var (kind: var, modifier: local, name: a7, )
+    {
+        type (name: int, ) {}
+        None () {}
+    }
+    declare_var (kind: var, modifier: local, name: a8, )
+    {
+        type (name: int, ) {}
+        expression ()
+        {
+            term (type: int, value: 0, ) {}
+        }
+    }
+    declare_var (kind: var, modifier: local, name: a9, )
+    {
+        type (name: int, ) {}
+        expression ()
+        {
+            term (type: int, value: 0, ) {}
+        }
+    }
+}
