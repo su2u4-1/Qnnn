@@ -1,7 +1,7 @@
 #include "../include/qlib.h"
 
-vector<Token> lexer(const vector<string>& source_code, const string& file_name) {
-    vector<Token> tokens;
+vector<shared_ptr<Token>> lexer(const vector<string>& source_code, const string& file_name) {
+    vector<shared_ptr<Token>> tokens;
     string state = "", content = "";
     char p = ' ', pp = ' ';
     pair<int, int> pos = make_pair(-1, -1);
@@ -14,7 +14,7 @@ vector<Token> lexer(const vector<string>& source_code, const string& file_name) 
             if (state == "comment_1") {
                 content += c;
                 if (p == '*' && c == '/') {
-                    tokens.push_back(Token("comment", content, file_name, pos));
+                    tokens.push_back(make_shared<Token>("comment", content, file_name, pos));
                     state = "";
                     content = "";
                 }
@@ -23,10 +23,10 @@ vector<Token> lexer(const vector<string>& source_code, const string& file_name) 
             if (state == "+" || state == "%") {
                 state = "";
                 if (c == '=') {
-                    tokens.push_back(Token("symbol", {p, c}, file_name, {i + 1, j - 1}));
+                    tokens.push_back(make_shared<Token>("symbol", string(1, p) + c, file_name, make_pair(i + 1, j - 1)));
                     continue;
                 } else
-                    tokens.push_back(Token("symbol", {p}, file_name, {i + 1, j - 1}));
+                    tokens.push_back(make_shared<Token>("symbol", string(1, p), file_name, make_pair(i + 1, j - 1)));
             } else if (state == "-") {
                 state = "";
                 if (isdigit(c)) {
@@ -35,20 +35,20 @@ vector<Token> lexer(const vector<string>& source_code, const string& file_name) 
                     pos = {i + 1, j - 1};
                     continue;
                 } else if (c == '=') {
-                    tokens.push_back(Token("symbol", "-=", file_name, {i + 1, j - 1}));
+                    tokens.push_back(make_shared<Token>("symbol", "-=", file_name, make_pair(i + 1, j - 1)));
                     continue;
                 } else
-                    tokens.push_back(Token("symbol", "-", file_name, {i + 1, j - 1}));
+                    tokens.push_back(make_shared<Token>("symbol", "-", file_name, make_pair(i + 1, j - 1)));
             } else if (state == "*") {
                 state = "";
                 if (c == '=') {
-                    tokens.push_back(Token("symbol", "*=", file_name, {i + 1, j - 1}));
+                    tokens.push_back(make_shared<Token>("symbol", "*=", file_name, make_pair(i + 1, j - 1)));
                     continue;
                 } else if (c == '*') {
-                    tokens.push_back(Token("symbol", "**", file_name, {i + 1, j - 1}));
+                    tokens.push_back(make_shared<Token>("symbol", "**", file_name, make_pair(i + 1, j - 1)));
                     continue;
                 } else
-                    tokens.push_back(Token("symbol", "*", file_name, {i + 1, j - 1}));
+                    tokens.push_back(make_shared<Token>("symbol", "*", file_name, make_pair(i + 1, j - 1)));
             } else if (state == "/") {
                 state = "";
                 if (c == '/') {
@@ -62,58 +62,58 @@ vector<Token> lexer(const vector<string>& source_code, const string& file_name) 
                     pos = {i + 1, j - 1};
                     continue;
                 } else if (c == '=') {
-                    tokens.push_back(Token("symbol", "/=", file_name, {i + 1, j - 1}));
+                    tokens.push_back(make_shared<Token>("symbol", "/=", file_name, make_pair(i + 1, j - 1)));
                     continue;
                 } else
-                    tokens.push_back(Token("symbol", "/", file_name, {i + 1, j - 1}));
+                    tokens.push_back(make_shared<Token>("symbol", "/", file_name, make_pair(i + 1, j - 1)));
             } else if (state == ">") {
                 state = "";
                 if (c == '=') {
-                    tokens.push_back(Token("symbol", ">=", file_name, {i + 1, j - 1}));
+                    tokens.push_back(make_shared<Token>("symbol", ">=", file_name, make_pair(i + 1, j - 1)));
                     continue;
                 } else if (c == '>') {
-                    tokens.push_back(Token("symbol", ">>", file_name, {i + 1, j - 1}));
+                    tokens.push_back(make_shared<Token>("symbol", ">>", file_name, make_pair(i + 1, j - 1)));
                     continue;
                 } else
-                    tokens.push_back(Token("symbol", ">", file_name, {i + 1, j - 1}));
+                    tokens.push_back(make_shared<Token>("symbol", ">", file_name, make_pair(i + 1, j - 1)));
             } else if (state == "<") {
                 state = "";
                 if (c == '=') {
-                    tokens.push_back(Token("symbol", "<=", file_name, {i + 1, j - 1}));
+                    tokens.push_back(make_shared<Token>("symbol", "<=", file_name, make_pair(i + 1, j - 1)));
                     continue;
                 } else if (c == '<') {
-                    tokens.push_back(Token("symbol", "<<", file_name, {i + 1, j - 1}));
+                    tokens.push_back(make_shared<Token>("symbol", "<<", file_name, make_pair(i + 1, j - 1)));
                     continue;
                 } else
-                    tokens.push_back(Token("symbol", "<", file_name, {i + 1, j - 1}));
+                    tokens.push_back(make_shared<Token>("symbol", "<", file_name, make_pair(i + 1, j - 1)));
             } else if (state == "=") {
                 state = "";
                 if (c == '=') {
-                    tokens.push_back(Token("symbol", "==", file_name, {i + 1, j - 1}));
+                    tokens.push_back(make_shared<Token>("symbol", "==", file_name, make_pair(i + 1, j - 1)));
                     continue;
                 } else
-                    tokens.push_back(Token("symbol", "=", file_name, {i + 1, j - 1}));
+                    tokens.push_back(make_shared<Token>("symbol", "=", file_name, make_pair(i + 1, j - 1)));
             } else if (state == "!") {
                 state = "";
                 if (c == '=') {
-                    tokens.push_back(Token("symbol", "!=", file_name, {i + 1, j - 1}));
+                    tokens.push_back(make_shared<Token>("symbol", "!=", file_name, make_pair(i + 1, j - 1)));
                     continue;
                 } else
-                    tokens.push_back(Token("symbol", "!", file_name, {i + 1, j - 1}));
+                    tokens.push_back(make_shared<Token>("symbol", "!", file_name, make_pair(i + 1, j - 1)));
             } else if (state == "&") {
                 state = "";
                 if (c == '&') {
-                    tokens.push_back(Token("symbol", "&&", file_name, {i + 1, j - 1}));
+                    tokens.push_back(make_shared<Token>("symbol", "&&", file_name, make_pair(i + 1, j - 1)));
                     continue;
                 } else
-                    tokens.push_back(Token("symbol", "&", file_name, {i + 1, j - 1}));
+                    tokens.push_back(make_shared<Token>("symbol", "&", file_name, make_pair(i + 1, j - 1)));
             } else if (state == "|") {
                 state = "";
                 if (c == '|') {
-                    tokens.push_back(Token("symbol", "||", file_name, {i + 1, j - 1}));
+                    tokens.push_back(make_shared<Token>("symbol", "||", file_name, make_pair(i + 1, j - 1)));
                     continue;
                 } else
-                    tokens.push_back(Token("symbol", "|", file_name, {i + 1, j - 1}));
+                    tokens.push_back(make_shared<Token>("symbol", "|", file_name, make_pair(i + 1, j - 1)));
             } else if (state == "char") {
                 if (c != '\'') {
                     if (content == "")
@@ -122,7 +122,7 @@ vector<Token> lexer(const vector<string>& source_code, const string& file_name) 
                         error("Character constant too long", file_name, {i + 1, j}, line);
                 } else {
                     if (content.size() == 1) {
-                        tokens.push_back(Token("char", "'" + content + "'", file_name, {i + 1, j}));
+                        tokens.push_back(make_shared<Token>("char", "'" + content + "'", file_name, make_pair(i + 1, j)));
                         state = "";
                         content = "";
                     } else
@@ -131,7 +131,7 @@ vector<Token> lexer(const vector<string>& source_code, const string& file_name) 
                 continue;
             } else if (state == "string") {
                 if (c == '"') {
-                    tokens.push_back(Token("str", "\"" + content + "\"", file_name, pos));
+                    tokens.push_back(make_shared<Token>("str", "\"" + content + "\"", file_name, pos));
                     state = "";
                     content = "";
                 } else
@@ -146,7 +146,7 @@ vector<Token> lexer(const vector<string>& source_code, const string& file_name) 
                     content += c;
                     continue;
                 } else {
-                    tokens.push_back(Token("int", content, file_name, pos));
+                    tokens.push_back(make_shared<Token>("int", content, file_name, pos));
                     state = "";
                     content = "";
                 }
@@ -155,7 +155,7 @@ vector<Token> lexer(const vector<string>& source_code, const string& file_name) 
                     content += c;
                     continue;
                 } else {
-                    tokens.push_back(Token("float", content, file_name, pos));
+                    tokens.push_back(make_shared<Token>("float", content, file_name, pos));
                     state = "";
                     content = "";
                 }
@@ -163,7 +163,7 @@ vector<Token> lexer(const vector<string>& source_code, const string& file_name) 
                 if (c != '\n')
                     content += c;
                 else {
-                    tokens.push_back(Token("comment", content, file_name, pos));
+                    tokens.push_back(make_shared<Token>("comment", content, file_name, pos));
                     state = "";
                     content = "";
                 }
@@ -174,9 +174,9 @@ vector<Token> lexer(const vector<string>& source_code, const string& file_name) 
                     continue;
                 } else {
                     if (is_keyword(content))
-                        tokens.push_back(Token("keyword", content, file_name, pos));
+                        tokens.push_back(make_shared<Token>("keyword", content, file_name, pos));
                     else
-                        tokens.push_back(Token("identifier", content, file_name, pos));
+                        tokens.push_back(make_shared<Token>("identifier", content, file_name, pos));
                     state = "";
                     content = "";
                 }
@@ -186,7 +186,7 @@ vector<Token> lexer(const vector<string>& source_code, const string& file_name) 
                 if (c == '+' || c == '-' || c == '*' || c == '/' || c == '%' || c == '>' || c == '=' || c == '<' || c == '!' || c == '&' || c == '|')
                     state = string(1, c);
                 else
-                    tokens.push_back(Token("symbol", string(1, c), file_name, {i + 1, j}));
+                    tokens.push_back(make_shared<Token>("symbol", string(1, c), file_name, make_pair(i + 1, j)));
             } else if (c == '\'')
                 state = "char";
             else if (c == '"') {

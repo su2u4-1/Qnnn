@@ -96,16 +96,16 @@ arguments parse_arguments(int argc, char* argv[]) {
     return args;
 }
 
-string ast_to_json(const Node& node) {
+string ast_to_json(shared_ptr<Node> node) {
     stringstream output;
     output << "{";
-    output << "\"type\":\"" << node.type << "\",";
+    output << "\"type\":\"" << node->type << "\",";
     output << "\"value\":{";
-    for (const auto& [k, v] : node.value)
+    for (const auto& [k, v] : node->value)
         output << '"' << k << "\":\"" << v << "\",";
     output << "},";
     output << "\"children\":[";
-    for (const auto& child : node.children)
+    for (const auto& child : node->children)
         output << ast_to_json(child);
     output << "]";
     output << "},";
@@ -131,19 +131,19 @@ string remove_json_trailing_comma(const string& json) {
     return result;
 }
 
-string output_ast(const Node& node, int ident) {
+string output_ast(shared_ptr<Node> node, int ident) {
     stringstream output;
-    output << string(ident * 4, ' ') << node.type << " (";
-    for (const auto& [k, v] : node.value) {
+    output << string(ident * 4, ' ') << node->type << " (";
+    for (const auto& [k, v] : node->value) {
         output << k << ": " << v << ", ";
     }
-    if (node.children.size() == 0)
+    if (node->children.size() == 0)
         output << ") {}" << endl;
     else {
         output << ")" << endl;
         output << string(ident * 4, ' ') << "{" << endl;
         ident++;
-        for (const auto& child : node.children) {
+        for (const auto& child : node->children) {
             output << output_ast(child, ident);
         }
         ident--;
@@ -152,9 +152,11 @@ string output_ast(const Node& node, int ident) {
     return output.str();
 }
 
+vector<shared_ptr<Token>> lexer(const vector<string>& source_code, const string& file_name);
+
 int main(int argc, char* argv[]) {
     try {
-        cout << "prase arguments" << endl;
+        cout << "parse arguments" << endl;
         arguments args = parse_arguments(argc, argv);
 
         cout << "read source code [" << args.source_code_file << "]" << endl;
@@ -168,7 +170,7 @@ int main(int argc, char* argv[]) {
         source_code_setitem(args.source_code_file, source_code);
 
         cout << "lexing [" << args.source_code_file << "]" << endl;
-        vector<Token> tokens;
+        vector<shared_ptr<Token>> tokens;
         try {
             tokens = lexer(source_code, args.source_code_file);
         } catch (const runtime_error& e) {
@@ -177,7 +179,7 @@ int main(int argc, char* argv[]) {
         }
 
         cout << "parsing [" << args.source_code_file << "]" << endl;
-        Node ast;
+        shared_ptr<Node> ast;
         try {
             ast = Parser(tokens, args.source_code_file).parse();
         } catch (const runtime_error& e) {

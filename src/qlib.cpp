@@ -190,13 +190,13 @@ bool Tokens::operator!=(const Token& other) const {
 }
 
 // Node
-Node::Node(const string& type, const map<string, string>& value, const vector<Node>& children) {
+Node::Node(const string& type, const map<string, string>& value, const vector<shared_ptr<Node>>& children) {
     this->type = type;
     this->value = value;
     this->children = children;
 }
 
-Node::Node(const string& type, const map<string, string>& value, const Node& child) {
+Node::Node(const string& type, const map<string, string>& value, const shared_ptr<Node>& child) {
     this->type = type;
     this->value = value;
     this->children.push_back(child);
@@ -205,19 +205,19 @@ Node::Node(const string& type, const map<string, string>& value, const Node& chi
 Node::Node(const string& type, const map<string, string>& value) {
     this->type = type;
     this->value = value;
-    this->children = vector<Node>();
+    this->children = vector<shared_ptr<Node>>();
 }
 
 Node::Node(const string& type) {
     this->type = type;
     this->value = map<string, string>();
-    this->children = vector<Node>();
+    this->children = vector<shared_ptr<Node>>();
 }
 
 Node::Node() {
     this->type = "None";
     this->value = map<string, string>();
-    this->children = vector<Node>();
+    this->children = vector<shared_ptr<Node>>();
 }
 
 string Node::toString() {
@@ -225,8 +225,8 @@ string Node::toString() {
     for (const auto& [key, val] : value)
         t += key + ": " + val + ", ";
     t += "}";
-    for (Node i : children)
-        t += ", " + i.toString();
+    for (shared_ptr<Node> i : children)
+        t += ", " + i->toString();
     t += ")";
     return t;
 }

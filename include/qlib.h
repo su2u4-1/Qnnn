@@ -5,6 +5,7 @@
 #include <fstream>
 #include <iostream>
 #include <map>
+#include <memory>
 #include <sstream>
 #include <stacktrace>
 #include <string>
@@ -61,14 +62,14 @@ class Tokens {
 
 class Node {
    public:
-    Node(const string& type, const map<string, string>& value, const vector<Node>& children);
-    Node(const string& type, const map<string, string>& value, const Node& child);
+    Node(const string& type, const map<string, string>& value, const vector<shared_ptr<Node>>& children);
+    Node(const string& type, const map<string, string>& value, const shared_ptr<Node>& child);
     Node(const string& type, const map<string, string>& value);
     Node(const string& type);
     Node();
     string type;
     map<string, string> value;
-    vector<Node> children;
+    vector<shared_ptr<Node>> children;
     string toString();
 };
 
