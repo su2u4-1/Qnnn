@@ -1,59 +1,86 @@
-/*test class, type*/
+/*test list class*/
 
-class list<T>(arr) {
+class list<T> {
     attr arr<T> c;
     attr int size;
-    method public void _init(self, arr<T> a) {
+
+    method op void _init(self, arr<T> a) {
         if (a == null) {
             Error("Null array passed to list constructor");
         }
-        if (a.size() <= 0) {
-            self.size = 4;
+        if (a.size() < 0) {
+            Error("Array size cannot be negative");
         } else {
             self.size = a.size();
         }
         self.c = arr<T>(self.size);
-        for (int i = 0; i < a.size(); i++) {
-            self.c[i] = a;
+        for (int i in range(a.size())) {
+            self.c[i] = a[i];
         }
         return;
     }
 
-    method public void _init(self, T a, int size) {
+    method op void _init(self, T a, int size) {
         if (size <= 0) {
             Error("Size must be greater than 0");
         }
         self.c = arr<T>(size);
         self.size = size;
-        for (int i = 0; i < size; i++) {
+        for (int i in range(size)) {
             self.c[i] = a;
         }
         return;
+    }
+
+    method op pointer<T> _index(self, int i) {
+        if (i < 0 || i >= self.size) {
+            Error("Index out of bounds");
+        }
+        return @self.c[i];
+    }
+
+    method op list<T> _add(self, list<T> a) {
+        if (a == NULL) {
+            Error("Null list passed to _add");
+        }
+        var arr<T> result = arr<T>(self.size + a.size());
+        for (int i in range(self.size)) {
+            result.c[i] = self.c[i];
+        }
+        for (int i in range(a.size)) {
+            result.c[i + self.size] = a.c[i];
+        }
+        return list<T>(result);
+    }
+
+    method op void _add_eq(self, list<T> a) {
+        if (a == NULL) {
+            Error("Null list passed to _add_eq");
+        }
+        var arr<T> result = arr<T>(self.size + a.size());
+        for (int i in range(self.size)) {
+            result[i] = self.c[i];
+        }
+        for (int i in range(a.size)) {
+            result[i + self.size] = a.c[i];
+        }
+        self.size += a.size();
+        self.c = result;
+        return;
+    }
+
+    method op arr<T> _range(self) {
+        return self.c;
     }
 
     method public int size(self) {
         return self.size;
     }
 
-    method public T _get(self, int i) {
-        if (i < 0 || i >= self.size) {
-            Error("Index out of range");
-        }
-        return self.c[i];
-    }
-
-    method public void _set(self, int i, T a) {
-        if (i < 0 || i >= self.size) {
-            Error("Index out of range");
-        }
-        self.c[i] = a;
-        return;
-    }
-
     method public void append(self, T a) {
         self.size = self.size + 1;
         self.c = arr<T>(self.size);
-        for (int i = 0; i < self.size - 1; i++) {
+        for (int i in range(self.size - 1)) {
             self.c[i] = self.c[i];
         }
         self.c[self.size - 1] = a;

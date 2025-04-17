@@ -261,6 +261,10 @@ Node Parser::parse_term() {
                 get_token();
             } else
                 term.children.push_back(var);
+            if (current_token == Token("symbol", "<") && next_token() != Tokens("keyword", BUILTINTYPE) && next_token().type != "identifier") {
+                add_call_stack("parse_term", 1);
+                return term;
+            }
             if (current_token == Tokens("symbol", {"<", "("})) {
                 t = parse_call(term.children.back());
                 get_token();
@@ -461,16 +465,21 @@ Node Parser::parse_method() {
     add_call_stack("parse_method", 0);
     get_token();
     Node method("method");
-    if (current_token == Token("keyword", "static")) {
-        method.value["static"] = "true";
+    if (current_token == Token("keyword", "op")) {
+        method.value["modifier"] = "op";
         get_token();
-    } else
-        method.value["static"] = "false";
-    if (current_token == Token("keyword", "public")) {
-        method.value["modifier"] = "public";
-        get_token();
-    } else
-        method.value["modifier"] = "local";
+    } else {
+        if (current_token == Token("keyword", "static")) {
+            method.value["static"] = "true";
+            get_token();
+        } else
+            method.value["static"] = "false";
+        if (current_token == Token("keyword", "public")) {
+            method.value["modifier"] = "public";
+            get_token();
+        } else
+            method.value["modifier"] = "local";
+    }
     method.children.push_back(parse_type());
     get_token();
     if (current_token.type == "identifier") {
