@@ -1,6 +1,8 @@
 {
     "type": "program",
-    "value": {},
+    "value": {
+        "name": "D:/Qnnn/test/test1/test1.qn"
+    },
     "children": [
         {
             "type": "declare_var",

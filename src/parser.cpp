@@ -52,7 +52,7 @@ void Parser::parser_error(const string& msg, const Token& token) {
 
 shared_ptr<Node> Parser::parse() {
     add_call_stack("parse", 0);
-    shared_ptr<Node> root = make_shared<Node>("program");
+    shared_ptr<Node> root = make_shared<Node>("program", map<string, string>{{"name", file_name}});
     while (current_token.type != "EOF") {
         if (current_token == Token("keyword", "import"))
             root->children.push_back(parse_import());
