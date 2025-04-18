@@ -69,11 +69,17 @@
                                 {
                                     "type": "variable",
                                     "value": {
-                                        "name": "var",
-                                        "state": "false",
-                                        "var": "A"
+                                        "state": "false"
                                     },
-                                    "children": []
+                                    "children": [
+                                        {
+                                            "type": "name",
+                                            "value": {
+                                                "name": "A"
+                                            },
+                                            "children": []
+                                        }
+                                    ]
                                 },
                                 {
                                     "type": "use_typevar",
@@ -157,11 +163,17 @@
                                 {
                                     "type": "variable",
                                     "value": {
-                                        "name": "var",
-                                        "state": "false",
-                                        "var": "C"
+                                        "state": "false"
                                     },
-                                    "children": []
+                                    "children": [
+                                        {
+                                            "type": "name",
+                                            "value": {
+                                                "name": "C"
+                                            },
+                                            "children": []
+                                        }
+                                    ]
                                 },
                                 {
                                     "type": "use_typevar",
@@ -407,7 +419,7 @@
                     "type": "method",
                     "value": {
                         "modifier": "public",
-                        "name": "init",
+                        "name": "_init",
                         "operator": "false",
                         "self": "true",
                         "static": "false"
@@ -416,7 +428,7 @@
                         {
                             "type": "type",
                             "value": {
-                                "name": "A"
+                                "name": "void"
                             },
                             "children": []
                         },
@@ -464,16 +476,28 @@
                                                 {
                                                     "type": "variable",
                                                     "value": {
-                                                        "name": "e",
                                                         "state": "attr"
                                                     },
                                                     "children": [
                                                         {
                                                             "type": "variable",
                                                             "value": {
-                                                                "name": "var",
-                                                                "state": "false",
-                                                                "var": "self"
+                                                                "state": "false"
+                                                            },
+                                                            "children": [
+                                                                {
+                                                                    "type": "name",
+                                                                    "value": {
+                                                                        "name": "self"
+                                                                    },
+                                                                    "children": []
+                                                                }
+                                                            ]
+                                                        },
+                                                        {
+                                                            "type": "name",
+                                                            "value": {
+                                                                "name": "e"
                                                             },
                                                             "children": []
                                                         }
@@ -490,11 +514,17 @@
                                                 {
                                                     "type": "variable",
                                                     "value": {
-                                                        "name": "var",
-                                                        "state": "false",
-                                                        "var": "T"
+                                                        "state": "false"
                                                     },
-                                                    "children": []
+                                                    "children": [
+                                                        {
+                                                            "type": "name",
+                                                            "value": {
+                                                                "name": "T"
+                                                            },
+                                                            "children": []
+                                                        }
+                                                    ]
                                                 },
                                                 {
                                                     "type": "use_typevar",
@@ -518,11 +548,17 @@
                                                                         {
                                                                             "type": "variable",
                                                                             "value": {
-                                                                                "name": "var",
-                                                                                "state": "false",
-                                                                                "var": "i"
+                                                                                "state": "false"
                                                                             },
-                                                                            "children": []
+                                                                            "children": [
+                                                                                {
+                                                                                    "type": "name",
+                                                                                    "value": {
+                                                                                        "name": "i"
+                                                                                    },
+                                                                                    "children": []
+                                                                                }
+                                                                            ]
                                                                         }
                                                                     ]
                                                                 }
@@ -554,16 +590,28 @@
                                                 {
                                                     "type": "variable",
                                                     "value": {
-                                                        "name": "f",
                                                         "state": "attr"
                                                     },
                                                     "children": [
                                                         {
                                                             "type": "variable",
                                                             "value": {
-                                                                "name": "var",
-                                                                "state": "false",
-                                                                "var": "self"
+                                                                "state": "false"
+                                                            },
+                                                            "children": [
+                                                                {
+                                                                    "type": "name",
+                                                                    "value": {
+                                                                        "name": "self"
+                                                                    },
+                                                                    "children": []
+                                                                }
+                                                            ]
+                                                        },
+                                                        {
+                                                            "type": "name",
+                                                            "value": {
+                                                                "name": "f"
                                                             },
                                                             "children": []
                                                         }
@@ -580,11 +628,17 @@
                                                 {
                                                     "type": "variable",
                                                     "value": {
-                                                        "name": "var",
-                                                        "state": "false",
-                                                        "var": "T"
+                                                        "state": "false"
                                                     },
-                                                    "children": []
+                                                    "children": [
+                                                        {
+                                                            "type": "name",
+                                                            "value": {
+                                                                "name": "T"
+                                                            },
+                                                            "children": []
+                                                        }
+                                                    ]
                                                 },
                                                 {
                                                     "type": "use_typevar",
@@ -608,11 +662,17 @@
                                                                         {
                                                                             "type": "variable",
                                                                             "value": {
-                                                                                "name": "var",
-                                                                                "state": "false",
-                                                                                "var": "i"
+                                                                                "state": "false"
                                                                             },
-                                                                            "children": []
+                                                                            "children": [
+                                                                                {
+                                                                                    "type": "name",
+                                                                                    "value": {
+                                                                                        "name": "i"
+                                                                                    },
+                                                                                    "children": []
+                                                                                }
+                                                                            ]
                                                                         }
                                                                     ]
                                                                 },
@@ -659,16 +719,28 @@
                                                 {
                                                     "type": "variable",
                                                     "value": {
-                                                        "name": "g",
                                                         "state": "attr"
                                                     },
                                                     "children": [
                                                         {
                                                             "type": "variable",
                                                             "value": {
-                                                                "name": "var",
-                                                                "state": "false",
-                                                                "var": "self"
+                                                                "state": "false"
+                                                            },
+                                                            "children": [
+                                                                {
+                                                                    "type": "name",
+                                                                    "value": {
+                                                                        "name": "self"
+                                                                    },
+                                                                    "children": []
+                                                                }
+                                                            ]
+                                                        },
+                                                        {
+                                                            "type": "name",
+                                                            "value": {
+                                                                "name": "g"
                                                             },
                                                             "children": []
                                                         }
@@ -685,11 +757,17 @@
                                                 {
                                                     "type": "variable",
                                                     "value": {
-                                                        "name": "var",
-                                                        "state": "false",
-                                                        "var": "T"
+                                                        "state": "false"
                                                     },
-                                                    "children": []
+                                                    "children": [
+                                                        {
+                                                            "type": "name",
+                                                            "value": {
+                                                                "name": "T"
+                                                            },
+                                                            "children": []
+                                                        }
+                                                    ]
                                                 },
                                                 {
                                                     "type": "use_typevar",
@@ -713,11 +791,17 @@
                                                                         {
                                                                             "type": "variable",
                                                                             "value": {
-                                                                                "name": "var",
-                                                                                "state": "false",
-                                                                                "var": "i"
+                                                                                "state": "false"
                                                                             },
-                                                                            "children": []
+                                                                            "children": [
+                                                                                {
+                                                                                    "type": "name",
+                                                                                    "value": {
+                                                                                        "name": "i"
+                                                                                    },
+                                                                                    "children": []
+                                                                                }
+                                                                            ]
                                                                         }
                                                                     ]
                                                                 },
@@ -764,16 +848,28 @@
                                                 {
                                                     "type": "variable",
                                                     "value": {
-                                                        "name": "h",
                                                         "state": "attr"
                                                     },
                                                     "children": [
                                                         {
                                                             "type": "variable",
                                                             "value": {
-                                                                "name": "var",
-                                                                "state": "false",
-                                                                "var": "self"
+                                                                "state": "false"
+                                                            },
+                                                            "children": [
+                                                                {
+                                                                    "type": "name",
+                                                                    "value": {
+                                                                        "name": "self"
+                                                                    },
+                                                                    "children": []
+                                                                }
+                                                            ]
+                                                        },
+                                                        {
+                                                            "type": "name",
+                                                            "value": {
+                                                                "name": "h"
                                                             },
                                                             "children": []
                                                         }
@@ -790,11 +886,17 @@
                                                 {
                                                     "type": "variable",
                                                     "value": {
-                                                        "name": "var",
-                                                        "state": "false",
-                                                        "var": "T"
+                                                        "state": "false"
                                                     },
-                                                    "children": []
+                                                    "children": [
+                                                        {
+                                                            "type": "name",
+                                                            "value": {
+                                                                "name": "T"
+                                                            },
+                                                            "children": []
+                                                        }
+                                                    ]
                                                 },
                                                 {
                                                     "type": "use_typevar",
@@ -818,11 +920,17 @@
                                                                         {
                                                                             "type": "variable",
                                                                             "value": {
-                                                                                "name": "var",
-                                                                                "state": "false",
-                                                                                "var": "i"
+                                                                                "state": "false"
                                                                             },
-                                                                            "children": []
+                                                                            "children": [
+                                                                                {
+                                                                                    "type": "name",
+                                                                                    "value": {
+                                                                                        "name": "i"
+                                                                                    },
+                                                                                    "children": []
+                                                                                }
+                                                                            ]
                                                                         }
                                                                     ]
                                                                 },
@@ -859,31 +967,7 @@
                                 {
                                     "type": "return",
                                     "value": {},
-                                    "children": [
-                                        {
-                                            "type": "expression",
-                                            "value": {},
-                                            "children": [
-                                                {
-                                                    "type": "term",
-                                                    "value": {
-                                                        "type": "variable"
-                                                    },
-                                                    "children": [
-                                                        {
-                                                            "type": "variable",
-                                                            "value": {
-                                                                "name": "var",
-                                                                "state": "false",
-                                                                "var": "self"
-                                                            },
-                                                            "children": []
-                                                        }
-                                                    ]
-                                                }
-                                            ]
-                                        }
-                                    ]
+                                    "children": []
                                 }
                             ]
                         }
