@@ -20,8 +20,26 @@ else:
     exit(1)
 
 
+def _term(now: Any) -> str:
+    t = "term"
+    return t
+
+
 def _expression(now: Any) -> str:
-    pass
+    t: list[str] = []
+    for i in now["children"]:
+        if i["type"] == "operator":
+            t.append("op_" + i["value"]["value"])
+        else:
+            t.append(_term(i))
+    stack: list[str] = []
+    for token in t:
+        if token.startswith("op_"):
+            a = stack.pop()
+            stack.append(f"{stack.pop()} {token[3:]} {a}")
+        else:
+            stack.append(token)
+    return " ".join(stack)
 
 
 def _type(now: Any) -> str:
@@ -34,9 +52,9 @@ def _type(now: Any) -> str:
 
 
 def _declare_var(now: Any) -> str:
-    t = now["value"]["type"]
+    t = now["value"]["kind"] + " "
     if now["value"]["modifier"] == "public":
-        t += " public"
+        t += "public "
     t += _type(now["children"][0])
     t += " " + now["value"]["name"]
     if len(now["children"]) == 2:
@@ -45,7 +63,12 @@ def _declare_var(now: Any) -> str:
 
 
 def _import(now: Any) -> str:
-    pass
+    t = "import "
+    if now["value"]["alias"] == "stdlib":
+        t += now["value"]["name"]
+    else:
+        t += '"' + now["value"]["name"] + '" as ' + now["value"]["alias"]
+    return t
 
 
 def _program(now: Any) -> str:
@@ -59,6 +82,7 @@ def _program(now: Any) -> str:
 
 
 result = _program(data)
+print(result)
 
-with open(data["value"]["name"], "w") as f:
-    f.write(result)
+# with open(data["value"]["name"], "w") as f:
+#     f.write(result)
