@@ -62,6 +62,61 @@ def _declare_var(now: Any) -> str:
     return t + ";"
 
 
+def _pass(now: Any) -> str:
+    return "pass"
+
+
+def _if(now: Any) -> list[str]:
+    t: list[str] = []
+    t.append("if (" + _expression(now["children"][0]) + ") {")
+    for i in _statements(now["children"][1]):
+        t.append("    " + i)
+    for i in range(int(now["value"]["elif_n"])):
+        t.append("} elif (" + _expression(now["children"][i * 2 + 2]) + ") {")
+        for j in _statements(now["children"][i * 2 + 3]):
+            t.append("    " + j)
+    if now["value"]["else"] == "true":
+        t.append("} else {")
+        for i in _statements(now["children"][-1]):
+            t.append("    " + i)
+    t.append("}")
+    return t
+
+
+def _for(now: Any) -> list[str]:
+    t: list[str] = []
+    t.append(f"for ({_type(now["children"][0])} {now["value"]["iterator"]} in {_expression(now["children"][1])}) {{")
+    for i in _statements(now["children"][2]):
+        t.append(f"    {i}")
+    t.append("}")
+    if now["value"]["else"] == "true":
+        t.append("else {")
+        for i in _statements(now["children"][3]):
+            t.append(f"    {i}")
+        t.append("}")
+    return t
+
+
+def _while(now: Any) -> list[str]:
+    t: list[str] = []
+    return t
+
+
+def _func(now: Any) -> list[str]:
+    t: list[str] = []
+    return t
+
+
+def _class(now: Any) -> list[str]:
+    t: list[str] = []
+    return t
+
+
+def _statements(now: Any) -> list[str]:
+    t: list[str] = []
+    return t
+
+
 def _import(now: Any) -> str:
     t = "import "
     if now["value"]["alias"] == "stdlib":
@@ -78,6 +133,20 @@ def _program(now: Any) -> str:
             result.append(_declare_var(i))
         elif i["type"] == "import":
             result.append(_import(i))
+        elif i["type"] == "if":
+            result.extend(_if(i))
+        elif i["type"] == "for":
+            result.extend(_for(i))
+        elif i["type"] == "while":
+            result.extend(_while(i))
+        elif i["type"] == "func":
+            result.extend(_func(i))
+        elif i["type"] == "class":
+            result.extend(_class(i))
+        elif i["type"] == "expression":
+            result.append(_expression(i))
+        elif i["type"] == "pass":
+            result.extend(_pass(i))
     return "\n".join(result)
 
 
