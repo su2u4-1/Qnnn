@@ -19,10 +19,21 @@ value = {
 }
 children = {}
 
-type = "declare_var" or "declare_attr"
+type = "declare_var"
 value = {
-    "kind": "var" or "attr",
-    "modifier": "local" or "global" or "public",
+    "kind": "var" or "const",
+    "modifier": "local" or "global",
+    "name": identifier
+}
+children = [
+    Node("type"),
+    Node("expression")
+]
+
+type = "declare_attr"
+value = {
+    "kind": "attr" or "static",
+    "modifier": "local" or "public",
     "name": identifier
 }
 children = [
@@ -175,7 +186,9 @@ value = {
     "name": identifier,
     "tuple": "true" or "false"
 }
-children = []
+children = [
+    Node("type")
+]
 
 type = "class"
 value = {
@@ -187,13 +200,12 @@ children = [
 
 type = "method"
 value = {
-    "static": "true" or "false",
-    "modifier": "local" or "public",
-    "name": identifier or string,
-    "operator": "true" or "false",
+    "kind": "op" or "static" or "public" or "static public" or "private",
+    "name": identifier,
     "self": "true" or "false"
 }
 children = [
+    Node("type"),
     Node("typevar"),
     Node("args_declare"),
     Node("statements")
@@ -255,7 +267,7 @@ children = [
 
 type = "break"
 value = {
-    "label": identifier
+    "label": identifier or "break"
 }
 children = {}
 

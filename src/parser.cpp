@@ -104,33 +104,16 @@ vector<shared_ptr<Node>> Parser::parse_declare(bool attr) {
     add_call_stack("parse_declare", 0);
     map<string, string> state;
     vector<shared_ptr<Node>> nodes;
-    if (attr) {
-        if (current_token == Token("keyword", "attr"))
-            state["kind"] = "attr";
-        else if (current_token == Token("keyword", "static"))
-            state["kind"] = "static";
-        else
-            parser_error("Expected 'attr' or 'static', not " + current_token.toString());
+    if (current_token == Tokens("keyword", {"var", "const", "attr", "static"}))
+        state["kind"] = current_token.value;
+    else
+        parser_error("Expected 'var', 'const', 'attr' or 'static', not " + current_token.toString());
+    get_token();
+    if (current_token == Tokens("keyword", {"global", "public"})) {
+        state["modifier"] = current_token.value;
         get_token();
-        if (current_token == Token("keyword", "public")) {
-            state["modifier"] = "public";
-            get_token();
-        } else
-            state["modifier"] = "local";
-    } else {
-        if (current_token == Token("keyword", "var"))
-            state["kind"] = "var";
-        else if (current_token == Token("keyword", "const"))
-            state["kind"] = "const";
-        else
-            parser_error("Expected 'var' or 'const', not " + current_token.toString());
-        get_token();
-        if (current_token == Token("keyword", "global")) {
-            state["modifier"] = "global";
-            get_token();
-        } else
-            state["modifier"] = "local";
-    }
+    } else
+        state["modifier"] = "local";
     shared_ptr<Node> type = parse_type();
     get_token();
     if (current_token.type != "identifier")
@@ -449,7 +432,7 @@ shared_ptr<Node> Parser::parse_class() {
         parser_error("Expected '{', not " + current_token.toString());
     while (current_token != Token("symbol", "}")) {
         if (current_token == Tokens("keyword", {"attr", "static"})) {
-            for (shared_ptr<Node> i : parse_statement())
+            for (shared_ptr<Node> i : parse_declare(true))
                 class_node->children.push_back(i);
         } else if (current_token == Token("keyword", "func"))
             class_node->children.push_back(parse_function());
@@ -466,29 +449,28 @@ shared_ptr<Node> Parser::parse_method() {
     get_token();
     shared_ptr<Node> method = make_shared<Node>("method");
     if (current_token == Token("keyword", "op")) {
-        method->value["modifier"] = "op";
+        method->value["kind"] = "op";
         get_token();
     } else {
         if (current_token == Token("keyword", "static")) {
-            method->value["static"] = "true";
+            method->value["kind"] += "static";
             get_token();
         } else
-            method->value["static"] = "false";
+            method->value["kind"] = "";
         if (current_token == Token("keyword", "public")) {
-            method->value["modifier"] = "public";
+            if (method->value["kind"] == "")
+                method->value["kind"] = "public";
+            else
+                method->value["kind"] = "static public";
             get_token();
-        } else
-            method->value["modifier"] = "local";
+        } else if (method->value["kind"] == "")
+            method->value["kind"] = "private";
     }
     method->children.push_back(parse_type());
     get_token();
-    if (current_token.type == "identifier") {
+    if (current_token.type == "identifier")
         method->value["name"] = current_token.value;
-        method->value["operator"] = "false";
-    } else if (current_token.type == "str") {
-        method->value["name"] = current_token.value;
-        method->value["operator"] = "true";
-    } else
+    else
         parser_error("Expected identifier or string, not " + current_token.toString());
     get_token();
     method->children.push_back(parse_declare_typevar());
@@ -768,7 +750,8 @@ shared_ptr<Node> Parser::parse_break() {
     if (current_token.type == "identifier") {
         break_node->value["label"] = current_token.value;
         get_token();
-    }
+    } else
+        break_node->value["label"] = "break";
     if (current_token != Token("symbol", ";"))
         parser_error("Expected ';', not " + current_token.toString());
     add_call_stack("parse_break", 1);
