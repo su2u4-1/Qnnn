@@ -209,7 +209,7 @@ def _if(now: Node) -> list[str]:
 
 
 def _for(now: Node) -> list[str]:
-    t = [f"for {now.value["label"] + " " if now.value["label"] else ""}({_type(now.children[0])} {now.value["iterator"]} in {_expression(now.children[1])}) {{"]
+    t = [f"for {now.value["label"] + " " if now.value["label"] else ""}({_type(now.children[0])} {now.value["name"]} in {_expression(now.children[1])}) {{"]
     for i in _statements(now.children[2]):
         t.append(ident + i)
     t.append("}")

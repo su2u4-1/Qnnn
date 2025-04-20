@@ -135,7 +135,7 @@ vector<shared_ptr<Node>> Parser::parse_declare(bool attr) {
             parser_error("Expected identifier, not " + current_token.toString());
         state["name"] = current_token.value;
         get_token();
-        expression = shared_ptr<Node>();
+        expression = make_shared<Node>("expression");
         if (current_token == Token("symbol", "=")) {
             get_token();
             expression = parse_expression();
