@@ -261,7 +261,6 @@ def _class(now: Node) -> list[str]:
 
 def _method(now: Node) -> list[str]:
     t: list[str] = []
-    print(now)
     tt = f"method {now.value["kind"] + " " if now.value["kind"] != "private" else ""}{_type(now.children[0])} {now.value["name"]}"
     if len(now.children[1].children) > 0:
         tt += f"<{', '.join(i.value["name"] for i in now.children[1].children)}>"
