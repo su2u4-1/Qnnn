@@ -41,9 +41,88 @@ else:
 data = json2node(data)
 
 
-def _term(now: Node) -> str:
-    t = "term"
+def _arr(now: Node) -> str:
+    t: list[str] = []
+    for i in now.children:
+        t.append(_expression(i))
+    return "[" + ", ".join(t) + "]"
+
+
+def _dict(now: Node) -> str:
+    t: list[str] = []
+    for i in range(0, len(now.children), 2):
+        t.append(f"{_expression(now.children[i])}: {_expression(now.children[i + 1])}")
+    return "{" + ", ".join(t) + "}"
+
+
+def _tuple(now: Node) -> str:
+    t: list[str] = []
+    for i in now.children:
+        t.append(_expression(i))
+    return "(" + ", ".join(t) + ")"
+
+
+def _call(now: Node) -> str:
+    t = _variable(now.children[0])
+    if len(now.children[1].children) > 0:
+        t += f"<{', '.join(_type(i) for i in now.children[1].children)}>"
+    t += f"({', '.join(_expression(i) for i in now.children[2].children)})"
     return t
+
+
+def _variable(now: Node) -> str:
+    t = ""
+    if now.children[0].type == "name":
+        t = now.children[0].value["name"]
+    elif now.children[0].type == "variable":
+        t = _variable(now.children[0])
+    elif now.children[0].type == "call":
+        t = _call(now.children[0])
+    if now.type == "index":
+        t += "[" + _expression(now.children[1]) + "]"
+    elif now.type == "attr":
+        t += "." + now.children[1].value["name"]
+    return t
+
+
+def _term(now: Node) -> str:
+    if now.value["type"] == "str":
+        return '"' + now.value["value"] + '"'
+    elif now.value["type"] == "int":
+        return now.value["value"]
+    elif now.value["type"] == "bool":
+        return now.value["value"]
+    elif now.value["type"] == "float":
+        return now.value["value"]
+    elif now.value["type"] == "arr":
+        return _arr(now.children[0])
+    elif now.value["type"] == "dict":
+        return _dict(now.children[0])
+    elif now.value["type"] == "tuple":
+        return _tuple(now.children[0])
+    elif now.value["type"] == "pointer":
+        return "@" + _term(now.children[0])
+    elif now.value["type"] == "dereference":
+        return "^" + _term(now.children[0])
+    elif now.value["type"] == "neg":
+        return "-" + _term(now.children[0])
+    elif now.value["type"] == "not":
+        return "!" + _term(now.children[0])
+    elif now.value["type"] == "expression":
+        return _expression(now)
+    elif now.value["type"] == "call":
+        return _call(now)
+    elif now.value["type"] == "variable":
+        return _variable(now)
+    elif now.value["type"] == "null":
+        return now.value["value"]
+    elif now.value["type"] == "void":
+        return now.value["value"]
+    elif now.value["type"] == "char":
+        return "'" + now.value["value"] + "'"
+    else:
+        print("Unknown type:", now.value["type"])
+        exit(1)
 
 
 def _expression(now: Node) -> str:
@@ -182,7 +261,8 @@ def _class(now: Node) -> list[str]:
 
 def _method(now: Node) -> list[str]:
     t: list[str] = []
-    tt = f"method {now.value["kind "] if now.value["kind"] != "private" else ""}{_type(now.children[0])} {now.value["name"]}"
+    print(now)
+    tt = f"method {now.value["kind"] + " " if now.value["kind"] != "private" else ""}{_type(now.children[0])} {now.value["name"]}"
     if len(now.children[1].children) > 0:
         tt += f"<{', '.join(i.value["name"] for i in now.children[1].children)}>"
     t.append(tt + f"({_declare_args(now.children[2])}) {{")
@@ -216,7 +296,7 @@ def _statements(now: Node) -> list[str]:
         elif i.type == "class":
             t.extend(_class(i))
         elif i.type == "expression":
-            t.extend(_expression(i))
+            t.append(_expression(i))
         elif i.type == "pass":
             t.append(_pass(i))
     return t

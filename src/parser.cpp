@@ -208,7 +208,7 @@ shared_ptr<Node> Parser::parse_term() {
     add_call_stack("parse_term", 0);
     shared_ptr<Node> term = make_shared<Node>("term");
     if (is_term(current_token)) {
-        if (current_token == Tokens("symbol", {"^", "@", "-", "!"})) {  // type = one operator
+        if (current_token == Tokens("symbol", {"^", "@", "-", "!"})) {  // type = dereference or pointer or neg or not
             if (current_token.value == "^") {
                 term->value["type"] = "dereference";
             } else if (current_token.value == "@") {
@@ -310,11 +310,11 @@ shared_ptr<Node> Parser::parse_variable(shared_ptr<Node> var) {
         variable->children.push_back(make_shared<Node>("name", map<string, string>{{"name", current_token.value}}));
     } else
         parser_error("Expected '[' or '.', not " + current_token.toString());
-    if (next_token() == Tokens("symbol", {".", "["})) {
+    while (next_token() == Tokens("symbol", {".", "["})) {
         get_token();
         variable = parse_variable(variable);
     }
-    if (next_token() == Tokens("symbol", {"<", "("})) {
+    while (next_token() == Tokens("symbol", {"<", "("})) {
         get_token();
         variable = parse_call(variable);
     }
@@ -376,11 +376,11 @@ shared_ptr<Node> Parser::parse_call(shared_ptr<Node> var) {
     if (current_token != Token("symbol", ")"))
         parser_error("Expected ')', not " + current_token.toString());
     call->children.push_back(args_call);
-    if (next_token() == Tokens("symbol", {".", "["})) {
+    while (next_token() == Tokens("symbol", {".", "["})) {
         get_token();
         call = parse_variable(call);
     }
-    if (next_token() == Tokens("symbol", {"<", "("})) {
+    while (next_token() == Tokens("symbol", {"<", "("})) {
         get_token();
         call = parse_call(call);
     }

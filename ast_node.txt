@@ -75,7 +75,6 @@ value = {
             "neg" or
             "not" or
             "expression" or
-            "tuple" or
             "call" or
             "variable" or
             "null" or
@@ -99,7 +98,7 @@ value = {
 }
 children = [
     Node("call") or Node("variable") or Node("name"),
-    Node("call") or Node("variable") or Node("name")
+    Node("expression") or Node("name")
 ]
 
 type = "name"
@@ -118,7 +117,7 @@ type = "call"
 value = {}
 children = [
     Node("variable"),
-    Node("typevar"),
+    Node("use_typevar"),
     Node("args_call")
 ]
 

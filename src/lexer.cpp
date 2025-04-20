@@ -122,7 +122,7 @@ vector<shared_ptr<Token>> lexer(const vector<string>& source_code, const string&
                         error("Character constant too long", file_name, {i + 1, j}, line);
                 } else {
                     if (content.size() == 1) {
-                        tokens.push_back(make_shared<Token>("char", "'" + content + "'", file_name, make_pair(i + 1, j)));
+                        tokens.push_back(make_shared<Token>("char", content, file_name, make_pair(i + 1, j)));
                         state = "";
                         content = "";
                     } else
@@ -131,7 +131,7 @@ vector<shared_ptr<Token>> lexer(const vector<string>& source_code, const string&
                 continue;
             } else if (state == "string") {
                 if (c == '"') {
-                    tokens.push_back(make_shared<Token>("str", "\"" + content + "\"", file_name, pos));
+                    tokens.push_back(make_shared<Token>("str", content, file_name, pos));
                     state = "";
                     content = "";
                 } else

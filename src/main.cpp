@@ -135,18 +135,16 @@ string remove_json_trailing_comma(const string& json) {
 string output_ast(shared_ptr<Node> node, int ident) {
     stringstream output;
     output << string(ident * 4, ' ') << node->type << " (";
-    for (const auto& [k, v] : node->value) {
+    for (const auto& [k, v] : node->value)
         output << k << ": " << v << ", ";
-    }
     if (node->children.size() == 0)
         output << ") {}" << endl;
     else {
         output << ")" << endl;
         output << string(ident * 4, ' ') << "{" << endl;
         ident++;
-        for (const auto& child : node->children) {
+        for (const auto& child : node->children)
             output << output_ast(child, ident);
-        }
         ident--;
         output << string(ident * 4, ' ') << "}" << endl;
     }
