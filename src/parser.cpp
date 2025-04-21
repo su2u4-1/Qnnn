@@ -120,30 +120,31 @@ vector<shared_ptr<Node>> Parser::parse_declare(bool attr) {
         parser_error("Expected identifier, not " + current_token.toString());
     state["name"] = current_token.value;
     get_token();
-    shared_ptr<Node> expression = make_shared<Node>("expression");
+    vector<shared_ptr<Node>> children{type};
     if (current_token == Token("symbol", "=")) {
         get_token();
-        expression = parse_expression();
+        children.push_back(parse_expression());
     }
     if (attr)
-        nodes.push_back(make_shared<Node>("declare_attr", state, vector<shared_ptr<Node>>{type, expression}));
+        nodes.push_back(make_shared<Node>("declare_attr", state, children));
     else
-        nodes.push_back(make_shared<Node>("declare_var", state, vector<shared_ptr<Node>>{type, expression}));
+        nodes.push_back(make_shared<Node>("declare_var", state, children));
     while (current_token == Token("symbol", ",")) {
         get_token();
         if (current_token.type != "identifier")
             parser_error("Expected identifier, not " + current_token.toString());
         state["name"] = current_token.value;
         get_token();
-        expression = make_shared<Node>("expression");
+        if (children.size() == 2)
+            children.pop_back();
         if (current_token == Token("symbol", "=")) {
             get_token();
-            expression = parse_expression();
+            children.push_back(parse_expression());
         }
         if (attr)
-            nodes.push_back(make_shared<Node>("declare_attr", state, vector<shared_ptr<Node>>{type, expression}));
+            nodes.push_back(make_shared<Node>("declare_attr", state, children));
         else
-            nodes.push_back(make_shared<Node>("declare_var", state, vector<shared_ptr<Node>>{type, expression}));
+            nodes.push_back(make_shared<Node>("declare_var", state, children));
     }
     if (current_token != Token("symbol", ";"))
         parser_error("Expected ';', not " + current_token.toString());
@@ -250,11 +251,11 @@ shared_ptr<Node> Parser::parse_term() {
             }
             if (current_token == Tokens("symbol", {"<", "("})) {
                 t = parse_call(term->children.back());
+                term->children.pop_back();
+                term->value["type"] = t->type;
+                term->children.push_back(t);
                 get_token();
-                term->value["type"] = "call";
             }
-            if (term->value["type"] == "call")
-                term->children = t->children;
         } else if (current_token.type == "int") {  // type = int
             term->value["type"] = "int";
             term->value["value"] = current_token.value;
@@ -301,7 +302,6 @@ shared_ptr<Node> Parser::parse_variable(shared_ptr<Node> var) {
         variable->children.push_back(parse_expression());
         if (current_token != Token("symbol", "]"))
             parser_error("Expected ']', not " + current_token.toString());
-        variable->value["name"] = "index";
     } else if (current_token == Token("symbol", ".")) {
         variable->value["state"] = "attr";
         get_token();
@@ -310,13 +310,13 @@ shared_ptr<Node> Parser::parse_variable(shared_ptr<Node> var) {
         variable->children.push_back(make_shared<Node>("name", map<string, string>{{"name", current_token.value}}));
     } else
         parser_error("Expected '[' or '.', not " + current_token.toString());
-    while (next_token() == Tokens("symbol", {".", "["})) {
+    while (next_token() == Tokens("symbol", {".", "[", "<", "("})) {
         get_token();
-        variable = parse_variable(variable);
-    }
-    while (next_token() == Tokens("symbol", {"<", "("})) {
-        get_token();
-        variable = parse_call(variable);
+        if (current_token == Tokens("symbol", {".", "["}))
+            variable = parse_variable(variable);
+        else {
+            variable = parse_call(variable);
+        }
     }
     add_call_stack("parse_variable", 1);
     return variable;
@@ -376,13 +376,12 @@ shared_ptr<Node> Parser::parse_call(shared_ptr<Node> var) {
     if (current_token != Token("symbol", ")"))
         parser_error("Expected ')', not " + current_token.toString());
     call->children.push_back(args_call);
-    while (next_token() == Tokens("symbol", {".", "["})) {
+    while (next_token() == Tokens("symbol", {".", "[", "<", "("})) {
         get_token();
-        call = parse_variable(call);
-    }
-    while (next_token() == Tokens("symbol", {"<", "("})) {
-        get_token();
-        call = parse_call(call);
+        if (current_token == Tokens("symbol", {".", "["}))
+            call = parse_variable(call);
+        else
+            call = parse_call(call);
     }
     add_call_stack("parse_call", 1);
     return call;

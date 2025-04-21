@@ -27,7 +27,7 @@ value = {
 }
 children = [
     Node("type"),
-    Node("expression")
+    Node("expression") / maybe
 ]
 
 type = "declare_attr"
@@ -89,7 +89,7 @@ children = [
     Node("tuple") or
     Node("arr") or
     Node("dict") or
-    Node("variable"), Node("typevar"), Node("args_call")
+    Node("call")
 ]
 
 type = "variable"
@@ -194,6 +194,7 @@ value = {
     "name" : "class_name"
 }
 children = [
+    Node("declare_typevar"),
     Node("func") or Node("method") or Node("declare_attr"), *n
 ]
 

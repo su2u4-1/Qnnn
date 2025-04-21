@@ -6,7 +6,7 @@ from typing import Any
 
 
 class Node:
-    def __init__(self, type: str, value: dict[str, str], children: list["Node"]):
+    def __init__(self, type: str, value: dict[str, str], children: list["Node"]) -> None:
         self.type = type
         self.value = value
         self.children = children
@@ -78,9 +78,9 @@ def _variable(now: Node) -> str:
         t = _variable(now.children[0])
     elif now.children[0].type == "call":
         t = _call(now.children[0])
-    if now.type == "index":
+    if now.value["state"] == "index":
         t += "[" + _expression(now.children[1]) + "]"
-    elif now.type == "attr":
+    elif now.value["state"] == "attr":
         t += "." + now.children[1].value["name"]
     return t
 
@@ -109,11 +109,11 @@ def _term(now: Node) -> str:
     elif now.value["type"] == "not":
         return "!" + _term(now.children[0])
     elif now.value["type"] == "expression":
-        return _expression(now)
+        return "(" + _expression(now.children[0]) + ")"
     elif now.value["type"] == "call":
-        return _call(now)
+        return _call(now.children[0])
     elif now.value["type"] == "variable":
-        return _variable(now)
+        return _variable(now.children[0])
     elif now.value["type"] == "null":
         return now.value["value"]
     elif now.value["type"] == "void":
@@ -150,14 +150,14 @@ def _type(now: Node) -> str:
 
 
 def _declare_var(now: Node) -> str:
-    t = f"{now.value["kind"]} {"public " if now.value["modifier"] == "public" else ""}{_type(now.children[0])} {now.value["name"]}"
+    t = f"{now.value["kind"]} {"global " if now.value["modifier"] == "global" else ""}{_type(now.children[0])} {now.value["name"]}"
     if len(now.children) == 2:
         t += f" = {_expression(now.children[1])}"
     return t + ";"
 
 
 def _declare_attr(now: Node) -> str:
-    t = f"{now.value["kind"]} {"static " if now.value["modifier"] == "static" else ""}{_type(now.children[0])} {now.value["name"]}"
+    t = f"{now.value["kind"]} {"public " if now.value["modifier"] == "public" else ""}{_type(now.children[0])} {now.value["name"]}"
     if len(now.children) == 2:
         t += f" = {_expression(now.children[1])}"
     return t + ";"
@@ -246,8 +246,12 @@ def _func(now: Node) -> list[str]:
 
 
 def _class(now: Node) -> list[str]:
-    t = [f"class {now.value["name"]} {{"]
-    for i in now.children:
+    t: list[str] = []
+    tt = f"class {now.value["name"]}"
+    if len(now.children[0].children) > 0:
+        tt += f"<{', '.join(i.value["name"] for i in now.children[0].children)}>"
+    t.append(tt + " {")
+    for i in now.children[1:]:
         if i.type == "declare_attr":
             t.append(ident + _declare_attr(i))
         elif i.type == "method":
@@ -256,6 +260,7 @@ def _class(now: Node) -> list[str]:
         elif i.type == "declare_func":
             for j in _func(i):
                 t.append(ident + j)
+    t.append("}")
     return t
 
 
@@ -264,7 +269,12 @@ def _method(now: Node) -> list[str]:
     tt = f"method {now.value["kind"] + " " if now.value["kind"] != "private" else ""}{_type(now.children[0])} {now.value["name"]}"
     if len(now.children[1].children) > 0:
         tt += f"<{', '.join(i.value["name"] for i in now.children[1].children)}>"
-    t.append(tt + f"({_declare_args(now.children[2])}) {{")
+    tt += "("
+    if now.value["self"] == "true":
+        tt += "self"
+    if len(now.children[2].children) > 0:
+        tt += ", "
+    t.append(tt + f"{_declare_args(now.children[2])}) {{")
     for i in _statements(now.children[3]):
         t.append(ident + i)
     t.append("}")
@@ -295,7 +305,7 @@ def _statements(now: Node) -> list[str]:
         elif i.type == "class":
             t.extend(_class(i))
         elif i.type == "expression":
-            t.append(_expression(i))
+            t.append(_expression(i) + ";")
         elif i.type == "pass":
             t.append(_pass(i))
     return t
@@ -307,7 +317,7 @@ def _import(now: Node) -> str:
         t += now.value["name"]
     else:
         t += '"' + now.value["name"] + '" as ' + now.value["alias"]
-    return t
+    return t + ";"
 
 
 def _program(now: Node) -> str:
@@ -328,7 +338,7 @@ def _program(now: Node) -> str:
         elif i.type == "class":
             t.extend(_class(i))
         elif i.type == "expression":
-            t.append(_expression(i))
+            t.append(_expression(i) + ";")
         elif i.type == "pass":
             t.extend(_pass(i))
     return "\n".join(t)
@@ -337,5 +347,5 @@ def _program(now: Node) -> str:
 result = _program(data)
 print(result)
 
-# with open(data["value"]["name"], "w") as f:
+# with open(data.value["name"], "w") as f:
 #     f.write(result)
