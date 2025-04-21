@@ -113,6 +113,7 @@ def _term(now: Node) -> str:
     elif now.value["type"] == "call":
         return _call(now.children[0])
     elif now.value["type"] == "variable":
+        print("Variable:", now)
         return _variable(now.children[0])
     elif now.value["type"] == "null":
         return now.value["value"]

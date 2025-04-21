@@ -39,19 +39,19 @@ void Parser::get_token() {
         }
     } else
         current_token = Token("EOF", "", file_name, {-1, -1});
-    add_call_stack(current_token.toString(), 2);
+    add_call_stack(current_token.toString() + " " + to_string(index), 2);
 }
 
 void Parser::rollback_token() {
     if (index > 0) {
         index--;
-        current_token = *tokens[index];
+        current_token = *tokens[index - 1];
         if (current_token.type == "comment") {
             rollback_token();
         }
     } else
         current_token = Token("SOF", "", file_name, {-1, -1});
-    add_call_stack(current_token.toString(), 5);
+    add_call_stack(current_token.toString() + " " + to_string(index), 5);
 }
 
 void Parser::parser_error(const string& msg) {
@@ -63,6 +63,7 @@ void Parser::parser_error(const string& msg, const Token& token) {
 }
 
 bool Parser::isCall() {
+    add_call_stack("isCall", 0);
     int i = 0, j = 0;
     while (true) {
         if (current_token != Tokens("symbol", {"<", ",", ">"}) && current_token.type != "identifier" && current_token != Tokens("keyword", BUILTINTYPE))
@@ -74,13 +75,16 @@ bool Parser::isCall() {
         }
         if (i < 0)
             break;
-        else if (i == 0)
+        else if (i == 0) {
+            add_call_stack("isCall", 1);
             return true;
+        }
         get_token();
         j++;
     }
     for (int k = 0; k < j; k++)
         rollback_token();
+    add_call_stack("isCall", 1);
     return false;
 }
 
@@ -278,7 +282,6 @@ shared_ptr<Node> Parser::parse_term() {
                 term->children.push_back(t);
                 get_token();
             } else if (current_token == Token("symbol", "<") && !isCall()) {
-                rollback_token();
                 add_call_stack("parse_term", 1);
                 return term;
             } else if (current_token == Tokens("symbol", {"<", "("})) {
@@ -401,17 +404,17 @@ shared_ptr<Node> Parser::parse_call(shared_ptr<Node> var) {
     call->children.push_back(parse_use_typevar());
     if (current_token != Token("symbol", "("))
         parser_error("Expected '(', not " + current_token.toString());
+    shared_ptr<Node> args_call = make_shared<Node>("args_call");
     if (next_token() == Token("symbol", ")")) {
         get_token();
-        return call;
+    } else {
+        do {
+            get_token();
+            args_call->children.push_back(parse_expression());
+        } while (current_token == Token("symbol", ","));
+        if (current_token != Token("symbol", ")"))
+            parser_error("Expected ')', not " + current_token.toString());
     }
-    shared_ptr<Node> args_call = make_shared<Node>("args_call");
-    do {
-        get_token();
-        args_call->children.push_back(parse_expression());
-    } while (current_token == Token("symbol", ","));
-    if (current_token != Token("symbol", ")"))
-        parser_error("Expected ')', not " + current_token.toString());
     call->children.push_back(args_call);
     while (next_token() == Tokens("symbol", {".", "[", "<", "("})) {
         get_token();
