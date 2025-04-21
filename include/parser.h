@@ -12,8 +12,10 @@ class Parser {
     Token current_token;
     Token next_token();
     void get_token();
+    void rollback_token();
     void parser_error(const string& msg);
     void parser_error(const string& msg, const Token& token);
+    bool isCall();
     shared_ptr<Node> parse();
     shared_ptr<Node> parse_import();
     vector<shared_ptr<Node>> parse_declare(bool attr);

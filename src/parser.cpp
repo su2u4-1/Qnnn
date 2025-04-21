@@ -42,12 +42,46 @@ void Parser::get_token() {
     add_call_stack(current_token.toString(), 2);
 }
 
+void Parser::rollback_token() {
+    if (index > 0) {
+        index--;
+        current_token = *tokens[index];
+        if (current_token.type == "comment") {
+            rollback_token();
+        }
+    } else
+        current_token = Token("SOF", "", file_name, {-1, -1});
+    add_call_stack(current_token.toString(), 5);
+}
+
 void Parser::parser_error(const string& msg) {
     parser_error(msg, current_token);
 }
 
 void Parser::parser_error(const string& msg, const Token& token) {
     error(msg, file_name, {token.line, token.column}, source_code_getitem(file_name, token.line - 1));
+}
+
+bool Parser::isCall() {
+    int i = 0, j = 0;
+    while (true) {
+        if (current_token != Tokens("symbol", {"<", ",", ">"}) && current_token.type != "identifier" && current_token != Tokens("keyword", BUILTINTYPE))
+            break;
+        else if (current_token == Token("symbol", "<"))
+            i++;
+        else if (current_token == Token("symbol", ">")) {
+            i--;
+        }
+        if (i < 0)
+            break;
+        else if (i == 0)
+            return true;
+        get_token();
+        j++;
+    }
+    for (int k = 0; k < j; k++)
+        rollback_token();
+    return false;
 }
 
 shared_ptr<Node> Parser::parse() {
@@ -243,19 +277,17 @@ shared_ptr<Node> Parser::parse_term() {
                 term->value["type"] = t->type;
                 term->children.push_back(t);
                 get_token();
-            } else
-                term->children.push_back(var);
-            if (current_token == Token("symbol", "<") && next_token() != Tokens("keyword", BUILTINTYPE) && next_token().type != "identifier") {
+            } else if (current_token == Token("symbol", "<") && !isCall()) {
+                rollback_token();
                 add_call_stack("parse_term", 1);
                 return term;
-            }
-            if (current_token == Tokens("symbol", {"<", "("})) {
-                t = parse_call(term->children.back());
-                term->children.pop_back();
+            } else if (current_token == Tokens("symbol", {"<", "("})) {
+                t = parse_call(var);
                 term->value["type"] = t->type;
                 term->children.push_back(t);
                 get_token();
-            }
+            } else
+                term->children.push_back(var);
         } else if (current_token.type == "int") {  // type = int
             term->value["type"] = "int";
             term->value["value"] = current_token.value;
@@ -315,6 +347,11 @@ shared_ptr<Node> Parser::parse_variable(shared_ptr<Node> var) {
         if (current_token == Tokens("symbol", {".", "["}))
             variable = parse_variable(variable);
         else {
+            if (current_token == Token("symbol", "<") && !isCall()) {
+                rollback_token();
+                add_call_stack("parse_variable", 1);
+                return variable;
+            }
             variable = parse_call(variable);
         }
     }
@@ -380,8 +417,14 @@ shared_ptr<Node> Parser::parse_call(shared_ptr<Node> var) {
         get_token();
         if (current_token == Tokens("symbol", {".", "["}))
             call = parse_variable(call);
-        else
+        else {
+            if (current_token == Token("symbol", "<") && !isCall()) {
+                rollback_token();
+                add_call_stack("parse_call", 1);
+                return call;
+            }
             call = parse_call(call);
+        }
     }
     add_call_stack("parse_call", 1);
     return call;

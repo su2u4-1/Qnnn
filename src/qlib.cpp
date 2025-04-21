@@ -98,10 +98,11 @@ void add_call_stack(const string& str, const int mode) {
     else if (mode == 1)
         call_stack.push_back("\033[34m(out) \033[0m" + str + "()");
     else if (mode == 2) {
-        if (t == str)
-            return;
         t = str;
         call_stack.push_back("(get) " + str);
+    } else if (mode == 5) {
+        t = str;
+        call_stack.push_back("(rollback) " + str);
     } else
         call_stack.push_back("(error) " + str);
 }
