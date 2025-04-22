@@ -1,4 +1,4 @@
-program ()
+program (name: /d/Qnnn/test/test1/test1.qn, )
 {
     declare_var (kind: var, modifier: local, name: a, )
     {
@@ -18,19 +18,22 @@ program ()
         {
             term (type: call, )
             {
-                variable (state: false, )
+                call ()
                 {
-                    name (name: A, ) {}
-                }
-                use_typevar ()
-                {
-                    type (name: B, ) {}
-                }
-                args_call ()
-                {
-                    expression ()
+                    variable (state: false, )
                     {
-                        term (type: int, value: 1, ) {}
+                        name (name: A, ) {}
+                    }
+                    use_typevar ()
+                    {
+                        type (name: B, ) {}
+                    }
+                    args_call ()
+                    {
+                        expression ()
+                        {
+                            term (type: int, value: 1, ) {}
+                        }
                     }
                 }
             }
@@ -47,20 +50,23 @@ program ()
         {
             term (type: call, )
             {
-                variable (state: false, )
+                call ()
                 {
-                    name (name: C, ) {}
-                }
-                use_typevar ()
-                {
-                    type (name: D, ) {}
-                    type (name: E, ) {}
-                }
-                args_call ()
-                {
-                    expression ()
+                    variable (state: false, )
                     {
-                        term (type: int, value: 2, ) {}
+                        name (name: C, ) {}
+                    }
+                    use_typevar ()
+                    {
+                        type (name: D, ) {}
+                        type (name: E, ) {}
+                    }
+                    args_call ()
+                    {
+                        expression ()
+                        {
+                            term (type: int, value: 2, ) {}
+                        }
                     }
                 }
             }
@@ -103,24 +109,20 @@ program ()
         declare_attr (kind: attr, modifier: local, name: e, )
         {
             type (name: T, ) {}
-            expression () {}
         }
         declare_attr (kind: static, modifier: local, name: f, )
         {
             type (name: T, ) {}
-            expression () {}
         }
         declare_attr (kind: attr, modifier: public, name: g, )
         {
             type (name: T, ) {}
-            expression () {}
         }
         declare_attr (kind: static, modifier: public, name: h, )
         {
             type (name: T, ) {}
-            expression () {}
         }
-        method (modifier: public, name: _init, operator: false, self: true, static: false, )
+        method (kind: public, name: _init, self: true, )
         {
             type (name: void, ) {}
             typevar () {}
@@ -148,20 +150,23 @@ program ()
                     }
                     term (type: call, )
                     {
-                        variable (state: false, )
+                        call ()
                         {
-                            name (name: T, ) {}
-                        }
-                        use_typevar () {}
-                        args_call ()
-                        {
-                            expression ()
+                            variable (state: false, )
                             {
-                                term (type: variable, )
+                                name (name: T, ) {}
+                            }
+                            use_typevar () {}
+                            args_call ()
+                            {
+                                expression ()
                                 {
-                                    variable (state: false, )
+                                    term (type: variable, )
                                     {
-                                        name (name: i, ) {}
+                                        variable (state: false, )
+                                        {
+                                            name (name: i, ) {}
+                                        }
                                     }
                                 }
                             }
@@ -184,24 +189,27 @@ program ()
                     }
                     term (type: call, )
                     {
-                        variable (state: false, )
+                        call ()
                         {
-                            name (name: T, ) {}
-                        }
-                        use_typevar () {}
-                        args_call ()
-                        {
-                            expression ()
+                            variable (state: false, )
                             {
-                                term (type: variable, )
+                                name (name: T, ) {}
+                            }
+                            use_typevar () {}
+                            args_call ()
+                            {
+                                expression ()
                                 {
-                                    variable (state: false, )
+                                    term (type: variable, )
                                     {
-                                        name (name: i, ) {}
+                                        variable (state: false, )
+                                        {
+                                            name (name: i, ) {}
+                                        }
                                     }
+                                    term (type: int, value: 1, ) {}
+                                    operator (value: +, ) {}
                                 }
-                                term (type: int, value: 1, ) {}
-                                operator (value: +, ) {}
                             }
                         }
                     }
@@ -222,24 +230,27 @@ program ()
                     }
                     term (type: call, )
                     {
-                        variable (state: false, )
+                        call ()
                         {
-                            name (name: T, ) {}
-                        }
-                        use_typevar () {}
-                        args_call ()
-                        {
-                            expression ()
+                            variable (state: false, )
                             {
-                                term (type: variable, )
+                                name (name: T, ) {}
+                            }
+                            use_typevar () {}
+                            args_call ()
+                            {
+                                expression ()
                                 {
-                                    variable (state: false, )
+                                    term (type: variable, )
                                     {
-                                        name (name: i, ) {}
+                                        variable (state: false, )
+                                        {
+                                            name (name: i, ) {}
+                                        }
                                     }
+                                    term (type: int, value: 2, ) {}
+                                    operator (value: +, ) {}
                                 }
-                                term (type: int, value: 2, ) {}
-                                operator (value: +, ) {}
                             }
                         }
                     }
@@ -260,24 +271,27 @@ program ()
                     }
                     term (type: call, )
                     {
-                        variable (state: false, )
+                        call ()
                         {
-                            name (name: T, ) {}
-                        }
-                        use_typevar () {}
-                        args_call ()
-                        {
-                            expression ()
+                            variable (state: false, )
                             {
-                                term (type: variable, )
+                                name (name: T, ) {}
+                            }
+                            use_typevar () {}
+                            args_call ()
+                            {
+                                expression ()
                                 {
-                                    variable (state: false, )
+                                    term (type: variable, )
                                     {
-                                        name (name: i, ) {}
+                                        variable (state: false, )
+                                        {
+                                            name (name: i, ) {}
+                                        }
                                     }
+                                    term (type: int, value: 3, ) {}
+                                    operator (value: +, ) {}
                                 }
-                                term (type: int, value: 3, ) {}
-                                operator (value: +, ) {}
                             }
                         }
                     }

@@ -1,6 +1,8 @@
 #ifndef QLIB_H
 #define QLIB_H
 
+#include <limits.h>
+
 #include <algorithm>
 #include <fstream>
 #include <iostream>

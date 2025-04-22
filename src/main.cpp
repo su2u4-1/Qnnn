@@ -71,6 +71,12 @@ arguments parse_arguments(int argc, char* argv[]) {
         exit(0);
     }
     args.source_code_file = argv[1];
+    char resolved_path[PATH_MAX];
+    if (realpath(args.source_code_file.c_str(), resolved_path) == nullptr) {
+        cerr << "Error: Could not resolve path for " << args.source_code_file << endl;
+        exit(1);
+    }
+    args.source_code_file = resolved_path;
     replace(args.source_code_file.begin(), args.source_code_file.end(), '\\', '/');
     args.program_name = args.source_code_file.substr(0, args.source_code_file.find_last_of('.'));
     for (int i = 2; i < argc; i++) {
