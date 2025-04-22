@@ -559,76 +559,86 @@
                                         {
                                             "type": "term",
                                             "value": {
-                                                "type": "variable"
+                                                "type": "call"
                                             },
                                             "children": [
                                                 {
-                                                    "type": "variable",
-                                                    "value": {
-                                                        "state": "false"
-                                                    },
-                                                    "children": [
-                                                        {
-                                                            "type": "name",
-                                                            "value": {
-                                                                "name": "arr"
-                                                            },
-                                                            "children": []
-                                                        }
-                                                    ]
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "type": "operator",
-                                            "value": {
-                                                "value": "="
-                                            },
-                                            "children": []
-                                        },
-                                        {
-                                            "type": "term",
-                                            "value": {
-                                                "type": "expression"
-                                            },
-                                            "children": [
-                                                {
-                                                    "type": "expression",
+                                                    "type": "call",
                                                     "value": {},
                                                     "children": [
                                                         {
-                                                            "type": "term",
+                                                            "type": "variable",
                                                             "value": {
-                                                                "type": "variable"
+                                                                "state": "false"
                                                             },
                                                             "children": [
                                                                 {
-                                                                    "type": "variable",
+                                                                    "type": "name",
                                                                     "value": {
-                                                                        "state": "attr"
+                                                                        "name": "arr"
                                                                     },
+                                                                    "children": []
+                                                                }
+                                                            ]
+                                                        },
+                                                        {
+                                                            "type": "use_typevar",
+                                                            "value": {},
+                                                            "children": [
+                                                                {
+                                                                    "type": "type",
+                                                                    "value": {
+                                                                        "name": "T"
+                                                                    },
+                                                                    "children": []
+                                                                }
+                                                            ]
+                                                        },
+                                                        {
+                                                            "type": "args_call",
+                                                            "value": {},
+                                                            "children": [
+                                                                {
+                                                                    "type": "expression",
+                                                                    "value": {},
                                                                     "children": [
                                                                         {
-                                                                            "type": "variable",
+                                                                            "type": "term",
                                                                             "value": {
-                                                                                "state": "false"
+                                                                                "type": "variable"
                                                                             },
                                                                             "children": [
                                                                                 {
-                                                                                    "type": "name",
+                                                                                    "type": "variable",
                                                                                     "value": {
-                                                                                        "name": "self"
+                                                                                        "state": "attr"
                                                                                     },
-                                                                                    "children": []
+                                                                                    "children": [
+                                                                                        {
+                                                                                            "type": "variable",
+                                                                                            "value": {
+                                                                                                "state": "false"
+                                                                                            },
+                                                                                            "children": [
+                                                                                                {
+                                                                                                    "type": "name",
+                                                                                                    "value": {
+                                                                                                        "name": "self"
+                                                                                                    },
+                                                                                                    "children": []
+                                                                                                }
+                                                                                            ]
+                                                                                        },
+                                                                                        {
+                                                                                            "type": "name",
+                                                                                            "value": {
+                                                                                                "name": "size"
+                                                                                            },
+                                                                                            "children": []
+                                                                                        }
+                                                                                    ]
                                                                                 }
                                                                             ]
-                                                                        },
-                                                                        {
-                                                                            "type": "name",
-                                                                            "value": {
-                                                                                "name": "size"
-                                                                            },
-                                                                            "children": []
                                                                         }
                                                                     ]
                                                                 }
@@ -641,7 +651,7 @@
                                         {
                                             "type": "operator",
                                             "value": {
-                                                "value": ">"
+                                                "value": "="
                                             },
                                             "children": []
                                         }
@@ -1159,61 +1169,71 @@
                                         {
                                             "type": "term",
                                             "value": {
-                                                "type": "variable"
+                                                "type": "call"
                                             },
                                             "children": [
                                                 {
-                                                    "type": "variable",
-                                                    "value": {
-                                                        "state": "false"
-                                                    },
-                                                    "children": [
-                                                        {
-                                                            "type": "name",
-                                                            "value": {
-                                                                "name": "arr"
-                                                            },
-                                                            "children": []
-                                                        }
-                                                    ]
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "type": "operator",
-                                            "value": {
-                                                "value": "="
-                                            },
-                                            "children": []
-                                        },
-                                        {
-                                            "type": "term",
-                                            "value": {
-                                                "type": "expression"
-                                            },
-                                            "children": [
-                                                {
-                                                    "type": "expression",
+                                                    "type": "call",
                                                     "value": {},
                                                     "children": [
                                                         {
-                                                            "type": "term",
+                                                            "type": "variable",
                                                             "value": {
-                                                                "type": "variable"
+                                                                "state": "false"
                                                             },
                                                             "children": [
                                                                 {
-                                                                    "type": "variable",
+                                                                    "type": "name",
                                                                     "value": {
-                                                                        "state": "false"
+                                                                        "name": "arr"
                                                                     },
+                                                                    "children": []
+                                                                }
+                                                            ]
+                                                        },
+                                                        {
+                                                            "type": "use_typevar",
+                                                            "value": {},
+                                                            "children": [
+                                                                {
+                                                                    "type": "type",
+                                                                    "value": {
+                                                                        "name": "T"
+                                                                    },
+                                                                    "children": []
+                                                                }
+                                                            ]
+                                                        },
+                                                        {
+                                                            "type": "args_call",
+                                                            "value": {},
+                                                            "children": [
+                                                                {
+                                                                    "type": "expression",
+                                                                    "value": {},
                                                                     "children": [
                                                                         {
-                                                                            "type": "name",
+                                                                            "type": "term",
                                                                             "value": {
-                                                                                "name": "size"
+                                                                                "type": "variable"
                                                                             },
-                                                                            "children": []
+                                                                            "children": [
+                                                                                {
+                                                                                    "type": "variable",
+                                                                                    "value": {
+                                                                                        "state": "false"
+                                                                                    },
+                                                                                    "children": [
+                                                                                        {
+                                                                                            "type": "name",
+                                                                                            "value": {
+                                                                                                "name": "size"
+                                                                                            },
+                                                                                            "children": []
+                                                                                        }
+                                                                                    ]
+                                                                                }
+                                                                            ]
                                                                         }
                                                                     ]
                                                                 }
@@ -1226,7 +1246,7 @@
                                         {
                                             "type": "operator",
                                             "value": {
-                                                "value": ">"
+                                                "value": "="
                                             },
                                             "children": []
                                         }
@@ -1594,7 +1614,23 @@
                                                     "value": {
                                                         "type": "variable"
                                                     },
-                                                    "children": []
+                                                    "children": [
+                                                        {
+                                                            "type": "variable",
+                                                            "value": {
+                                                                "state": "false"
+                                                            },
+                                                            "children": [
+                                                                {
+                                                                    "type": "name",
+                                                                    "value": {
+                                                                        "name": "i"
+                                                                    },
+                                                                    "children": []
+                                                                }
+                                                            ]
+                                                        }
+                                                    ]
                                                 },
                                                 {
                                                     "type": "term",
@@ -2081,145 +2117,155 @@
                                                 {
                                                     "type": "term",
                                                     "value": {
-                                                        "type": "variable"
+                                                        "type": "call"
                                                     },
                                                     "children": [
                                                         {
-                                                            "type": "variable",
-                                                            "value": {
-                                                                "state": "false"
-                                                            },
-                                                            "children": [
-                                                                {
-                                                                    "type": "name",
-                                                                    "value": {
-                                                                        "name": "arr"
-                                                                    },
-                                                                    "children": []
-                                                                }
-                                                            ]
-                                                        }
-                                                    ]
-                                                },
-                                                {
-                                                    "type": "term",
-                                                    "value": {
-                                                        "type": "expression"
-                                                    },
-                                                    "children": [
-                                                        {
-                                                            "type": "expression",
+                                                            "type": "call",
                                                             "value": {},
                                                             "children": [
                                                                 {
-                                                                    "type": "term",
+                                                                    "type": "variable",
                                                                     "value": {
-                                                                        "type": "variable"
+                                                                        "state": "false"
                                                                     },
                                                                     "children": [
                                                                         {
-                                                                            "type": "variable",
+                                                                            "type": "name",
                                                                             "value": {
-                                                                                "state": "attr"
+                                                                                "name": "arr"
                                                                             },
-                                                                            "children": [
-                                                                                {
-                                                                                    "type": "variable",
-                                                                                    "value": {
-                                                                                        "state": "false"
-                                                                                    },
-                                                                                    "children": [
-                                                                                        {
-                                                                                            "type": "name",
-                                                                                            "value": {
-                                                                                                "name": "self"
-                                                                                            },
-                                                                                            "children": []
-                                                                                        }
-                                                                                    ]
-                                                                                },
-                                                                                {
-                                                                                    "type": "name",
-                                                                                    "value": {
-                                                                                        "name": "size"
-                                                                                    },
-                                                                                    "children": []
-                                                                                }
-                                                                            ]
+                                                                            "children": []
                                                                         }
                                                                     ]
                                                                 },
                                                                 {
-                                                                    "type": "term",
-                                                                    "value": {
-                                                                        "type": "call"
-                                                                    },
+                                                                    "type": "use_typevar",
+                                                                    "value": {},
                                                                     "children": [
                                                                         {
-                                                                            "type": "call",
+                                                                            "type": "type",
+                                                                            "value": {
+                                                                                "name": "T"
+                                                                            },
+                                                                            "children": []
+                                                                        }
+                                                                    ]
+                                                                },
+                                                                {
+                                                                    "type": "args_call",
+                                                                    "value": {},
+                                                                    "children": [
+                                                                        {
+                                                                            "type": "expression",
                                                                             "value": {},
                                                                             "children": [
                                                                                 {
-                                                                                    "type": "variable",
+                                                                                    "type": "term",
                                                                                     "value": {
-                                                                                        "state": "attr"
+                                                                                        "type": "variable"
                                                                                     },
                                                                                     "children": [
                                                                                         {
                                                                                             "type": "variable",
                                                                                             "value": {
-                                                                                                "state": "false"
+                                                                                                "state": "attr"
                                                                                             },
                                                                                             "children": [
                                                                                                 {
+                                                                                                    "type": "variable",
+                                                                                                    "value": {
+                                                                                                        "state": "false"
+                                                                                                    },
+                                                                                                    "children": [
+                                                                                                        {
+                                                                                                            "type": "name",
+                                                                                                            "value": {
+                                                                                                                "name": "self"
+                                                                                                            },
+                                                                                                            "children": []
+                                                                                                        }
+                                                                                                    ]
+                                                                                                },
+                                                                                                {
                                                                                                     "type": "name",
                                                                                                     "value": {
-                                                                                                        "name": "a"
+                                                                                                        "name": "size"
                                                                                                     },
                                                                                                     "children": []
                                                                                                 }
                                                                                             ]
-                                                                                        },
-                                                                                        {
-                                                                                            "type": "name",
-                                                                                            "value": {
-                                                                                                "name": "size"
-                                                                                            },
-                                                                                            "children": []
                                                                                         }
                                                                                     ]
                                                                                 },
                                                                                 {
-                                                                                    "type": "use_typevar",
-                                                                                    "value": {},
-                                                                                    "children": []
+                                                                                    "type": "term",
+                                                                                    "value": {
+                                                                                        "type": "call"
+                                                                                    },
+                                                                                    "children": [
+                                                                                        {
+                                                                                            "type": "call",
+                                                                                            "value": {},
+                                                                                            "children": [
+                                                                                                {
+                                                                                                    "type": "variable",
+                                                                                                    "value": {
+                                                                                                        "state": "attr"
+                                                                                                    },
+                                                                                                    "children": [
+                                                                                                        {
+                                                                                                            "type": "variable",
+                                                                                                            "value": {
+                                                                                                                "state": "false"
+                                                                                                            },
+                                                                                                            "children": [
+                                                                                                                {
+                                                                                                                    "type": "name",
+                                                                                                                    "value": {
+                                                                                                                        "name": "a"
+                                                                                                                    },
+                                                                                                                    "children": []
+                                                                                                                }
+                                                                                                            ]
+                                                                                                        },
+                                                                                                        {
+                                                                                                            "type": "name",
+                                                                                                            "value": {
+                                                                                                                "name": "size"
+                                                                                                            },
+                                                                                                            "children": []
+                                                                                                        }
+                                                                                                    ]
+                                                                                                },
+                                                                                                {
+                                                                                                    "type": "use_typevar",
+                                                                                                    "value": {},
+                                                                                                    "children": []
+                                                                                                },
+                                                                                                {
+                                                                                                    "type": "args_call",
+                                                                                                    "value": {},
+                                                                                                    "children": []
+                                                                                                }
+                                                                                            ]
+                                                                                        }
+                                                                                    ]
                                                                                 },
                                                                                 {
-                                                                                    "type": "args_call",
-                                                                                    "value": {},
+                                                                                    "type": "operator",
+                                                                                    "value": {
+                                                                                        "value": "+"
+                                                                                    },
                                                                                     "children": []
                                                                                 }
                                                                             ]
                                                                         }
                                                                     ]
-                                                                },
-                                                                {
-                                                                    "type": "operator",
-                                                                    "value": {
-                                                                        "value": "+"
-                                                                    },
-                                                                    "children": []
                                                                 }
                                                             ]
                                                         }
                                                     ]
-                                                },
-                                                {
-                                                    "type": "operator",
-                                                    "value": {
-                                                        "value": ">"
-                                                    },
-                                                    "children": []
                                                 }
                                             ]
                                         }
@@ -2833,54 +2879,71 @@
                                                 {
                                                     "type": "term",
                                                     "value": {
-                                                        "type": "variable"
+                                                        "type": "call"
                                                     },
                                                     "children": [
                                                         {
-                                                            "type": "variable",
-                                                            "value": {
-                                                                "state": "false"
-                                                            },
-                                                            "children": [
-                                                                {
-                                                                    "type": "name",
-                                                                    "value": {
-                                                                        "name": "list"
-                                                                    },
-                                                                    "children": []
-                                                                }
-                                                            ]
-                                                        }
-                                                    ]
-                                                },
-                                                {
-                                                    "type": "term",
-                                                    "value": {
-                                                        "type": "expression"
-                                                    },
-                                                    "children": [
-                                                        {
-                                                            "type": "expression",
+                                                            "type": "call",
                                                             "value": {},
                                                             "children": [
                                                                 {
-                                                                    "type": "term",
+                                                                    "type": "variable",
                                                                     "value": {
-                                                                        "type": "variable"
+                                                                        "state": "false"
                                                                     },
                                                                     "children": [
                                                                         {
-                                                                            "type": "variable",
+                                                                            "type": "name",
                                                                             "value": {
-                                                                                "state": "false"
+                                                                                "name": "list"
                                                                             },
+                                                                            "children": []
+                                                                        }
+                                                                    ]
+                                                                },
+                                                                {
+                                                                    "type": "use_typevar",
+                                                                    "value": {},
+                                                                    "children": [
+                                                                        {
+                                                                            "type": "type",
+                                                                            "value": {
+                                                                                "name": "T"
+                                                                            },
+                                                                            "children": []
+                                                                        }
+                                                                    ]
+                                                                },
+                                                                {
+                                                                    "type": "args_call",
+                                                                    "value": {},
+                                                                    "children": [
+                                                                        {
+                                                                            "type": "expression",
+                                                                            "value": {},
                                                                             "children": [
                                                                                 {
-                                                                                    "type": "name",
+                                                                                    "type": "term",
                                                                                     "value": {
-                                                                                        "name": "result"
+                                                                                        "type": "variable"
                                                                                     },
-                                                                                    "children": []
+                                                                                    "children": [
+                                                                                        {
+                                                                                            "type": "variable",
+                                                                                            "value": {
+                                                                                                "state": "false"
+                                                                                            },
+                                                                                            "children": [
+                                                                                                {
+                                                                                                    "type": "name",
+                                                                                                    "value": {
+                                                                                                        "name": "result"
+                                                                                                    },
+                                                                                                    "children": []
+                                                                                                }
+                                                                                            ]
+                                                                                        }
+                                                                                    ]
                                                                                 }
                                                                             ]
                                                                         }
@@ -2889,13 +2952,6 @@
                                                             ]
                                                         }
                                                     ]
-                                                },
-                                                {
-                                                    "type": "operator",
-                                                    "value": {
-                                                        "value": ">"
-                                                    },
-                                                    "children": []
                                                 }
                                             ]
                                         }
@@ -3123,145 +3179,155 @@
                                                 {
                                                     "type": "term",
                                                     "value": {
-                                                        "type": "variable"
+                                                        "type": "call"
                                                     },
                                                     "children": [
                                                         {
-                                                            "type": "variable",
-                                                            "value": {
-                                                                "state": "false"
-                                                            },
-                                                            "children": [
-                                                                {
-                                                                    "type": "name",
-                                                                    "value": {
-                                                                        "name": "arr"
-                                                                    },
-                                                                    "children": []
-                                                                }
-                                                            ]
-                                                        }
-                                                    ]
-                                                },
-                                                {
-                                                    "type": "term",
-                                                    "value": {
-                                                        "type": "expression"
-                                                    },
-                                                    "children": [
-                                                        {
-                                                            "type": "expression",
+                                                            "type": "call",
                                                             "value": {},
                                                             "children": [
                                                                 {
-                                                                    "type": "term",
+                                                                    "type": "variable",
                                                                     "value": {
-                                                                        "type": "variable"
+                                                                        "state": "false"
                                                                     },
                                                                     "children": [
                                                                         {
-                                                                            "type": "variable",
+                                                                            "type": "name",
                                                                             "value": {
-                                                                                "state": "attr"
+                                                                                "name": "arr"
                                                                             },
-                                                                            "children": [
-                                                                                {
-                                                                                    "type": "variable",
-                                                                                    "value": {
-                                                                                        "state": "false"
-                                                                                    },
-                                                                                    "children": [
-                                                                                        {
-                                                                                            "type": "name",
-                                                                                            "value": {
-                                                                                                "name": "self"
-                                                                                            },
-                                                                                            "children": []
-                                                                                        }
-                                                                                    ]
-                                                                                },
-                                                                                {
-                                                                                    "type": "name",
-                                                                                    "value": {
-                                                                                        "name": "size"
-                                                                                    },
-                                                                                    "children": []
-                                                                                }
-                                                                            ]
+                                                                            "children": []
                                                                         }
                                                                     ]
                                                                 },
                                                                 {
-                                                                    "type": "term",
-                                                                    "value": {
-                                                                        "type": "call"
-                                                                    },
+                                                                    "type": "use_typevar",
+                                                                    "value": {},
                                                                     "children": [
                                                                         {
-                                                                            "type": "call",
+                                                                            "type": "type",
+                                                                            "value": {
+                                                                                "name": "T"
+                                                                            },
+                                                                            "children": []
+                                                                        }
+                                                                    ]
+                                                                },
+                                                                {
+                                                                    "type": "args_call",
+                                                                    "value": {},
+                                                                    "children": [
+                                                                        {
+                                                                            "type": "expression",
                                                                             "value": {},
                                                                             "children": [
                                                                                 {
-                                                                                    "type": "variable",
+                                                                                    "type": "term",
                                                                                     "value": {
-                                                                                        "state": "attr"
+                                                                                        "type": "variable"
                                                                                     },
                                                                                     "children": [
                                                                                         {
                                                                                             "type": "variable",
                                                                                             "value": {
-                                                                                                "state": "false"
+                                                                                                "state": "attr"
                                                                                             },
                                                                                             "children": [
                                                                                                 {
+                                                                                                    "type": "variable",
+                                                                                                    "value": {
+                                                                                                        "state": "false"
+                                                                                                    },
+                                                                                                    "children": [
+                                                                                                        {
+                                                                                                            "type": "name",
+                                                                                                            "value": {
+                                                                                                                "name": "self"
+                                                                                                            },
+                                                                                                            "children": []
+                                                                                                        }
+                                                                                                    ]
+                                                                                                },
+                                                                                                {
                                                                                                     "type": "name",
                                                                                                     "value": {
-                                                                                                        "name": "a"
+                                                                                                        "name": "size"
                                                                                                     },
                                                                                                     "children": []
                                                                                                 }
                                                                                             ]
-                                                                                        },
-                                                                                        {
-                                                                                            "type": "name",
-                                                                                            "value": {
-                                                                                                "name": "size"
-                                                                                            },
-                                                                                            "children": []
                                                                                         }
                                                                                     ]
                                                                                 },
                                                                                 {
-                                                                                    "type": "use_typevar",
-                                                                                    "value": {},
-                                                                                    "children": []
+                                                                                    "type": "term",
+                                                                                    "value": {
+                                                                                        "type": "call"
+                                                                                    },
+                                                                                    "children": [
+                                                                                        {
+                                                                                            "type": "call",
+                                                                                            "value": {},
+                                                                                            "children": [
+                                                                                                {
+                                                                                                    "type": "variable",
+                                                                                                    "value": {
+                                                                                                        "state": "attr"
+                                                                                                    },
+                                                                                                    "children": [
+                                                                                                        {
+                                                                                                            "type": "variable",
+                                                                                                            "value": {
+                                                                                                                "state": "false"
+                                                                                                            },
+                                                                                                            "children": [
+                                                                                                                {
+                                                                                                                    "type": "name",
+                                                                                                                    "value": {
+                                                                                                                        "name": "a"
+                                                                                                                    },
+                                                                                                                    "children": []
+                                                                                                                }
+                                                                                                            ]
+                                                                                                        },
+                                                                                                        {
+                                                                                                            "type": "name",
+                                                                                                            "value": {
+                                                                                                                "name": "size"
+                                                                                                            },
+                                                                                                            "children": []
+                                                                                                        }
+                                                                                                    ]
+                                                                                                },
+                                                                                                {
+                                                                                                    "type": "use_typevar",
+                                                                                                    "value": {},
+                                                                                                    "children": []
+                                                                                                },
+                                                                                                {
+                                                                                                    "type": "args_call",
+                                                                                                    "value": {},
+                                                                                                    "children": []
+                                                                                                }
+                                                                                            ]
+                                                                                        }
+                                                                                    ]
                                                                                 },
                                                                                 {
-                                                                                    "type": "args_call",
-                                                                                    "value": {},
+                                                                                    "type": "operator",
+                                                                                    "value": {
+                                                                                        "value": "+"
+                                                                                    },
                                                                                     "children": []
                                                                                 }
                                                                             ]
                                                                         }
                                                                     ]
-                                                                },
-                                                                {
-                                                                    "type": "operator",
-                                                                    "value": {
-                                                                        "value": "+"
-                                                                    },
-                                                                    "children": []
                                                                 }
                                                             ]
                                                         }
                                                     ]
-                                                },
-                                                {
-                                                    "type": "operator",
-                                                    "value": {
-                                                        "value": ">"
-                                                    },
-                                                    "children": []
                                                 }
                                             ]
                                         }
@@ -4391,76 +4457,86 @@
                                         {
                                             "type": "term",
                                             "value": {
-                                                "type": "variable"
+                                                "type": "call"
                                             },
                                             "children": [
                                                 {
-                                                    "type": "variable",
-                                                    "value": {
-                                                        "state": "false"
-                                                    },
-                                                    "children": [
-                                                        {
-                                                            "type": "name",
-                                                            "value": {
-                                                                "name": "arr"
-                                                            },
-                                                            "children": []
-                                                        }
-                                                    ]
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "type": "operator",
-                                            "value": {
-                                                "value": "="
-                                            },
-                                            "children": []
-                                        },
-                                        {
-                                            "type": "term",
-                                            "value": {
-                                                "type": "expression"
-                                            },
-                                            "children": [
-                                                {
-                                                    "type": "expression",
+                                                    "type": "call",
                                                     "value": {},
                                                     "children": [
                                                         {
-                                                            "type": "term",
+                                                            "type": "variable",
                                                             "value": {
-                                                                "type": "variable"
+                                                                "state": "false"
                                                             },
                                                             "children": [
                                                                 {
-                                                                    "type": "variable",
+                                                                    "type": "name",
                                                                     "value": {
-                                                                        "state": "attr"
+                                                                        "name": "arr"
                                                                     },
+                                                                    "children": []
+                                                                }
+                                                            ]
+                                                        },
+                                                        {
+                                                            "type": "use_typevar",
+                                                            "value": {},
+                                                            "children": [
+                                                                {
+                                                                    "type": "type",
+                                                                    "value": {
+                                                                        "name": "T"
+                                                                    },
+                                                                    "children": []
+                                                                }
+                                                            ]
+                                                        },
+                                                        {
+                                                            "type": "args_call",
+                                                            "value": {},
+                                                            "children": [
+                                                                {
+                                                                    "type": "expression",
+                                                                    "value": {},
                                                                     "children": [
                                                                         {
-                                                                            "type": "variable",
+                                                                            "type": "term",
                                                                             "value": {
-                                                                                "state": "false"
+                                                                                "type": "variable"
                                                                             },
                                                                             "children": [
                                                                                 {
-                                                                                    "type": "name",
+                                                                                    "type": "variable",
                                                                                     "value": {
-                                                                                        "name": "self"
+                                                                                        "state": "attr"
                                                                                     },
-                                                                                    "children": []
+                                                                                    "children": [
+                                                                                        {
+                                                                                            "type": "variable",
+                                                                                            "value": {
+                                                                                                "state": "false"
+                                                                                            },
+                                                                                            "children": [
+                                                                                                {
+                                                                                                    "type": "name",
+                                                                                                    "value": {
+                                                                                                        "name": "self"
+                                                                                                    },
+                                                                                                    "children": []
+                                                                                                }
+                                                                                            ]
+                                                                                        },
+                                                                                        {
+                                                                                            "type": "name",
+                                                                                            "value": {
+                                                                                                "name": "size"
+                                                                                            },
+                                                                                            "children": []
+                                                                                        }
+                                                                                    ]
                                                                                 }
                                                                             ]
-                                                                        },
-                                                                        {
-                                                                            "type": "name",
-                                                                            "value": {
-                                                                                "name": "size"
-                                                                            },
-                                                                            "children": []
                                                                         }
                                                                     ]
                                                                 }
@@ -4473,7 +4549,7 @@
                                         {
                                             "type": "operator",
                                             "value": {
-                                                "value": ">"
+                                                "value": "="
                                             },
                                             "children": []
                                         }

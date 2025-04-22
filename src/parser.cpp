@@ -65,6 +65,7 @@ void Parser::parser_error(const string& msg, const Token& token) {
 bool Parser::isCall() {
     add_call_stack("isCall", 0);
     int i = 0, j = 0;
+    bool result = false;
     while (true) {
         if (current_token != Tokens("symbol", {"<", ",", ">"}) && current_token.type != "identifier" && current_token != Tokens("keyword", BUILTINTYPE))
             break;
@@ -76,8 +77,8 @@ bool Parser::isCall() {
         if (i < 0)
             break;
         else if (i == 0) {
-            add_call_stack("isCall", 1);
-            return true;
+            result = true;
+            break;
         }
         get_token();
         j++;
@@ -85,7 +86,7 @@ bool Parser::isCall() {
     for (int k = 0; k < j; k++)
         rollback_token();
     add_call_stack("isCall", 1);
-    return false;
+    return result;
 }
 
 shared_ptr<Node> Parser::parse() {
@@ -272,7 +273,7 @@ shared_ptr<Node> Parser::parse_term() {
             term->value["type"] = "dict";
             get_token();
         } else if (current_token.type == "identifier" || current_token == Tokens("keyword", BUILTINTYPE)) {  // type = variable or call or type
-            shared_ptr<Node> var = make_shared<Node>("variable", map<string, string>{{"state", "false"}}, vector<shared_ptr<Node>>{make_shared<Node>("name", map<string, string>{{"name", current_token.value}})});
+            shared_ptr<Node> var = make_shared<Node>("variable", map<string, string>{{"state", "false"}}, make_shared<Node>("name", map<string, string>{{"name", current_token.value}}));
             get_token();
             term->value["type"] = "variable";
             shared_ptr<Node> t;
@@ -282,6 +283,7 @@ shared_ptr<Node> Parser::parse_term() {
                 term->children.push_back(t);
                 get_token();
             } else if (current_token == Token("symbol", "<") && !isCall()) {
+                term->children.push_back(var);
                 add_call_stack("parse_term", 1);
                 return term;
             } else if (current_token == Tokens("symbol", {"<", "("})) {
