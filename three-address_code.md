@@ -1,56 +1,117 @@
-# logic not (`!`) (3 byte)
-r1 = !r0
-# neg (`-`) (3 byte)
-r1 = -r0
-# get address (`@`) (3 byte)
-r1 = @r0
-# deference (`^`) (3 byte)
-r1 = ^r0
-# power (`**`) (4 byte)
-r2 = r0 ** r1
-# mul (`*`) (4 byte)
-r2 = r0 * r1
-# div (`/`) (4 byte)
-r2 = r0 / r1
-# rem (`%`) (4 byte)
-r2 = r0 % r1
-# add (`+`) (4 byte)
-r2 = r0 + r1
-# sub (`-`) (4 byte)
-r2 = r0 - r1
-# left shift (`<<`) (4 byte)
-r2 = r0 << r1
-# right shift (`>>`) (4 byte)
-r2 = r0 >> r1
-# lt (`<`) (4 byte)
-r2 = r0 < r1
-# leq (`<=`) (4 byte)
-r2 = r0 <= r1
-# gt (`>`) (4 byte)
-r2 = r0 > r1
-# geq (`>=`) (4 byte)
-r2 = r0 >= r1
-# eq (`==`) (4 byte)
-r2 = r0 == r1
-# neq (`!=`) (4 byte)
-r2 = r0 != r1
-# bit and (`&`) (4 byte)
-r2 = r0 & r1
-# bit or (`|`) (4 byte)
-r2 = r0 | r1
-# logic and (`&&`) (4 byte)
-r2 = r0 && r1
-# logic or (`||`) (4 byte)
-r2 = r0 || r1
-# goto (`goto`) (2 byte)
-goto r0
-# if-goto (`if-goto`) (3 byte)
-if r1 goto r0
-# index (`[]`) (3 byte)
-r0[r1]
-# attribute (`.`) (3 byte)
-r0.r1
-# call (`call`) (3 byte)
-call r0 n
-# assignment (`=`) (2 + N byte)
-r0 = n
+## other
+### assignment
+byte: 2 + N byte  
+symbol: `=`  
+statement: `r0 = n`  
+binary: `00000000 r0 n`
+### goto
+byte: 2 byte  
+symbol: `goto`  
+statement: `goto r0`  
+binary: `00000001 r0`
+## 3 byte
+### logic not
+symbol: `!`  
+statement: `r1 = !r0`  
+binary: `00000010 r0 r1`
+### neg
+symbol: `-`  
+statement: `r1 = -r0`  
+binary: `00000011 r0 r1`
+### get address
+symbol: `@`  
+statement: `r1 = @r0`  
+binary: `00000100 r0 r1`
+### deference
+symbol: `^`  
+statement: `r1 = ^r0`  
+binary: `00000101 r0 r1`
+### if-goto
+symbol: `if-goto`  
+statement: `if r1 goto r0`  
+binary: `00000110 r0 r1`
+### index
+symbol: `[]`  
+statement: `r0[r1]`  
+binary: `00000111 r0 r1`
+### attribute
+symbol: `.`  
+statement: `r0.r1`  
+binary: `00001000 r0 r1`
+### call
+symbol: `call`  
+statement: `call r0 n`  
+binary: `00001001 r0 r1`
+## 4byte
+### power
+symbol: `**`  
+statement: `r2 = r0 ** r1`  
+binary: `00001010 r0 r1 r2`
+### mul
+symbol: `*`  
+statement: `r2 = r0 * r1`  
+binary: `00001011 r0 r1 r2`
+### div
+symbol: `/`  
+statement: `r2 = r0 / r1`  
+binary: `00001100 r0 r1 r2`
+### rem
+symbol: `%`  
+statement: `r2 = r0 % r1`  
+binary: `00001101 r0 r1 r2`
+### add
+symbol: `+`  
+statement: `r2 = r0 + r1`  
+binary: `00001110 r0 r1 r2`
+### sub
+symbol: `-`  
+statement: `r2 = r0 - r1`  
+binary: `00001111 r0 r1 r2`
+### left shift
+symbol: `<<`  
+statement: `r2 = r0 << r1`  
+binary: `00010000 r0 r1 r2`
+### right shift
+symbol: `>>`  
+statement: `r2 = r0 >> r1`  
+binary: `00010001 r0 r1 r2`
+### lt
+symbol: `<`  
+statement: `r2 = r0 < r1`  
+binary: `00010010 r0 r1 r2`
+### leq
+symbol: `<=`  
+statement: `r2 = r0 <= r1`  
+binary: `00010011 r0 r1 r2`
+### gt
+symbol: `>`  
+statement: `r2 = r0 > r1`  
+binary: `00010100 r0 r1 r2`
+### geq
+symbol: `>=`  
+statement: `r2 = r0 >= r1`  
+binary: `00010101 r0 r1 r2`
+### eq
+symbol: `==`  
+statement: `r2 = r0 == r1`  
+binary: `00010110 r0 r1 r2`
+### neq
+symbol: `!=`  
+statement: `r2 = r0 != r1`  
+binary: `00010111 r0 r1 r2`
+### bit and
+symbol: `&`  
+statement: `r2 = r0 & r1`  
+binary: `00011000 r0 r1 r2`
+### bit or
+symbol: `|`  
+statement: `r2 = r0 | r1`  
+binary: `00011001 r0 r1 r2`
+### logic and
+symbol: `&&`  
+statement: `r2 = r0 && r1`  
+binary: `00011010 r0 r1 r2`
+### logic or
+symbol: `||`  
+statement: `r2 = r0 || r1`  
+binary: `00011011 r0 r1 r2`
