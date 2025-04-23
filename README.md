@@ -59,12 +59,14 @@ d:\Qnnn\
 
 #### 使用方式 / Usage:
 ```sh
-$ python ./build.py <files or dirs> [-o <executable file>] [-a <args>]
+$ python build.py {(<file> | <dir>)} [-i <dir>] [-o <output>] [-a {<arg>}]
 ```
-- `<files or dirs>`: 可接受一個或多個檔案或資料夾，`build.py` 會將資料夾中的所有檔案加入編譯，生成指定的 `<executable file>` 並運行。  
-  `<files or dirs>`: Accepts one or more files or directories. `build.py` will include all files in the directories for compilation , generate the specified `<executable file>` and run it.
+- `{(<file> | <dir>)}`: 可接受一個或多個檔案或資料夾，`build.py` 會將資料夾中的所有檔案加入編譯，生成指定的 `<executable file>` 並運行。  
+  `{(<file> | <dir>)}`: Accepts one or more files or directories. `build.py` will include all files in the directories for compilation , generate the specified `<executable file>` and run it.
 - `<args>`: 接受一連串以空白分隔的參數，這些參數會傳遞給生成的 `<executable file>`。  
   `<args>`: Accepts a series of space-separated arguments, which will be passed to the generated `<executable file>`.
+- `-i <dir>`: 等同於 g++ 的 `-I` 選項，將 `<dir>` 作為 include 來源，且會將所有原始碼的路徑轉換成絕對路徑
+  `-i <dir>`: Equivalent to g++'s `-I` option, except `<dir>` is used as the include source, and all source code paths are converted to absolute paths.
 
 ### format.py
 `format.py` 的原始目的是使用語法分析器生成的 AST 來重新格式化原始碼，但目前該功能尚未完善。  
