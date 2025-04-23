@@ -65,7 +65,7 @@ class Tokens {
 class Node {
    public:
     Node(const string& type, const map<string, string>& value, const vector<shared_ptr<Node>>& children);
-    Node(const string& type, const map<string, string>& value, const shared_ptr<Node>& child);
+    Node(const string& type, const map<string, string>& value, const Node& child);
     Node(const string& type, const map<string, string>& value);
     Node(const string& type);
     Node();

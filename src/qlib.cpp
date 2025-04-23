@@ -197,10 +197,10 @@ Node::Node(const string& type, const map<string, string>& value, const vector<sh
     this->children = children;
 }
 
-Node::Node(const string& type, const map<string, string>& value, const shared_ptr<Node>& child) {
+Node::Node(const string& type, const map<string, string>& value, const Node& child) {
     this->type = type;
     this->value = value;
-    this->children.push_back(child);
+    this->children.push_back(make_shared<Node>(child));
 }
 
 Node::Node(const string& type, const map<string, string>& value) {
@@ -226,7 +226,7 @@ string Node::toString() {
     for (const auto& [key, val] : value)
         t += key + ": " + val + ", ";
     t += "}";
-    for (shared_ptr<Node> i : children)
+    for (shared_ptr<Node>& i : children)
         t += ", " + i->toString();
     t += ")";
     return t;

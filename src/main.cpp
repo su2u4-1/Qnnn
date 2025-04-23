@@ -40,7 +40,7 @@ struct arguments {
     */
 };
 
-vector<string> read_file(string file_name) {
+vector<string> read_file(const string& file_name) {
     ifstream input;
     input.open(file_name);
     if (input.fail())
@@ -112,7 +112,7 @@ string ast_to_json(shared_ptr<Node> node) {
         output << '"' << k << "\":\"" << v << "\",";
     output << "},";
     output << "\"children\":[";
-    for (const auto& child : node->children)
+    for (const shared_ptr<Node>& child : node->children)
         output << ast_to_json(child);
     output << "]";
     output << "},";
@@ -138,7 +138,7 @@ string remove_json_trailing_comma(const string& json) {
     return result;
 }
 
-string output_ast(shared_ptr<Node> node, int ident) {
+string output_ast(const shared_ptr<Node> node, int ident) {
     stringstream output;
     output << string(ident * 4, ' ') << node->type << " (";
     for (const auto& [k, v] : node->value)
