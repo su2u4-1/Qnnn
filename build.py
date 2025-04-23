@@ -28,12 +28,12 @@ def parse_args(arg: list[str]) -> tuple[list[str], str, list[str]]:
         elif i == "-i":
             state = 2
         elif isfile(i):
-            files.append(abspath(i))
+            files.append(i)
         elif isdir(i):
             for j in listdir(i):
                 j = i + "/" + j
                 if isfile(j):
-                    files.append(abspath(j))
+                    files.append(j)
                 else:
                     print(f"{j} is not file")
                     exit(1)
