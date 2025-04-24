@@ -197,10 +197,10 @@ Node::Node(const string& type, const map<string, string>& value, const vector<sh
     this->children = children;
 }
 
-Node::Node(const string& type, const map<string, string>& value, const Node& child) {
+Node::Node(const string& type, const map<string, string>& value, const shared_ptr<Node>& child) {
     this->type = type;
     this->value = value;
-    this->children.push_back(make_shared<Node>(child));
+    this->children.push_back(child);
 }
 
 Node::Node(const string& type, const map<string, string>& value) {
