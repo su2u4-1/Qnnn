@@ -9,7 +9,6 @@
 #include <map>
 #include <memory>
 #include <sstream>
-#include <stacktrace>
 #include <string>
 #include <unordered_set>
 #include <vector>

@@ -145,19 +145,19 @@ def _expression(now: Node) -> str:
 def _type(now: Node) -> str:
     t = now.value["name"]
     if len(now.children) > 0:
-        t += f"<{", ".join(_type(i) for i in now.children)}>"
+        t += f"<{', '.join(_type(i) for i in now.children)}>"
     return t
 
 
 def _declare_var(now: Node) -> str:
-    t = f"{now.value["kind"]} {"global " if now.value["modifier"] == "global" else ""}{_type(now.children[0])} {now.value["name"]}"
+    t = f"{now.value['kind']} {'global ' if now.value['modifier'] == 'global' else ''}{_type(now.children[0])} {now.value['name']}"
     if len(now.children) == 2:
         t += f" = {_expression(now.children[1])}"
     return t + ";"
 
 
 def _declare_attr(now: Node) -> str:
-    t = f"{now.value["kind"]} {"public " if now.value["modifier"] == "public" else ""}{_type(now.children[0])} {now.value["name"]}"
+    t = f"{now.value['kind']} {'public ' if now.value['modifier'] == 'public' else ''}{_type(now.children[0])} {now.value['name']}"
     if len(now.children) == 2:
         t += f" = {_expression(now.children[1])}"
     return t + ";"
@@ -166,7 +166,7 @@ def _declare_attr(now: Node) -> str:
 def _declare_args(now: Node) -> str:
     t: list[str] = []
     for i in now.children:
-        t.append(f"{_type(i.children[0])} {"*" if i.value["tuple"] == "true" else ""}{i.value["name"]}")
+        t.append(f"{_type(i.children[0])} {'*' if i.value['tuple'] == 'true' else ''}{i.value['name']}")
     return ", ".join(t)
 
 
@@ -209,7 +209,7 @@ def _if(now: Node) -> list[str]:
 
 
 def _for(now: Node) -> list[str]:
-    t = [f"for {now.value["label"] + " " if now.value["label"] != "for" else ""}({_type(now.children[0])} {now.value["name"]} in {_expression(now.children[1])}) {{"]
+    t = [f"for {now.value['label'] + ' ' if now.value['label'] != 'for' else ''}({_type(now.children[0])} {now.value['name']} in {_expression(now.children[1])}) {{"]
     for i in _statements(now.children[2]):
         t.append(ident + i)
     t.append("}")
@@ -235,9 +235,9 @@ def _while(now: Node) -> list[str]:
 
 def _func(now: Node) -> list[str]:
     t: list[str] = []
-    tt = f"func {"const " if now.value["const"] == "true" else ""}{_type(now.children[0])} {now.value["name"]}"
+    tt = f"func {'const ' if now.value['const'] == 'true' else ''}{_type(now.children[0])} {now.value['name']}"
     if len(now.children[1].children) > 0:
-        tt += f"<{', '.join(i.value["name"] for i in now.children[1].children)}>"
+        tt += f"<{', '.join(i.value['name'] for i in now.children[1].children)}>"
     t.append(tt + f"({_declare_args(now.children[2])}) {{")
     for i in _statements(now.children[3]):
         t.append(ident + i)
@@ -247,9 +247,9 @@ def _func(now: Node) -> list[str]:
 
 def _class(now: Node) -> list[str]:
     t: list[str] = []
-    tt = f"class {now.value["name"]}"
+    tt = f"class {now.value['name']}"
     if len(now.children[0].children) > 0:
-        tt += f"<{', '.join(i.value["name"] for i in now.children[0].children)}>"
+        tt += f"<{', '.join(i.value['name'] for i in now.children[0].children)}>"
     t.append(tt + " {")
     for i in now.children[1:]:
         if i.type == "declare_attr":
@@ -266,9 +266,9 @@ def _class(now: Node) -> list[str]:
 
 def _method(now: Node) -> list[str]:
     t: list[str] = []
-    tt = f"method {now.value["kind"] + " " if now.value["kind"] != "private" else ""}{_type(now.children[0])} {now.value["name"]}"
+    tt = f"method {now.value['kind'] + ' ' if now.value['kind'] != 'private' else ''}{_type(now.children[0])} {now.value['name']}"
     if len(now.children[1].children) > 0:
-        tt += f"<{', '.join(i.value["name"] for i in now.children[1].children)}>"
+        tt += f"<{', '.join(i.value['name'] for i in now.children[1].children)}>"
     tt += "("
     if now.value["self"] == "true":
         tt += "self"

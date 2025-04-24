@@ -58,7 +58,8 @@ def main(files: list[str], output_file: str, args: list[str]) -> None:
     if platform == "win32" or platform == "cygwin":
         with open(bat_path, "w") as f:
             f.write(f"{compiler_path} {' '.join(files)} -o {output_file}\n")
-            f.write(f"{abspath(output_file).replace('/', '\\')} {' '.join(args)}\n")
+            t = "\\"
+            f.write(f"{abspath(output_file).replace('/', t)} {' '.join(args)}\n")
         system(abspath(bat_path))
     else:
         with open(sh_path, "w") as f:
