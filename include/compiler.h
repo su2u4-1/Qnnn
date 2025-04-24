@@ -3,12 +3,27 @@
 
 #include "qlib.h"
 
+int symbol_index;
+
+struct Symbol {
+    string kind;
+    string type;
+    string value;
+    int index;
+    bool is_const_or_static;
+    static int symbol_index;  // 移除類別內的初始化
+    Symbol(const string& kind, const string& type, const string& value, int index, bool is_const_or_static);
+    Symbol(const string& kind, const string& type, const string& value, int index);
+    Symbol(const string& kind, const string& type, const string& value);
+    Symbol();
+};
+
 class Compiler {
    public:
     Compiler(const Node& ast);
     Node ast;
     vector<string> target_code;
-    vector<map<string, string>> symbol_table;
+    vector<map<string, Symbol>> symbol_table;
     vector<string> compile();
     void compile_class(const Node& node);
     void compile_import(const Node& node);
