@@ -42,76 +42,80 @@ binary: `00001000 r0 r1`
 symbol: `call`  
 statement: `call r0 n`  
 binary: `00001001 r0 r1`
+### declare
+symbol: `declare`
+statement: `declare type r<n>`
+binary: `00001010 type n`
 ## 4byte
 ### power
 symbol: `**`  
 statement: `r2 = r0 ** r1`  
-binary: `00001010 r0 r1 r2`
+binary: `00001011 r0 r1 r2`
 ### mul
 symbol: `*`  
 statement: `r2 = r0 * r1`  
-binary: `00001011 r0 r1 r2`
+binary: `00001100 r0 r1 r2`
 ### div
 symbol: `/`  
 statement: `r2 = r0 / r1`  
-binary: `00001100 r0 r1 r2`
+binary: `00001101 r0 r1 r2`
 ### rem
 symbol: `%`  
 statement: `r2 = r0 % r1`  
-binary: `00001101 r0 r1 r2`
+binary: `00001110 r0 r1 r2`
 ### add
 symbol: `+`  
 statement: `r2 = r0 + r1`  
-binary: `00001110 r0 r1 r2`
+binary: `00001111 r0 r1 r2`
 ### sub
 symbol: `-`  
 statement: `r2 = r0 - r1`  
-binary: `00001111 r0 r1 r2`
+binary: `00010000 r0 r1 r2`
 ### left shift
 symbol: `<<`  
 statement: `r2 = r0 << r1`  
-binary: `00010000 r0 r1 r2`
+binary: `00010001 r0 r1 r2`
 ### right shift
 symbol: `>>`  
 statement: `r2 = r0 >> r1`  
-binary: `00010001 r0 r1 r2`
+binary: `00010010 r0 r1 r2`
 ### lt
 symbol: `<`  
 statement: `r2 = r0 < r1`  
-binary: `00010010 r0 r1 r2`
+binary: `00010011 r0 r1 r2`
 ### leq
 symbol: `<=`  
 statement: `r2 = r0 <= r1`  
-binary: `00010011 r0 r1 r2`
+binary: `00010100 r0 r1 r2`
 ### gt
 symbol: `>`  
 statement: `r2 = r0 > r1`  
-binary: `00010100 r0 r1 r2`
+binary: `00010101 r0 r1 r2`
 ### geq
 symbol: `>=`  
 statement: `r2 = r0 >= r1`  
-binary: `00010101 r0 r1 r2`
+binary: `00010110 r0 r1 r2`
 ### eq
 symbol: `==`  
 statement: `r2 = r0 == r1`  
-binary: `00010110 r0 r1 r2`
+binary: `00010111 r0 r1 r2`
 ### neq
 symbol: `!=`  
 statement: `r2 = r0 != r1`  
-binary: `00010111 r0 r1 r2`
+binary: `00011000 r0 r1 r2`
 ### bit and
 symbol: `&`  
 statement: `r2 = r0 & r1`  
-binary: `00011000 r0 r1 r2`
+binary: `00011001 r0 r1 r2`
 ### bit or
 symbol: `|`  
 statement: `r2 = r0 | r1`  
-binary: `00011001 r0 r1 r2`
+binary: `00011010 r0 r1 r2`
 ### logic and
 symbol: `&&`  
 statement: `r2 = r0 && r1`  
-binary: `00011010 r0 r1 r2`
+binary: `00011011 r0 r1 r2`
 ### logic or
 symbol: `||`  
 statement: `r2 = r0 || r1`  
-binary: `00011011 r0 r1 r2`
+binary: `00011100 r0 r1 r2`

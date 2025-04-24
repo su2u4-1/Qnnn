@@ -1,5 +1,7 @@
 type = "program"
-value = {}
+value = {
+    "name": string
+}
 children = [
     Node("import") or
     Node("declare_var") or
