@@ -17,7 +17,7 @@ program (name: /d/Qnnn/test/test2/test2.qn, )
         {
             type (name: int, ) {}
         }
-        method (kind: op, name: _init, self: true, )
+        method (kind: op, name: _init, )
         {
             type (name: void, ) {}
             typevar () {}
@@ -300,7 +300,7 @@ program (name: /d/Qnnn/test/test2/test2.qn, )
                 return () {}
             }
         }
-        method (kind: op, name: _init, self: true, )
+        method (kind: op, name: _init, )
         {
             type (name: void, ) {}
             typevar () {}
@@ -492,7 +492,7 @@ program (name: /d/Qnnn/test/test2/test2.qn, )
                 return () {}
             }
         }
-        method (kind: op, name: _index, self: true, )
+        method (kind: op, name: _index, )
         {
             type (name: pointer, )
             {
@@ -602,7 +602,7 @@ program (name: /d/Qnnn/test/test2/test2.qn, )
                 }
             }
         }
-        method (kind: op, name: _add, self: true, )
+        method (kind: op, name: _add, )
         {
             type (name: list, )
             {
@@ -951,7 +951,7 @@ program (name: /d/Qnnn/test/test2/test2.qn, )
                 }
             }
         }
-        method (kind: op, name: _add_eq, self: true, )
+        method (kind: op, name: _add_eq, )
         {
             type (name: void, ) {}
             typevar () {}
@@ -1310,7 +1310,7 @@ program (name: /d/Qnnn/test/test2/test2.qn, )
                 return () {}
             }
         }
-        method (kind: op, name: _range, self: true, )
+        method (kind: op, name: _range, )
         {
             type (name: arr, )
             {
@@ -1339,7 +1339,7 @@ program (name: /d/Qnnn/test/test2/test2.qn, )
                 }
             }
         }
-        method (kind: public, name: size, self: true, )
+        method (kind: public, name: size, )
         {
             type (name: int, ) {}
             typevar () {}
@@ -1365,7 +1365,7 @@ program (name: /d/Qnnn/test/test2/test2.qn, )
                 }
             }
         }
-        method (kind: public, name: append, self: true, )
+        method (kind: public, name: append, )
         {
             type (name: void, ) {}
             typevar () {}

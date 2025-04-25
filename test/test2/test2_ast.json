@@ -1,7 +1,7 @@
 {
     "type": "program",
     "value": {
-        "name": "/d/Qnnn/test/test2/test2.qn"
+        "name": "/home/su2u4/code/Qnnn/test/test2/test2.qn"
     },
     "children": [
         {
@@ -69,8 +69,7 @@
                     "type": "method",
                     "value": {
                         "kind": "op",
-                        "name": "_init",
-                        "self": "true"
+                        "name": "_init"
                     },
                     "children": [
                         {
@@ -947,8 +946,7 @@
                     "type": "method",
                     "value": {
                         "kind": "op",
-                        "name": "_init",
-                        "self": "true"
+                        "name": "_init"
                     },
                     "children": [
                         {
@@ -1548,8 +1546,7 @@
                     "type": "method",
                     "value": {
                         "kind": "op",
-                        "name": "_index",
-                        "self": "true"
+                        "name": "_index"
                     },
                     "children": [
                         {
@@ -1895,8 +1892,7 @@
                     "type": "method",
                     "value": {
                         "kind": "op",
-                        "name": "_add",
-                        "self": "true"
+                        "name": "_add"
                     },
                     "children": [
                         {
@@ -2965,8 +2961,7 @@
                     "type": "method",
                     "value": {
                         "kind": "op",
-                        "name": "_add_eq",
-                        "self": "true"
+                        "name": "_add_eq"
                     },
                     "children": [
                         {
@@ -4092,8 +4087,7 @@
                     "type": "method",
                     "value": {
                         "kind": "op",
-                        "name": "_range",
-                        "self": "true"
+                        "name": "_range"
                     },
                     "children": [
                         {
@@ -4183,8 +4177,7 @@
                     "type": "method",
                     "value": {
                         "kind": "public",
-                        "name": "size",
-                        "self": "true"
+                        "name": "size"
                     },
                     "children": [
                         {
@@ -4266,8 +4259,7 @@
                     "type": "method",
                     "value": {
                         "kind": "public",
-                        "name": "append",
-                        "self": "true"
+                        "name": "append"
                     },
                     "children": [
                         {

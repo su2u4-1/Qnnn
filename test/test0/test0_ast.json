@@ -1,7 +1,7 @@
 {
     "type": "program",
     "value": {
-        "name": "/d/Qnnn/test/test0/test0.qn"
+        "name": "/home/su2u4/code/Qnnn/test/test0/test0.qn"
     },
     "children": [
         {
@@ -1157,8 +1157,7 @@
                     "type": "method",
                     "value": {
                         "kind": "public",
-                        "name": "_init",
-                        "self": "true"
+                        "name": "_init"
                     },
                     "children": [
                         {
@@ -1331,8 +1330,7 @@
                     "type": "method",
                     "value": {
                         "kind": "private",
-                        "name": "_init",
-                        "self": "true"
+                        "name": "_init"
                     },
                     "children": [
                         {

@@ -202,9 +202,8 @@ children = [
 
 type = "method"
 value = {
-    "kind": "op" or "static" or "public" or "static public" or "private",
-    "name": identifier,
-    "self": "true" or "false"
+    "kind": "op" or "public" or "private",
+    "name": identifier
 }
 children = [
     Node("type"),

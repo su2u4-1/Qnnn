@@ -498,21 +498,12 @@ shared_ptr<Node> Parser::parse_method() {
     if (current_token == Token("keyword", "op")) {
         method->value["kind"] = "op";
         get_token();
-    } else {
-        if (current_token == Token("keyword", "static")) {
-            method->value["kind"] += "static";
-            get_token();
-        } else
-            method->value["kind"] = "";
-        if (current_token == Token("keyword", "public")) {
-            if (method->value["kind"] == "")
-                method->value["kind"] = "public";
-            else
-                method->value["kind"] = "static public";
-            get_token();
-        } else if (method->value["kind"] == "")
-            method->value["kind"] = "private";
-    }
+    } else if (current_token == Token("keyword", "public")) {
+        method->value["kind"] = "public";
+        get_token();
+    } else
+        method->value["kind"] = "private";
+
     method->children.push_back(parse_type());
     get_token();
     if (current_token.type == "identifier")
@@ -523,11 +514,10 @@ shared_ptr<Node> Parser::parse_method() {
     method->children.push_back(parse_declare_typevar());
     if (current_token != Token("symbol", "("))
         parser_error("Expected '(', not " + current_token.toString());
-    if (next_token() == Token("identifier", "self")) {
-        get_token();
-        method->value["self"] = "true";
-        get_token();
-    }
+    get_token();
+    if (current_token != Token("identifier", "self"))
+        parser_error("Excepted keyword 'self', not " + current_token.toString());
+    get_token();
     shared_ptr<Node> args_declare = make_shared<Node>("args_declare");
     if (current_token == Token("symbol", ",")) {
         for (shared_ptr<Node> i : parse_declare_args())

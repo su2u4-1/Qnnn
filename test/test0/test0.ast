@@ -1,4 +1,4 @@
-program (name: /d/Qnnn/test/test0/test0.qn, )
+program (name: /home/su2u4/code/Qnnn/test/test0/test0.qn, )
 {
     import (alias: stdlib, name: list, ) {}
     import (alias: userlib, name: <path>/userlib, ) {}
@@ -343,7 +343,7 @@ program (name: /d/Qnnn/test/test0/test0.qn, )
                 term (type: int, value: 1, ) {}
             }
         }
-        method (kind: public, name: _init, self: true, )
+        method (kind: public, name: _init, )
         {
             type (name: void, ) {}
             typevar () {}
@@ -390,7 +390,7 @@ program (name: /d/Qnnn/test/test0/test0.qn, )
                 }
             }
         }
-        method (kind: private, name: _init, self: true, )
+        method (kind: private, name: _init, )
         {
             type (name: A, ) {}
             typevar () {}
