@@ -16,7 +16,7 @@ children = [
 
 type = "import"
 value = {
-    "name": "stdlib" or string,
+    "name": stdlib or string,
     "alias": "stdlib" or identifier
 }
 children = {}

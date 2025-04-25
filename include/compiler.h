@@ -7,15 +7,20 @@ int symbol_index;
 
 struct Symbol {
     string kind;
-    string type;
+    Type type;
     string value;
     int index;
-    bool is_const_or_static;
-    static int symbol_index;  // 移除類別內的初始化
-    Symbol(const string& kind, const string& type, const string& value, int index, bool is_const_or_static);
-    Symbol(const string& kind, const string& type, const string& value, int index);
-    Symbol(const string& kind, const string& type, const string& value);
+    static int symbol_index;
+    Symbol(const string& kind, const Type& type, const string& value, int index);
+    Symbol(const string& kind, const Type& type, const string& value);
     Symbol();
+};
+struct Type {
+    string type;
+    vector<string> args;
+    Type(const string& type, const vector<string>& args);
+    Type(const string& type);
+    Type();
 };
 
 class Compiler {
@@ -28,7 +33,7 @@ class Compiler {
     void compile_class(const Node& node);
     void compile_import(const Node& node);
     void compile_declare(const Node& node);
-    void compile_type(const Node& node);
+    Type compile_type(const Node& node);
     void compile_expression(const Node& node);
     void compile_term(const Node& node);
     void compile_variable(const Node& node);
