@@ -65,7 +65,7 @@ def main(files: list[str], output_file: str, args: list[str]) -> None:
         with open(sh_path, "w") as f:
             f.write(f"{compiler_path} {' '.join(files)} -o {output_file}\n")
             f.write(f"{output_file} {' '.join(args)}\n")
-        system(sh_path)
+        system("bash " + sh_path)
 
 
 if len(argv) > 1:
