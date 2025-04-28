@@ -1,6 +1,6 @@
 #include "../include/qlib.h"
 
-unordered_set<string> _KEYWORD = {"arr", "as", "attr", "break", "class", "const", "continue", "elif", "else", "false", "for", "func", "global", "if", "import", "in", "int", "method", "NULL", "op", "public", "return", "static", "true", "type", "var", "void", "while"};
+unordered_set<string> _KEYWORD = {"arr", "as", "attr", "break", "class", "const", "continue", "elif", "else", "false", "for", "func", "if", "import", "in", "int", "method", "NULL", "op", "public", "return", "static", "true", "type", "var", "void", "while"};
 unordered_set<string> _SYMBOLS = {"(", ")", "[", "]", "{", "}", ",", ";", ".", "+", "-", "*", "/", "%", "<", ">", "&", "|", "=", "@", "^", "!", "==", "!=", "<=", ">=", "&&", "||", "+=", "-=", "*=", "/=", "%=", "**", "<<", ">>"};
 map<fs::path, vector<string>> source_code_map = map<fs::path, vector<string>>();
 string HELP_DOCS =

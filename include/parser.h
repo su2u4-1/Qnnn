@@ -18,7 +18,7 @@ class Parser {
     bool isCall();
     shared_ptr<Node> parse();
     shared_ptr<Node> parse_import();
-    vector<shared_ptr<Node>> parse_declare(bool attr);
+    vector<shared_ptr<Node>> parse_declare(bool attr, bool global);
     shared_ptr<Node> parse_type();
     shared_ptr<Node> parse_expression();
     shared_ptr<Node> parse_term();

@@ -1,6 +1,6 @@
 # qnnn grammar
-code ::= [{<import> | <statement> | <function> | <class> | <comment_0> | <comment_1>}]
-declare ::= (('var' | 'const') ['global'] | ('attr' | 'static') ['public']) <type> <identifier'var_name'> ['=' <expression>] [{',' <identifier'var_name'> ['=' <expression>]}] ';'
+code ::= [{<import> | <declare'global'> | <function> | <class> | <comment_0> | <comment_1>}]
+declare ::= (('var' | 'const') | ('attr' | 'static') ['public']) <type> <identifier'var_name'> ['=' <expression>] [{',' <identifier'var_name'> ['=' <expression>]}] ';'
 declare_args ::= ['*'] <type> <identifier'var_name'> [{',' ['*'] <type> <identifier'var_name'>}]
 declare_typevar ::= '<' <identifier'type_name'> [{',' <identifier'type_name'>}] '>'
 type ::= <builtin_type> | <identifier'class_name'> | <type> '<' <type> [{',' <type>}] '>'
@@ -36,7 +36,7 @@ string ::= '"' [{<unicode_character>}] '"'
 float ::= ['-'] <digit> [{<digit>}] '.' <digit> [{<digit>}]
 keyword ::= <bool> | <void> | <null> | <pass> | 'if' | 'elif' | 'else'
         | 'for' | 'in' | 'while' | 'return' | 'break' | 'continue' | 'import' | 'const'
-        | 'global' | 'public' | 'func' | 'method' | 'class' | 'var' | 'as'
+        | 'public' | 'func' | 'method' | 'class' | 'var' | 'as'
 comment_0 ::= ('#' | "//") [{<unicode_character>}] '\n'
 comment_1 ::= '/*' [{<unicode_character> | '\n'}] '*/'
 

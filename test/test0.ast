@@ -1,0 +1,200 @@
+program (name: /d/Qnnn/./test/test0.qn, )
+{
+    import (alias: stdlib, name: list, ) {}
+    import (alias: test1, name: ./test1.qn, ) {}
+    declare_var (kind: const, modifier: global, name: a, )
+    {
+        type (name: int, ) {}
+        expression ()
+        {
+            term (type: int, value: 0, ) {}
+        }
+    }
+    func (const: false, name: main, )
+    {
+        type (name: int, ) {}
+        typevar () {}
+        args_declare ()
+        {
+            declare_arg (name: args, tuple: true, )
+            {
+                type (name: string, ) {}
+            }
+        }
+        statements ()
+        {
+            declare_var (kind: var, modifier: local, name: l, )
+            {
+                type (name: list, )
+                {
+                    type (name: int, ) {}
+                }
+                expression ()
+                {
+                    term (type: call, )
+                    {
+                        call ()
+                        {
+                            variable (state: false, )
+                            {
+                                name (name: list, ) {}
+                            }
+                            use_typevar ()
+                            {
+                                type (name: int, ) {}
+                            }
+                            args_call ()
+                            {
+                                expression ()
+                                {
+                                    term (type: int, value: 1, ) {}
+                                }
+                                expression ()
+                                {
+                                    term (type: int, value: 2, ) {}
+                                }
+                                expression ()
+                                {
+                                    term (type: int, value: 3, ) {}
+                                }
+                                expression ()
+                                {
+                                    term (type: int, value: 4, ) {}
+                                }
+                                expression ()
+                                {
+                                    term (type: int, value: 5, ) {}
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            declare_var (kind: const, modifier: local, name: b, )
+            {
+                type (name: Test, ) {}
+                expression ()
+                {
+                    term (type: call, )
+                    {
+                        call ()
+                        {
+                            variable (state: attr, )
+                            {
+                                variable (state: false, )
+                                {
+                                    name (name: test1, ) {}
+                                }
+                                name (name: Test, ) {}
+                            }
+                            use_typevar () {}
+                            args_call ()
+                            {
+                                expression ()
+                                {
+                                    term (type: variable, )
+                                    {
+                                        variable (state: false, )
+                                        {
+                                            name (name: l, ) {}
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            expression ()
+            {
+                term (type: call, )
+                {
+                    call ()
+                    {
+                        variable (state: false, )
+                        {
+                            name (name: print, ) {}
+                        }
+                        use_typevar () {}
+                        args_call ()
+                        {
+                            expression ()
+                            {
+                                term (type: variable, )
+                                {
+                                    variable (state: false, )
+                                    {
+                                        name (name: a, ) {}
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            declare_var (kind: var, modifier: local, name: a, )
+            {
+                type (name: int, ) {}
+                expression ()
+                {
+                    term (type: call, )
+                    {
+                        call ()
+                        {
+                            variable (state: attr, )
+                            {
+                                variable (state: false, )
+                                {
+                                    name (name: b, ) {}
+                                }
+                                name (name: get, ) {}
+                            }
+                            use_typevar () {}
+                            args_call ()
+                            {
+                                expression ()
+                                {
+                                    term (type: int, value: 1, ) {}
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            expression ()
+            {
+                term (type: call, )
+                {
+                    call ()
+                    {
+                        variable (state: false, )
+                        {
+                            name (name: print, ) {}
+                        }
+                        use_typevar () {}
+                        args_call ()
+                        {
+                            expression ()
+                            {
+                                term (type: variable, )
+                                {
+                                    variable (state: false, )
+                                    {
+                                        name (name: a, ) {}
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            return ()
+            {
+                expression ()
+                {
+                    term (type: int, value: 0, ) {}
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,20 @@
+import list;
+
+class Test {
+    attr list<int> l;
+    method operator void init(self, list<int> l) {
+        self.l = l;
+        return;
+    }
+
+    method public int get(self, int index) {
+        return self.l[index];
+    }
+
+    method operator void add(self, list<int> other) {
+        for (int i in other) {
+            self.l.append(i);
+        }
+        return;
+    }
+}

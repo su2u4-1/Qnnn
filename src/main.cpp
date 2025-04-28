@@ -29,10 +29,10 @@
 using namespace std;
 
 struct arguments {
-    fs::path program_name = "";
+    fs::path program_name = fs::path("output");
     vector<fs::path> files = {};
     vector<string> flags = {};
-    fs::path output_ast_file = "";
+    fs::path output_ast_file = fs::path("output.ast");
     int output_ast_type = -1;
     /*
     no output ast = -1
@@ -100,7 +100,7 @@ arguments parse_arguments(int argc, char* argv[]) {
                     exit(1);
                 }
             } else if (state == 1) {
-                args.program_name = t.string().substr(0, t.string().find_last_of('.'));
+                args.program_name = t.parent_path() / t.stem();
                 state = 0;
             }
         }
@@ -171,7 +171,6 @@ int main(int argc, char* argv[]) {
             cerr << "Error: No input files" << endl;
             return 1;
         }
-        cout << "output_ast_file: " << args.output_ast_file << endl;
         string output = "";
         for (const fs::path& file : args.files) {
             cout << "read source code [" << file << "]" << endl;

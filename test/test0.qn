@@ -1,0 +1,13 @@
+import list;
+import "./test1.qn" as test1;
+
+const int a = 0;
+
+func int main(*string args) {
+    var list<int> l = list<int>(1, 2, 3, 4, 5);
+    const Test b = test1.Test(l);
+    print(a);  // 0
+    var int a = b.get(1);
+    print(a);  // 2
+    return 0;
+}

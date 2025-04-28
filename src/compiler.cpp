@@ -58,13 +58,15 @@ vector<string> Compiler::compile() {
 }
 
 void Compiler::compile_import(const Node& node) {
+    fs::path path;
     if (node.value.at("alias") == "stdlib") {
         symbol_table.back()[node.value.at("name")] = Symbol("import", Type("stdlib"), node.value.at("name"));
-        cout << fs::absolute(BASEPATH / ("stdlib/" + node.value.at("name"))) << endl;  // t
+        path = fs::absolute(BASEPATH / ("stdlib/" + node.value.at("name")));
     } else {
         symbol_table.back()[node.value.at("alias")] = Symbol("import", Type("userlib"), node.value.at("name"));
-        cout << fs::absolute(fs::path(ast.value["name"]).parent_path() / fs::path(node.value.at("name"))) << endl;  // t
+        path = fs::absolute(fs::path(ast.value["name"]).parent_path() / fs::path(node.value.at("name")));
     }
+    cout << "importing [" << path << "]" << endl;
     // TODO
 }
 

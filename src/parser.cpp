@@ -100,7 +100,7 @@ shared_ptr<Node> Parser::parse() {
         else if (current_token == Token("keyword", "func"))
             root->children.push_back(parse_function());
         else
-            for (shared_ptr<Node> i : parse_statement()) root->children.push_back(i);
+            for (shared_ptr<Node> i : parse_declare(false, true)) root->children.push_back(i);
         get_token();
     }
     add_call_stack("parse", 1);
@@ -139,18 +139,27 @@ shared_ptr<Node> Parser::parse_import() {
     return shared_ptr<Node>();
 }
 
-vector<shared_ptr<Node>> Parser::parse_declare(bool attr) {
+vector<shared_ptr<Node>> Parser::parse_declare(bool attr, bool global) {
     add_call_stack("parse_declare", 0);
     map<string, string> state;
     vector<shared_ptr<Node>> nodes;
-    if (current_token == Tokens("keyword", {"var", "const", "attr", "static"}))
+    if (current_token == Tokens("keyword", {"var", "const", "attr", "static"})) {
+        if (attr && current_token == Tokens("keyword", {"var", "const"}))
+            parser_error("Expected 'attr' or 'static', not " + current_token.toString());
+        if (global && current_token == Tokens("keyword", {"attr", "static"}))
+            parser_error("Expected 'var' or 'const', not " + current_token.toString());
         state["kind"] = current_token.value;
-    else
+    } else
         parser_error("Expected 'var', 'const', 'attr' or 'static', not " + current_token.toString());
     get_token();
-    if (current_token == Tokens("keyword", {"global", "public"})) {
-        state["modifier"] = current_token.value;
+    if (current_token == Token("keyword", "public")) {
+        if (attr)
+            state["modifier"] = current_token.value;
+        else
+            parser_error("Expected type declare, not " + current_token.toString());
         get_token();
+    } else if (global) {
+        state["modifier"] = "global";
     } else
         state["modifier"] = "local";
     shared_ptr<Node> type = parse_type();
@@ -479,7 +488,7 @@ shared_ptr<Node> Parser::parse_class() {
         parser_error("Expected '{', not " + current_token.toString());
     while (current_token != Token("symbol", "}")) {
         if (current_token == Tokens("keyword", {"attr", "static"})) {
-            for (shared_ptr<Node> i : parse_declare(true))
+            for (shared_ptr<Node> i : parse_declare(true, false))
                 class_node->children.push_back(i);
         } else if (current_token == Token("keyword", "func"))
             class_node->children.push_back(parse_function());
@@ -647,9 +656,9 @@ vector<shared_ptr<Node>> Parser::parse_statement() {
     else if (current_token == Token("keyword", "continue"))
         return {make_shared<Node>("continue")};
     else if (current_token == Tokens("keyword", {"var", "const"}))
-        return parse_declare(false);
+        return parse_declare(false, false);
     else if (current_token == Tokens("keyword", {"attr", "static"}))
-        return parse_declare(true);
+        return parse_declare(true, false);
     else if (is_term(current_token)) {
         shared_ptr<Node> t = parse_expression();
         if (current_token != Token("symbol", ";"))
