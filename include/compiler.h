@@ -27,6 +27,7 @@ class Compiler {
     Node ast;
     vector<string> target_code;
     vector<map<string, Symbol>> symbol_table;
+    vector<fs::path> import_list;
     vector<string> compile();
     void compile_class(const Node& node);
     void compile_import(const Node& node);

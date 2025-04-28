@@ -13,18 +13,14 @@ Symbol::Symbol(const string& kind, const Type& type, const string& value) : kind
 Symbol::Symbol() : kind("None"), type(Type()), value(""), index(++symbol_index) {}
 
 // Type
-Type::Type(const string& type, const vector<string>& args) : type(type), args(args) {
-}
+Type::Type(const string& type, const vector<string>& args) : type(type), args(args) {}
 
-Type::Type(const string& type) : type(type), args(vector<string>()) {
-}
+Type::Type(const string& type) : type(type), args(vector<string>()) {}
 
-Type::Type() : type("None"), args(vector<string>()) {
-}
+Type::Type() : type("None"), args(vector<string>()) {}
 
 // Compiler
-Compiler::Compiler(const Node& ast) : ast(ast), target_code(vector<string>()), symbol_table(vector<map<string, Symbol>>{map<string, Symbol>()}) {
-}
+Compiler::Compiler(const Node& ast) : ast(ast), target_code(vector<string>()), symbol_table(vector<map<string, Symbol>>{map<string, Symbol>()}), import_list(vector<fs::path>()) {}
 
 vector<string> Compiler::compile() {
     symbol_table.push_back(map<string, Symbol>());
@@ -55,19 +51,19 @@ vector<string> Compiler::compile() {
             compile_while(*i);
         }
     }
+    return target_code;
 }
 
 void Compiler::compile_import(const Node& node) {
     fs::path path;
     if (node.value.at("alias") == "stdlib") {
         symbol_table.back()[node.value.at("name")] = Symbol("import", Type("stdlib"), node.value.at("name"));
-        path = fs::absolute(BASEPATH / ("stdlib/" + node.value.at("name")));
+        path = fs::absolute(BASEPATH / ("stdlib/" + node.value.at("name") + ".qn"));
     } else {
         symbol_table.back()[node.value.at("alias")] = Symbol("import", Type("userlib"), node.value.at("name"));
-        path = fs::absolute(fs::path(ast.value["name"]).parent_path() / fs::path(node.value.at("name")));
+        path = fs::absolute(fs::path(ast.value["name"]).parent_path() / fs::path(node.value.at("name")).replace_extension(".qn"));
     }
-    cout << "importing [" << path << "]" << endl;
-    // TODO
+    import_list.push_back(path);
 }
 
 void Compiler::compile_declare(const Node& node) {

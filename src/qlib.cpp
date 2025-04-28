@@ -10,7 +10,7 @@ string HELP_DOCS =
     "  -oaj, --output-ast-json   Output AST to JSON file\n"
     "  -oan, --output-ast-none   No output AST\n"
     "  -h,   --help              Show this help message\n";
-fs::path BASEPATH = fs::absolute(fs::current_path());
+fs::path BASEPATH = fs::absolute(fs::path(__FILE__).parent_path().parent_path());
 
 vector<string> STDLIB = {"math", "list", "random", "io", "time"};
 vector<string> BUILTINTYPE = {"int", "void", "NULL", "arr", "type"};
@@ -106,6 +106,10 @@ void add_call_stack(const string& str, const int mode) {
         call_stack.push_back("(rollback) " + str);
     } else
         call_stack.push_back("(error) " + str);
+}
+
+void clear_call_stack() {
+    call_stack.clear();
 }
 
 void source_code_setitem(fs::path file_name, vector<string> source_code) {

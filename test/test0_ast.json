@@ -1,7 +1,7 @@
 {
     "type": "program",
     "value": {
-        "name": "/d/Qnnn/./test/test0.qn"
+        "name": "/home/su2u4/code/Qnnn/./test/test0.qn"
     },
     "children": [
         {
@@ -16,7 +16,7 @@
             "type": "import",
             "value": {
                 "alias": "test1",
-                "name": "./test1.qn"
+                "name": "./test1"
             },
             "children": []
         },

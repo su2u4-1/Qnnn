@@ -172,7 +172,9 @@ int main(int argc, char* argv[]) {
             return 1;
         }
         string output = "";
-        for (const fs::path& file : args.files) {
+        for (int i = 0; i < args.files.size(); i++) {
+            clear_call_stack();
+            const fs::path& file = args.files[i];
             cout << "read source code [" << file << "]" << endl;
             vector<string> source_code;
             try {
@@ -210,17 +212,28 @@ int main(int argc, char* argv[]) {
                     cout << "json file [" << args.output_ast_file << "]" << endl;
                     output += remove_json_trailing_comma(ast_to_json(ast));
                 }
+                ofstream output_file(args.output_ast_file);
+                if (output_file.fail())
+                    throw runtime_error("Error: Could not open file " + args.output_ast_file.string());
+                output_file << output;
+                output_file.close();
             }
 
             cout << "compiling [" << file << "]" << endl;
-            Compiler compiler(*ast);  // t
-            compiler.compile();       // t
+            Compiler compiler(*ast);
+            vector<string> target_code = compiler.compile();
+            for (const fs::path& i : compiler.import_list) {
+                if (find(args.files.begin(), args.files.end(), i) == args.files.end()) {
+                    if (fs::exists(i) && i.extension() == ".qn") {
+                        cout << "importing [" << i << "]" << endl;
+                        args.files.push_back(i);
+                    } else {
+                        cerr << "Error: File " << i << " does not exist or is not a .qn file" << endl;
+                        exit(1);
+                    }
+                }
+            }
         }
-        ofstream output_file(args.output_ast_file);
-        if (output_file.fail())
-            throw runtime_error("Error: Could not open file " + args.output_ast_file.string());
-        output_file << output;
-        output_file.close();
     } catch (const exception& e) {
         cerr << "Error: " << e.what() << endl;
         return 1;

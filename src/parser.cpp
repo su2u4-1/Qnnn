@@ -518,7 +518,7 @@ shared_ptr<Node> Parser::parse_method() {
     if (current_token.type == "identifier")
         method->value["name"] = current_token.value;
     else
-        parser_error("Expected identifier or string, not " + current_token.toString());
+        parser_error("Expected identifier, not " + current_token.toString());
     get_token();
     method->children.push_back(parse_declare_typevar());
     if (current_token != Token("symbol", "("))

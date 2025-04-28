@@ -1,0 +1,545 @@
+{
+    "type": "program",
+    "value": {
+        "name": "/home/su2u4/code/Qnnn/./test/test1.qn"
+    },
+    "children": [
+        {
+            "type": "import",
+            "value": {
+                "alias": "stdlib",
+                "name": "list"
+            },
+            "children": []
+        },
+        {
+            "type": "class",
+            "value": {
+                "name": "Test"
+            },
+            "children": [
+                {
+                    "type": "typevar",
+                    "value": {},
+                    "children": []
+                },
+                {
+                    "type": "declare_attr",
+                    "value": {
+                        "kind": "attr",
+                        "modifier": "local",
+                        "name": "l"
+                    },
+                    "children": [
+                        {
+                            "type": "type",
+                            "value": {
+                                "name": "list"
+                            },
+                            "children": [
+                                {
+                                    "type": "type",
+                                    "value": {
+                                        "name": "int"
+                                    },
+                                    "children": []
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "method",
+                    "value": {
+                        "kind": "private",
+                        "name": "init"
+                    },
+                    "children": [
+                        {
+                            "type": "type",
+                            "value": {
+                                "name": "operator"
+                            },
+                            "children": []
+                        },
+                        {
+                            "type": "typevar",
+                            "value": {},
+                            "children": []
+                        },
+                        {
+                            "type": "args_declare",
+                            "value": {},
+                            "children": [
+                                {
+                                    "type": "declare_arg",
+                                    "value": {
+                                        "name": "l",
+                                        "tuple": "false"
+                                    },
+                                    "children": [
+                                        {
+                                            "type": "type",
+                                            "value": {
+                                                "name": "list"
+                                            },
+                                            "children": [
+                                                {
+                                                    "type": "type",
+                                                    "value": {
+                                                        "name": "int"
+                                                    },
+                                                    "children": []
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "type": "statements",
+                            "value": {},
+                            "children": [
+                                {
+                                    "type": "expression",
+                                    "value": {},
+                                    "children": [
+                                        {
+                                            "type": "term",
+                                            "value": {
+                                                "type": "variable"
+                                            },
+                                            "children": [
+                                                {
+                                                    "type": "variable",
+                                                    "value": {
+                                                        "state": "attr"
+                                                    },
+                                                    "children": [
+                                                        {
+                                                            "type": "variable",
+                                                            "value": {
+                                                                "state": "false"
+                                                            },
+                                                            "children": [
+                                                                {
+                                                                    "type": "name",
+                                                                    "value": {
+                                                                        "name": "self"
+                                                                    },
+                                                                    "children": []
+                                                                }
+                                                            ]
+                                                        },
+                                                        {
+                                                            "type": "name",
+                                                            "value": {
+                                                                "name": "l"
+                                                            },
+                                                            "children": []
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "type": "term",
+                                            "value": {
+                                                "type": "variable"
+                                            },
+                                            "children": [
+                                                {
+                                                    "type": "variable",
+                                                    "value": {
+                                                        "state": "false"
+                                                    },
+                                                    "children": [
+                                                        {
+                                                            "type": "name",
+                                                            "value": {
+                                                                "name": "l"
+                                                            },
+                                                            "children": []
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "type": "operator",
+                                            "value": {
+                                                "value": "="
+                                            },
+                                            "children": []
+                                        }
+                                    ]
+                                },
+                                {
+                                    "type": "return",
+                                    "value": {},
+                                    "children": []
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "method",
+                    "value": {
+                        "kind": "public",
+                        "name": "get"
+                    },
+                    "children": [
+                        {
+                            "type": "type",
+                            "value": {
+                                "name": "int"
+                            },
+                            "children": []
+                        },
+                        {
+                            "type": "typevar",
+                            "value": {},
+                            "children": []
+                        },
+                        {
+                            "type": "args_declare",
+                            "value": {},
+                            "children": [
+                                {
+                                    "type": "declare_arg",
+                                    "value": {
+                                        "name": "index",
+                                        "tuple": "false"
+                                    },
+                                    "children": [
+                                        {
+                                            "type": "type",
+                                            "value": {
+                                                "name": "int"
+                                            },
+                                            "children": []
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "type": "statements",
+                            "value": {},
+                            "children": [
+                                {
+                                    "type": "return",
+                                    "value": {},
+                                    "children": [
+                                        {
+                                            "type": "expression",
+                                            "value": {},
+                                            "children": [
+                                                {
+                                                    "type": "term",
+                                                    "value": {
+                                                        "type": "variable"
+                                                    },
+                                                    "children": [
+                                                        {
+                                                            "type": "variable",
+                                                            "value": {
+                                                                "state": "index"
+                                                            },
+                                                            "children": [
+                                                                {
+                                                                    "type": "variable",
+                                                                    "value": {
+                                                                        "state": "attr"
+                                                                    },
+                                                                    "children": [
+                                                                        {
+                                                                            "type": "variable",
+                                                                            "value": {
+                                                                                "state": "false"
+                                                                            },
+                                                                            "children": [
+                                                                                {
+                                                                                    "type": "name",
+                                                                                    "value": {
+                                                                                        "name": "self"
+                                                                                    },
+                                                                                    "children": []
+                                                                                }
+                                                                            ]
+                                                                        },
+                                                                        {
+                                                                            "type": "name",
+                                                                            "value": {
+                                                                                "name": "l"
+                                                                            },
+                                                                            "children": []
+                                                                        }
+                                                                    ]
+                                                                },
+                                                                {
+                                                                    "type": "expression",
+                                                                    "value": {},
+                                                                    "children": [
+                                                                        {
+                                                                            "type": "term",
+                                                                            "value": {
+                                                                                "type": "variable"
+                                                                            },
+                                                                            "children": [
+                                                                                {
+                                                                                    "type": "variable",
+                                                                                    "value": {
+                                                                                        "state": "false"
+                                                                                    },
+                                                                                    "children": [
+                                                                                        {
+                                                                                            "type": "name",
+                                                                                            "value": {
+                                                                                                "name": "index"
+                                                                                            },
+                                                                                            "children": []
+                                                                                        }
+                                                                                    ]
+                                                                                }
+                                                                            ]
+                                                                        }
+                                                                    ]
+                                                                }
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "method",
+                    "value": {
+                        "kind": "private",
+                        "name": "add"
+                    },
+                    "children": [
+                        {
+                            "type": "type",
+                            "value": {
+                                "name": "operator"
+                            },
+                            "children": []
+                        },
+                        {
+                            "type": "typevar",
+                            "value": {},
+                            "children": []
+                        },
+                        {
+                            "type": "args_declare",
+                            "value": {},
+                            "children": [
+                                {
+                                    "type": "declare_arg",
+                                    "value": {
+                                        "name": "other",
+                                        "tuple": "false"
+                                    },
+                                    "children": [
+                                        {
+                                            "type": "type",
+                                            "value": {
+                                                "name": "list"
+                                            },
+                                            "children": [
+                                                {
+                                                    "type": "type",
+                                                    "value": {
+                                                        "name": "int"
+                                                    },
+                                                    "children": []
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "type": "statements",
+                            "value": {},
+                            "children": [
+                                {
+                                    "type": "for",
+                                    "value": {
+                                        "else": "false",
+                                        "label": "for",
+                                        "name": "i"
+                                    },
+                                    "children": [
+                                        {
+                                            "type": "type",
+                                            "value": {
+                                                "name": "int"
+                                            },
+                                            "children": []
+                                        },
+                                        {
+                                            "type": "expression",
+                                            "value": {},
+                                            "children": [
+                                                {
+                                                    "type": "term",
+                                                    "value": {
+                                                        "type": "variable"
+                                                    },
+                                                    "children": [
+                                                        {
+                                                            "type": "variable",
+                                                            "value": {
+                                                                "state": "false"
+                                                            },
+                                                            "children": [
+                                                                {
+                                                                    "type": "name",
+                                                                    "value": {
+                                                                        "name": "other"
+                                                                    },
+                                                                    "children": []
+                                                                }
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "type": "statements",
+                                            "value": {},
+                                            "children": [
+                                                {
+                                                    "type": "expression",
+                                                    "value": {},
+                                                    "children": [
+                                                        {
+                                                            "type": "term",
+                                                            "value": {
+                                                                "type": "call"
+                                                            },
+                                                            "children": [
+                                                                {
+                                                                    "type": "call",
+                                                                    "value": {},
+                                                                    "children": [
+                                                                        {
+                                                                            "type": "variable",
+                                                                            "value": {
+                                                                                "state": "attr"
+                                                                            },
+                                                                            "children": [
+                                                                                {
+                                                                                    "type": "variable",
+                                                                                    "value": {
+                                                                                        "state": "attr"
+                                                                                    },
+                                                                                    "children": [
+                                                                                        {
+                                                                                            "type": "variable",
+                                                                                            "value": {
+                                                                                                "state": "false"
+                                                                                            },
+                                                                                            "children": [
+                                                                                                {
+                                                                                                    "type": "name",
+                                                                                                    "value": {
+                                                                                                        "name": "self"
+                                                                                                    },
+                                                                                                    "children": []
+                                                                                                }
+                                                                                            ]
+                                                                                        },
+                                                                                        {
+                                                                                            "type": "name",
+                                                                                            "value": {
+                                                                                                "name": "l"
+                                                                                            },
+                                                                                            "children": []
+                                                                                        }
+                                                                                    ]
+                                                                                },
+                                                                                {
+                                                                                    "type": "name",
+                                                                                    "value": {
+                                                                                        "name": "append"
+                                                                                    },
+                                                                                    "children": []
+                                                                                }
+                                                                            ]
+                                                                        },
+                                                                        {
+                                                                            "type": "use_typevar",
+                                                                            "value": {},
+                                                                            "children": []
+                                                                        },
+                                                                        {
+                                                                            "type": "args_call",
+                                                                            "value": {},
+                                                                            "children": [
+                                                                                {
+                                                                                    "type": "expression",
+                                                                                    "value": {},
+                                                                                    "children": [
+                                                                                        {
+                                                                                            "type": "term",
+                                                                                            "value": {
+                                                                                                "type": "variable"
+                                                                                            },
+                                                                                            "children": [
+                                                                                                {
+                                                                                                    "type": "variable",
+                                                                                                    "value": {
+                                                                                                        "state": "false"
+                                                                                                    },
+                                                                                                    "children": [
+                                                                                                        {
+                                                                                                            "type": "name",
+                                                                                                            "value": {
+                                                                                                                "name": "i"
+                                                                                                            },
+                                                                                                            "children": []
+                                                                                                        }
+                                                                                                    ]
+                                                                                                }
+                                                                                            ]
+                                                                                        }
+                                                                                    ]
+                                                                                }
+                                                                            ]
+                                                                        }
+                                                                    ]
+                                                                }
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                {
+                                    "type": "return",
+                                    "value": {},
+                                    "children": []
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

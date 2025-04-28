@@ -1,5 +1,5 @@
 import list;
-import "./test1.qn" as test1;
+import "./test1" as test1;
 
 const int a = 0;
 
