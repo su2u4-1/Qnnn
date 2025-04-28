@@ -3,12 +3,13 @@ from os.path import isfile, isdir, abspath, split
 from sys import argv, platform
 
 
-def parse_args(arg: list[str]) -> tuple[list[str], str, list[str]]:
+def parse_args(arg: list[str]) -> tuple[list[str], str, list[str], list[str]]:
     if len(arg) < 3:
         print("Usage: python build.py {(<file> | <dir>)} [-i <dir>] [-o <output>] [-a {<arg>}]")
         exit(1)
     args: list[str] = []
     files: list[str] = []
+    flags: list[str] = []
     state = -1
     output_file = "./build/output.exe"
     include_path = ""
@@ -27,6 +28,8 @@ def parse_args(arg: list[str]) -> tuple[list[str], str, list[str]]:
             state = 1
         elif i == "-i":
             state = 2
+        elif i.startswith("-"):
+            flags.append(i)
         elif isfile(i):
             files.append(i)
         elif isdir(i):
@@ -44,10 +47,10 @@ def parse_args(arg: list[str]) -> tuple[list[str], str, list[str]]:
         for i in range(len(files)):
             files[i] = abspath(files[i])
         files.append(f"-I {include_path}")
-    return files, output_file, args
+    return files, output_file, args, flags
 
 
-def main(files: list[str], output_file: str, args: list[str]) -> None:
+def main(files: list[str], output_file: str, args: list[str], flags: list[str]) -> None:
     compiler_path = "g++"
     output_dir = split(output_file)[0]
     bat_path = output_dir + "/run.bat"
@@ -57,13 +60,13 @@ def main(files: list[str], output_file: str, args: list[str]) -> None:
         mkdir(output_dir)
     if platform == "win32" or platform == "cygwin":
         with open(bat_path, "w") as f:
-            f.write(f"{compiler_path} {' '.join(files)} -o {output_file}\n")
+            f.write(f"{compiler_path} {' '.join(flags)} {' '.join(files)} -o {output_file}\n")
             t = "\\"
             f.write(f"{abspath(output_file).replace('/', t)} {' '.join(args)}\n")
         system(abspath(bat_path))
     else:
         with open(sh_path, "w") as f:
-            f.write(f"{compiler_path} {' '.join(files)} -o {output_file}\n")
+            f.write(f"{compiler_path} {' '.join(flags)} {' '.join(files)} -o {output_file}\n")
             f.write(f"{output_file} {' '.join(args)}\n")
         system("bash " + sh_path)
 
