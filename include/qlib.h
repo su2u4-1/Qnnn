@@ -4,6 +4,7 @@
 #include <limits.h>
 
 #include <algorithm>
+#include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <map>
@@ -14,6 +15,7 @@
 #include <vector>
 
 using namespace std;
+namespace fs = filesystem;
 
 class Token;
 class Tokens;
@@ -22,26 +24,27 @@ extern vector<string> STDLIB;
 extern vector<string> BUILTINTYPE;
 extern vector<string> OPERATOR;
 extern string HELP_DOCS;
+extern fs::path BASEPATH;
 
 bool is_keyword(const string& word);
 bool is_symbol(const string& word);
 bool is_symbol(char c);
 int operator_precedence(const string& op);
 bool is_term(const Token& token);
-void error(const string& msg, const string& file_name, pair<int, int> pos, const string& source_code);
+void error(const string& msg, const fs::path& file_name, pair<int, int> pos, const string& source_code);
 string get_call_stack();
 void add_call_stack(const string& str, const int mode);
-void source_code_setitem(string file_name, vector<string> source_code);
-string source_code_getitem(string file_name, int line);
+void source_code_setitem(fs::path file_name, vector<string> source_code);
+string source_code_getitem(fs::path file_name, int line);
 
 class Token {
    public:
-    Token(const string& type, const string& value, const string& file_name, pair<int, int> pos);
+    Token(const string& type, const string& value, const fs::path& file_name, pair<int, int> pos);
     Token(const string& type, const string& value);
     Token();
     string type;
     string value;
-    string file_name;
+    fs::path file_name;
     int line;
     int column;
     string toString();

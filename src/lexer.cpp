@@ -1,6 +1,6 @@
 #include "../include/qlib.h"
 
-vector<shared_ptr<Token>> lexer(const vector<string>& source_code, const string& file_name) {
+vector<shared_ptr<Token>> lexer(const vector<string>& source_code, const fs::path& file_name) {
     vector<shared_ptr<Token>> tokens;
     string state = "", content = "";
     char p = ' ', pp = ' ';

@@ -3,8 +3,13 @@
 
 #include "qlib.h"
 
-int symbol_index;
-
+struct Type {
+    string type;
+    vector<string> args;
+    Type(const string& type, const vector<string>& args);
+    Type(const string& type);
+    Type();
+};
 struct Symbol {
     string kind;
     Type type;
@@ -14,13 +19,6 @@ struct Symbol {
     Symbol(const string& kind, const Type& type, const string& value, int index);
     Symbol(const string& kind, const Type& type, const string& value);
     Symbol();
-};
-struct Type {
-    string type;
-    vector<string> args;
-    Type(const string& type, const vector<string>& args);
-    Type(const string& type);
-    Type();
 };
 
 class Compiler {

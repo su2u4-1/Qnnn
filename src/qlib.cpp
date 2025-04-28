@@ -2,7 +2,7 @@
 
 unordered_set<string> _KEYWORD = {"arr", "as", "attr", "break", "class", "const", "continue", "elif", "else", "false", "for", "func", "global", "if", "import", "in", "int", "method", "NULL", "op", "public", "return", "static", "true", "type", "var", "void", "while"};
 unordered_set<string> _SYMBOLS = {"(", ")", "[", "]", "{", "}", ",", ";", ".", "+", "-", "*", "/", "%", "<", ">", "&", "|", "=", "@", "^", "!", "==", "!=", "<=", ">=", "&&", "||", "+=", "-=", "*=", "/=", "%=", "**", "<<", ">>"};
-map<string, vector<string>> source_code_map = map<string, vector<string>>();
+map<fs::path, vector<string>> source_code_map = map<fs::path, vector<string>>();
 string HELP_DOCS =
     "Usage: qlib <filename> [options]\n"
     "Options:\n"
@@ -10,6 +10,7 @@ string HELP_DOCS =
     "  -oaj, --output-ast-json   Output AST to JSON file\n"
     "  -oan, --output-ast-none   No output AST\n"
     "  -h,   --help              Show this help message\n";
+fs::path BASEPATH = fs::absolute(fs::current_path());
 
 vector<string> STDLIB = {"math", "list", "random", "io", "time"};
 vector<string> BUILTINTYPE = {"int", "void", "NULL", "arr", "type"};
@@ -67,10 +68,10 @@ bool is_term(const Token& token) {
         return false;
 }
 
-void error(const string& msg, const string& file_name, pair<int, int> pos, const string& source_code) {
+void error(const string& msg, const fs::path& file_name, pair<int, int> pos, const string& source_code) {
     ostringstream oss;
     oss << get_call_stack();
-    oss << "File " << file_name << ", line " << pos.first << ", in " << pos.second << "\n"
+    oss << "File " << file_name.string() << ", line " << pos.first << ", in " << pos.second << "\n"
         << msg << "\n"
         << source_code << string(pos.second, ' ') << "^";
     throw runtime_error(oss.str());
@@ -107,16 +108,16 @@ void add_call_stack(const string& str, const int mode) {
         call_stack.push_back("(error) " + str);
 }
 
-void source_code_setitem(string file_name, vector<string> source_code) {
+void source_code_setitem(fs::path file_name, vector<string> source_code) {
     source_code_map[file_name] = source_code;
 }
 
-string source_code_getitem(string file_name, int line) {
+string source_code_getitem(fs::path file_name, int line) {
     return source_code_map[file_name][line];
 }
 
 // Token
-Token::Token(const string& type, const string& value, const string& file_name, pair<int, int> pos) {
+Token::Token(const string& type, const string& value, const fs::path& file_name, pair<int, int> pos) {
     this->type = type;
     this->value = value;
     this->file_name = file_name;
@@ -127,7 +128,7 @@ Token::Token(const string& type, const string& value, const string& file_name, p
 Token::Token(const string& type, const string& value) {
     this->type = type;
     this->value = value;
-    this->file_name = "";
+    this->file_name = fs::path();
     this->line = -1;
     this->column = -1;
 }
@@ -135,7 +136,7 @@ Token::Token(const string& type, const string& value) {
 Token::Token() {
     this->type = "None";
     this->value = "None";
-    this->file_name = "";
+    this->file_name = fs::path();
     this->line = -1;
     this->column = -1;
 }

@@ -2,7 +2,7 @@
 
 #include "../include/qlib.h"
 
-Parser::Parser(const vector<shared_ptr<Token>>& tokens, const string& file_name) {
+Parser::Parser(const vector<shared_ptr<Token>>& tokens, const fs::path& file_name) {
     if (!tokens.empty()) {
         this->tokens = tokens;
         this->file_name = file_name;

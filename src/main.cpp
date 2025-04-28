@@ -21,6 +21,7 @@
 /*                佛祖保佑       永無BUG                 */
 /*******************************************************/
 
+#include "../include/compiler.h"
 #include "../include/lexer.h"
 #include "../include/parser.h"
 #include "../include/qlib.h"
@@ -28,10 +29,10 @@
 using namespace std;
 
 struct arguments {
-    string program_name = "";
-    string source_code_file = "";
+    fs::path program_name = "";
+    vector<fs::path> files = {};
     vector<string> flags = {};
-    string output_ast_file = "";
+    fs::path output_ast_file = "";
     int output_ast_type = -1;
     /*
     no output ast = -1
@@ -40,11 +41,11 @@ struct arguments {
     */
 };
 
-vector<string> read_file(const string& file_name) {
+vector<string> read_file(const fs::path& file_name) {
     ifstream input;
     input.open(file_name);
     if (input.fail())
-        throw runtime_error("Error: Could not open file " + file_name);
+        throw runtime_error("Error: Could not open file " + file_name.string());
     vector<string> source_code;
     string line;
     while (getline(input, line)) {
@@ -70,35 +71,39 @@ arguments parse_arguments(int argc, char* argv[]) {
         cout << HELP_DOCS;
         exit(0);
     }
-    args.source_code_file = argv[1];
-    char resolved_path[PATH_MAX];
-    if (realpath(args.source_code_file.c_str(), resolved_path) == nullptr) {
-        cerr << "Error: Could not resolve path for " << args.source_code_file << endl;
-        exit(1);
-    }
-    args.source_code_file = resolved_path;
-    replace(args.source_code_file.begin(), args.source_code_file.end(), '\\', '/');
-    args.program_name = args.source_code_file.substr(0, args.source_code_file.find_last_of('.'));
-    for (int i = 2; i < argc; i++) {
+
+    int state = 0;
+    for (int i = 1; i < argc; i++) {
         if (argv[i][0] == '-') {
             args.flags.push_back(argv[i]);
             if (string(argv[i]) == "--output-ast" || string(argv[i]) == "-oa") {
                 args.output_ast_type = 0;
-                args.output_ast_file = args.program_name + ".ast";
+                args.output_ast_file = args.program_name.replace_extension(".ast");
             } else if (string(argv[i]) == "--output-ast-json" || string(argv[i]) == "-oaj") {
                 args.output_ast_type = 1;
-                args.output_ast_file = args.program_name + "_ast.json";
+                args.output_ast_file = args.program_name.replace_filename(args.program_name.filename().string() + "_ast.json");
             } else if (string(argv[i]) == "--output-ast-none" || string(argv[i]) == "-oan") {
                 args.output_ast_type = -1;
             } else if (string(argv[i]) == "--help" || string(argv[i]) == "-h") {
                 cout << HELP_DOCS;
                 exit(0);
+            } else if (string(argv[i]) == "--output" || string(argv[i]) == "-o") {
+                state = 1;
+            }
+        } else {
+            fs::path t = fs::absolute(argv[i]);
+            if (state == 0) {
+                if (fs::exists(t) && t.extension() == ".qn") {
+                    args.files.push_back(t);
+                } else {
+                    cerr << "Error: File " << t << " does not exist or is not a .qn file" << endl;
+                    exit(1);
+                }
+            } else if (state == 1) {
+                args.program_name = t.string().substr(0, t.string().find_last_of('.'));
+                state = 0;
             }
         }
-    }
-    if (args.source_code_file.find(".qn") == string::npos) {
-        cerr << "Error: File name must end with .qn" << endl;
-        exit(1);
     }
     return args;
 }
@@ -157,59 +162,66 @@ string output_ast(const shared_ptr<Node> node, int ident) {
     return output.str();
 }
 
-vector<shared_ptr<Token>> lexer(const vector<string>& source_code, const string& file_name);
-
 int main(int argc, char* argv[]) {
     try {
+        cout << "base path: " << BASEPATH << endl;
         cout << "parse arguments" << endl;
         arguments args = parse_arguments(argc, argv);
-
-        cout << "read source code [" << args.source_code_file << "]" << endl;
-        vector<string> source_code;
-        try {
-            source_code = read_file(args.source_code_file);
-        } catch (const runtime_error& e) {
-            cerr << e.what() << endl;
+        if (args.files.size() == 0) {
+            cerr << "Error: No input files" << endl;
             return 1;
         }
-        source_code_setitem(args.source_code_file, source_code);
-
-        cout << "lexing [" << args.source_code_file << "]" << endl;
-        vector<shared_ptr<Token>> tokens;
-        try {
-            tokens = lexer(source_code, args.source_code_file);
-        } catch (const runtime_error& e) {
-            cerr << e.what() << endl;
-            return 1;
-        }
-
-        cout << "parsing [" << args.source_code_file << "]" << endl;
-        shared_ptr<Node> ast;
-        try {
-            ast = Parser(tokens, args.source_code_file).parse();
-        } catch (const runtime_error& e) {
-            cerr << e.what() << endl;
-            return 1;
-        }
-
-        if (args.output_ast_type > -1) {
-            cout << "outputting AST to ";
-            string output;
-            if (args.output_ast_type == 0) {
-                cout << "ast file [" << args.output_ast_file << "]" << endl;
-                output = output_ast(ast, 0);
-            } else if (args.output_ast_type == 1) {
-                cout << "json file [" << args.output_ast_file << "]" << endl;
-                output = remove_json_trailing_comma(ast_to_json(ast));
+        cout << "output_ast_file: " << args.output_ast_file << endl;
+        string output = "";
+        for (const fs::path& file : args.files) {
+            cout << "read source code [" << file << "]" << endl;
+            vector<string> source_code;
+            try {
+                source_code = read_file(file);
+            } catch (const runtime_error& e) {
+                cerr << e.what() << endl;
+                return 1;
             }
-            ofstream output_file(args.output_ast_file);
-            if (output_file.fail())
-                throw runtime_error("Error: Could not open file " + args.output_ast_file);
-            output_file << output;
-            output_file.close();
-        }
+            source_code_setitem(file, source_code);
 
-        cout << "compiling [" << args.source_code_file << "]" << endl;
+            cout << "lexing [" << file << "]" << endl;
+            vector<shared_ptr<Token>> tokens;
+            try {
+                tokens = lexer(source_code, file);
+            } catch (const runtime_error& e) {
+                cerr << e.what() << endl;
+                return 1;
+            }
+
+            cout << "parsing [" << file << "]" << endl;
+            shared_ptr<Node> ast;
+            try {
+                ast = Parser(tokens, file).parse();
+            } catch (const runtime_error& e) {
+                cerr << e.what() << endl;
+                return 1;
+            }
+
+            if (args.output_ast_type > -1) {
+                cout << "outputting AST to ";
+                if (args.output_ast_type == 0) {
+                    cout << "ast file [" << args.output_ast_file << "]" << endl;
+                    output += output_ast(ast, 0);
+                } else if (args.output_ast_type == 1) {
+                    cout << "json file [" << args.output_ast_file << "]" << endl;
+                    output += remove_json_trailing_comma(ast_to_json(ast));
+                }
+            }
+
+            cout << "compiling [" << file << "]" << endl;
+            Compiler compiler(*ast);  // t
+            compiler.compile();       // t
+        }
+        ofstream output_file(args.output_ast_file);
+        if (output_file.fail())
+            throw runtime_error("Error: Could not open file " + args.output_ast_file.string());
+        output_file << output;
+        output_file.close();
     } catch (const exception& e) {
         cerr << "Error: " << e.what() << endl;
         return 1;
