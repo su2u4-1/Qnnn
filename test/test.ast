@@ -1,4 +1,4 @@
-program (name: /home/su2u4/code/Qnnn/./test/test0.qn, )
+program (name: /d/Qnnn/./test/test0.qn, )
 {
     import (alias: stdlib, name: list, ) {}
     import (alias: test1, name: ./test1, ) {}
@@ -194,6 +194,189 @@ program (name: /home/su2u4/code/Qnnn/./test/test0.qn, )
                 {
                     term (type: int, value: 0, ) {}
                 }
+            }
+        }
+    }
+}
+program (name: /d/Qnnn/./stdlib/list.qn, )
+{
+    declare_var (kind: var, modifier: global, name: a, )
+    {
+        type (name: int, ) {}
+        expression ()
+        {
+            term (type: int, value: 0, ) {}
+        }
+    }
+}
+program (name: /d/Qnnn/./test/./test1.qn, )
+{
+    import (alias: stdlib, name: list, ) {}
+    class (name: Test, )
+    {
+        typevar () {}
+        declare_attr (kind: attr, modifier: local, name: l, )
+        {
+            type (name: list, )
+            {
+                type (name: int, ) {}
+            }
+        }
+        method (kind: private, name: init, )
+        {
+            type (name: operator, ) {}
+            typevar () {}
+            args_declare ()
+            {
+                declare_arg (name: l, tuple: false, )
+                {
+                    type (name: list, )
+                    {
+                        type (name: int, ) {}
+                    }
+                }
+            }
+            statements ()
+            {
+                expression ()
+                {
+                    term (type: variable, )
+                    {
+                        variable (state: attr, )
+                        {
+                            variable (state: false, )
+                            {
+                                name (name: self, ) {}
+                            }
+                            name (name: l, ) {}
+                        }
+                    }
+                    term (type: variable, )
+                    {
+                        variable (state: false, )
+                        {
+                            name (name: l, ) {}
+                        }
+                    }
+                    operator (value: =, ) {}
+                }
+                return () {}
+            }
+        }
+        method (kind: public, name: get, )
+        {
+            type (name: int, ) {}
+            typevar () {}
+            args_declare ()
+            {
+                declare_arg (name: index, tuple: false, )
+                {
+                    type (name: int, ) {}
+                }
+            }
+            statements ()
+            {
+                return ()
+                {
+                    expression ()
+                    {
+                        term (type: variable, )
+                        {
+                            variable (state: index, )
+                            {
+                                variable (state: attr, )
+                                {
+                                    variable (state: false, )
+                                    {
+                                        name (name: self, ) {}
+                                    }
+                                    name (name: l, ) {}
+                                }
+                                expression ()
+                                {
+                                    term (type: variable, )
+                                    {
+                                        variable (state: false, )
+                                        {
+                                            name (name: index, ) {}
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        method (kind: private, name: add, )
+        {
+            type (name: operator, ) {}
+            typevar () {}
+            args_declare ()
+            {
+                declare_arg (name: other, tuple: false, )
+                {
+                    type (name: list, )
+                    {
+                        type (name: int, ) {}
+                    }
+                }
+            }
+            statements ()
+            {
+                for (else: false, label: for, name: i, )
+                {
+                    type (name: int, ) {}
+                    expression ()
+                    {
+                        term (type: variable, )
+                        {
+                            variable (state: false, )
+                            {
+                                name (name: other, ) {}
+                            }
+                        }
+                    }
+                    statements ()
+                    {
+                        expression ()
+                        {
+                            term (type: call, )
+                            {
+                                call ()
+                                {
+                                    variable (state: attr, )
+                                    {
+                                        variable (state: attr, )
+                                        {
+                                            variable (state: false, )
+                                            {
+                                                name (name: self, ) {}
+                                            }
+                                            name (name: l, ) {}
+                                        }
+                                        name (name: append, ) {}
+                                    }
+                                    use_typevar () {}
+                                    args_call ()
+                                    {
+                                        expression ()
+                                        {
+                                            term (type: variable, )
+                                            {
+                                                variable (state: false, )
+                                                {
+                                                    name (name: i, ) {}
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                return () {}
             }
         }
     }

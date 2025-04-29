@@ -210,12 +210,18 @@ int main(int argc, char* argv[]) {
                     output += output_ast(ast, 0);
                 } else if (args.output_ast_type == 1) {
                     cout << "json file [" << args.output_ast_file << "]" << endl;
-                    output += remove_json_trailing_comma(ast_to_json(ast));
+                    if (output.empty())
+                        output = "[" + ast_to_json(ast);
+                    else
+                        output += ast_to_json(ast);
                 }
                 ofstream output_file(args.output_ast_file);
                 if (output_file.fail())
                     throw runtime_error("Error: Could not open file " + args.output_ast_file.string());
-                output_file << output;
+                if (args.output_ast_type == 1)
+                    output_file << remove_json_trailing_comma(output + "]");
+                else
+                    output_file << output;
                 output_file.close();
             }
 
