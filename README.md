@@ -43,6 +43,7 @@ d:\Qnnn\
 │   │   ├── test<n>.ast # 測試 AST 輸出 / Test AST output
 │   │   ├── test<n>.qn  # 測試原始碼 / Test source code
 │   ......
+├── temp\               # 臨時檔案 / Temporary files
 ├── README.md
 ├── .gitignore
 ├── LICENSE
@@ -76,7 +77,9 @@ As a result, it is currently used primarily to verify the correctness of the AST
 
 #### 使用方式 / Usage:
 ```sh
-$ python ./format.py <file>
+$ python ./format.py <file> "[ident]"
 ```
 - `<file>`: 僅接受一個以 `.qn` 為副檔名的檔案。  
-  `<file>`: Accepts only one file with the `.qn` extension.
+  `<file>`: Accepts only one file with the `.qn` extension.  
+- `"[ident]"`: 僅接受一個字串  
+  `"[ident]"`: Accepts only one string.

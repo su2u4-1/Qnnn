@@ -1,3 +1,4 @@
+from hashlib import sha256
 from os import mkdir, system, listdir
 from os.path import isfile, isdir, abspath, split
 from sys import argv, platform
@@ -50,29 +51,48 @@ def parse_args(arg: list[str]) -> tuple[list[str], str, list[str], list[str]]:
     return files, output_file, args, flags
 
 
-def main(files: list[str], output_file: str, args: list[str], flags: list[str]) -> None:
+def main(files: list[str], output_file: str, args: list[str], flags: list[str], p_hash: str = "") -> str:
     compiler_path = "g++"
     output_dir = split(output_file)[0]
     bat_path = output_dir + "/run.bat"
     sh_path = output_dir + "/run.sh"
+    source_code = ""
+    for i in files:
+        with open(i, "r") as f:
+            source_code += f.read()
+    a_hash = sha256(source_code.encode()).hexdigest()
 
     if not isdir(output_dir):
         mkdir(output_dir)
     if platform == "win32" or platform == "cygwin":
         with open(bat_path, "w") as f:
-            f.write(f"{compiler_path} {' '.join(flags)} {' '.join(files)} -o {output_file}\n")
+            if a_hash != p_hash:
+                f.write(f"{compiler_path} {' '.join(flags)} {' '.join(files)} -o {output_file}\n")
             t = "\\"
             f.write(f"{abspath(output_file).replace('/', t)} {' '.join(args)}\n")
         system(abspath(bat_path))
     else:
         with open(sh_path, "w") as f:
-            f.write(f"{compiler_path} {' '.join(flags)} {' '.join(files)} -o {output_file}\n")
+            if a_hash != p_hash:
+                f.write(f"{compiler_path} {' '.join(flags)} {' '.join(files)} -o {output_file}\n")
             f.write(f"{output_file} {' '.join(args)}\n")
         system("bash " + sh_path)
 
+    return a_hash
+
+
+p_hash = ""
+if isfile("./temp/hash.txt"):
+    with open("./temp/hash.txt", "r") as f:
+        p_hash = f.read()
 
 if len(argv) > 1:
-    main(*parse_args(argv[1:]))
+    a_hash = main(*parse_args(argv[1:]), p_hash)
 else:
     print("Usage: {(<file> | <dir>)} [-i <dir>] [-o <output>] [-a {<arg>}]")
-    main(*parse_args(input(": ").split()))
+    a_hash = main(*parse_args(input(": ").split()), p_hash)
+
+if not isdir("./temp"):
+    mkdir("./temp")
+with open("./temp/hash.txt", "w") as f:
+    f.write(str(a_hash))

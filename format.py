@@ -18,26 +18,32 @@ def json2node(data: Any) -> Node:
     return Node(data["type"], data["value"], [json2node(i) for i in data["children"]])
 
 
-if len(argv) < 2:
-    print('Usage: python ./format.py <qn_filename> "[ident]"')
-    exit(1)
-if len(argv) >= 3:
-    ident = argv[2]
-else:
-    ident = "    "
-filename = argv[1]
-if filename.endswith(".json"):
-    with open(filename, "r", encoding="utf-8") as f:
-        data = json.load(f)
-elif filename.endswith(".qn"):
-    system(f"python ./build.py ./src -o ./build/app.exe -a {filename} -o ./build/temp -oaj")
-    with open("./build/temp_ast.json", "r", encoding="utf-8") as f:
-        data = json.load(f)
-else:
-    print("File type not supported")
-    exit(1)
+def main() -> str:
+    global ident
+    if len(argv) < 2:
+        print('Usage: python ./format.py <qn_file> "[ident]"')
+        exit(1)
+    if len(argv) >= 3:
+        ident = argv[2]
+    else:
+        ident = "    "
+    filename = argv[1]
+    if filename.endswith(".json"):
+        with open(filename, "r", encoding="utf-8") as f:
+            data = json.load(f)
+    elif filename.endswith(".qn"):
+        system(f"python ./build.py ./src -o ./build/app.exe -a {filename} -o ./temp/format -oaj")
+        with open("./temp/format_ast.json", "r", encoding="utf-8") as f:
+            data = json.load(f)
+    else:
+        print("File type not supported")
+        exit(1)
 
-data = (json2node(i) for i in data)
+    data = (json2node(i) for i in data)
+
+    result = (_program(i) for i in data)
+    result = "\n\n".join(result)
+    return result
 
 
 def _arr(now: Node) -> str:
@@ -149,7 +155,7 @@ def _type(now: Node) -> str:
 
 
 def _declare_var(now: Node) -> str:
-    t = f"{now.value['kind']} {'global ' if now.value['modifier'] == 'global' else ''}{_type(now.children[0])} {now.value['name']}"
+    t = f"{now.value['kind']} {_type(now.children[0])} {now.value['name']}"
     if len(now.children) == 2:
         t += f" = {_expression(now.children[1])}"
     return t + ";"
@@ -165,7 +171,7 @@ def _declare_attr(now: Node) -> str:
 def _declare_args(now: Node) -> str:
     t: list[str] = []
     for i in now.children:
-        t.append(f"{_type(i.children[0])} {'*' if i.value['tuple'] == 'true' else ''}{i.value['name']}")
+        t.append(f"{'*' if i.value['tuple'] == 'true' else ''}{_type(i.children[0])} {i.value['name']}")
     return ", ".join(t)
 
 
@@ -341,9 +347,7 @@ def _program(now: Node) -> str:
     return "\n".join(t)
 
 
-result = (_program(i) for i in data)
-result = "\n\n".join(result)
-print(result)
-
-# with open(data.value["name"], "w") as f:
-#     f.write(result)
+if __name__ == "__main__":
+    result = main()
+    with open("./temp/format_result", "w") as f:
+        f.write(result)

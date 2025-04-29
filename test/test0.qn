@@ -1,7 +1,9 @@
 import list;
 import "./test1" as test1;
-const global int a = 0;
-func int main(string *args) {
+
+const int a = 0;
+
+func int main(*string args) {
     var list<int> l = list<int>(1, 2, 3, 4, 5);
     const Test b = test1.Test(l);
     print(a);
