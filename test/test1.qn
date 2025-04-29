@@ -2,7 +2,7 @@ import list;
 
 class Test {
     attr list<int> l;
-    method operator init(self, list<int> l) {
+    method op void init(self, list<int> l) {
         self.l = l;
         return;
     }
@@ -11,7 +11,7 @@ class Test {
         return self.l[index];
     }
 
-    method operator add(self, list<int> other) {
+    method op void add(self, list<int> other) {
         for (int i in other) {
             self.l.append(i);
         }

@@ -1,1 +1,224 @@
-var int a = 0;
+class list<T> {
+    attr int size, real_size;
+    attr arr<T> c;
+
+    method op void init(self, int size, T value) {
+        self.size = size;
+        self.real_size = size + 4;
+        self.c = arr<T>(size + 4);
+        for (int i in range(size)) {
+            self.c[i] = value;
+        }
+        return;
+    }
+
+    method op void init(self, arr<T> a) {
+        self.c = a;
+        self.size = a.size();
+        return;
+    }
+
+    method op T get(self, int index) {
+        if (index < 0 || index >= self.size) {
+            raise(Except("Index out of bounds"));
+        }
+        return self.c[index];
+    }
+
+    method op void set(self, int index, T value) {
+        if (index < 0 || index >= self.size) {
+            raise(Except("Index out of bounds"));
+        }
+        self.c[index] = value;
+        return;
+    }
+
+    method op bool eq(self, list<T> other) {
+        if (self.size != other.size()) {
+            return false;
+        }
+        for (int i in range(self.size)) {
+            if (self.c[i] != other.c[i]) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    method op list<T> mul(self, int n) {
+        var arr<T> t = arr<T>(self.size * n);
+        for (int i in range(n)) {
+            for (int j in range(self.size)) {
+                t[i * n + j] = self.c[j];
+            }
+        }
+        return list<T>(t);
+    }
+
+    method op void imul(self, int n) {
+        var arr<T> t = arr<T>(self.size * n + 4);
+        for (int i in range(n)) {
+            for (int j in range(self.size)) {
+                t[i * n + j] = self.c[j];
+            }
+        }
+        self.c = t;
+        self.size *= n;
+        self.real_size = self.size + 4;
+        return self;
+    }
+
+    method op list<T> add(self, list<T> other) {
+        var arr<T> t = arr<T>(self.size + other.size());
+        for (int i in range(self.size)) {
+            t[i] = self.c[i];
+        }
+        for (int i in range(other.size)) {
+            t[self.size + i] = other.c[i];
+        }
+        return list<T>(t);
+    }
+
+    method op void iadd(self, list<T> other) {
+        self.extend(other);
+        return;
+    }
+
+    method op string str(self) {
+        var string result = "[";
+        for (T i in self.c) {
+            if (i == self.c[self.size - 1]) {
+                result += string(i) + "]";
+            } else {
+                result += string(i) + ", ";
+            }
+        }
+        return result;
+    }
+
+    method public void append(self, T value) {
+        self.size += 1;
+        if (self.size >= self.real_size) {
+            var arr<T> t = arr<T>(self.real_size * 2);
+            for (int i in range(self.size)) {
+                t[i] = self.c[i];
+            }
+            self.c = t;
+            self.real_size *= 2;
+        }
+        self.c[self.size - 1] = value;
+        return;
+    }
+
+    method public int size(self) {
+        return self.size;
+    }
+
+    method public void clear(self) {
+        self.c = arr<T>(4);
+        self.size = 0;
+        self.real_size = 4;
+        return;
+    }
+
+    method public void insert(self, int n, T value) {
+        if (n < 0 || n > self.size) {
+            raise(Except("Index out of bounds"));
+        }
+        self.size += 1;
+        if (self.size >= self.real_size) {
+            var arr<T> t = arr<T>(self.real_size * 2);
+            for (int i in range(n)) {
+                t[i] = self.c[i];
+            }
+            self.c = t;
+            self.real_size *= 2;
+        }
+        var T t1, t2 = value;
+        for (int i in range(n, self.size)) {
+            t1 = self.c[i];
+            self.c[i] = t2;
+            t2 = t1;
+        }
+        return;
+    }
+
+    method public void extend(self, list<T> other) {
+        if (self.real_size < self.size + other.size) {
+            var arr<T> t = arr<T>(self.size + other.size() + 4);
+            for (int i in range(self.size)) {
+                t[i] = self.c[i];
+            }
+            for (int i in range(other.size())) {
+                t[self.size + i] = other.c[i];
+            }
+            self.c = t;
+            self.size += other.size();
+            self.real_size = self.size + 4;
+        } else {
+            for (int i in range(other.size())) {
+                self.c[self.size + i] = other.c[i];
+            }
+            self.size += other.size();
+        }
+        return;
+    }
+
+    method public T pop(self, int n) {
+        self.size -= 1;
+        return self.c[n];
+    }
+
+    method public void remove(self, T value) {
+        for (int i in range(self.size)) {
+            if (self.c[i] == value) {
+                self.size -= 1;
+                for (int j in range(i, self.size)) {
+                    self.c[j] = self.c[j + 1];
+                }
+                return;
+            }
+        }
+        raise(Except("Value not found"));
+    }
+
+    method public int index(self, T value) {
+        for (int i in range(self.size)) {
+            if (self.c[i] == value) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    method public int count(self, T value) {
+        var int count = 0;
+        for (int i in range(self.size)) {
+            if (self.c[i] == value) {
+                count += 1;
+            }
+        }
+        return count;
+    }
+
+    method public void reverse(self) {
+        var arr<T> t = arr<T>(self.real_size);
+        for (int i in range(self.size)) {
+            t[i] = self.c[self.size - 1 - i];
+        }
+        self.c = t;
+        return;
+    }
+
+    method public void sort(self) {
+        for (int i in range(self.size - 1)) {
+            for (int j in range(0, self.size - i - 1)) {
+                if (self.c[j] > self.c[j + 1]) {
+                    var T t = self.c[j];
+                    self.c[j] = self.c[j + 1];
+                    self.c[j + 1] = t;
+                }
+            }
+        }
+    }
+}

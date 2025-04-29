@@ -1,5 +1,4 @@
 from os import system
-from os.path import abspath
 from sys import argv
 import json
 from typing import Any
@@ -26,19 +25,19 @@ if len(argv) >= 3:
     ident = argv[2]
 else:
     ident = "    "
-filename = abspath(argv[1])
+filename = argv[1]
 if filename.endswith(".json"):
     with open(filename, "r", encoding="utf-8") as f:
         data = json.load(f)
 elif filename.endswith(".qn"):
-    system(f"python ./build.py ./src -o ./build/app.exe -a {filename} -oaj")
-    with open(filename.split(".", 1)[0] + "_ast.json", "r", encoding="utf-8") as f:
+    system(f"python ./build.py ./src -o ./build/app.exe -a {filename} -o ./build/temp -oaj")
+    with open("./build/temp_ast.json", "r", encoding="utf-8") as f:
         data = json.load(f)
 else:
     print("File type not supported")
     exit(1)
 
-data = json2node(data)
+data = (json2node(i) for i in data)
 
 
 def _arr(now: Node) -> str:
@@ -269,9 +268,7 @@ def _method(now: Node) -> list[str]:
     tt = f"method {now.value['kind'] + ' ' if now.value['kind'] != 'private' else ''}{_type(now.children[0])} {now.value['name']}"
     if len(now.children[1].children) > 0:
         tt += f"<{', '.join(i.value['name'] for i in now.children[1].children)}>"
-    tt += "("
-    if now.value["self"] == "true":
-        tt += "self"
+    tt += "(self"
     if len(now.children[2].children) > 0:
         tt += ", "
     t.append(tt + f"{_declare_args(now.children[2])}) {{")
@@ -344,7 +341,8 @@ def _program(now: Node) -> str:
     return "\n".join(t)
 
 
-result = _program(data)
+result = (_program(i) for i in data)
+result = "\n\n".join(result)
 print(result)
 
 # with open(data.value["name"], "w") as f:
