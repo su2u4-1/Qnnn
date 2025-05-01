@@ -58,10 +58,10 @@ void Compiler::compile_import(const Node& node) {
     fs::path path;
     if (node.value.at("alias") == "stdlib") {
         symbol_table.back()[node.value.at("name")] = Symbol("import", Type("stdlib"), node.value.at("name"));
-        path = fs::absolute(BASEPATH / ("stdlib/" + node.value.at("name") + ".qn"));
+        path = BASEPATH / ("stdlib/" + node.value.at("name") + ".qn");
     } else {
         symbol_table.back()[node.value.at("alias")] = Symbol("import", Type("userlib"), node.value.at("name"));
-        path = fs::absolute(fs::path(ast.value["name"]).parent_path() / fs::path(node.value.at("name")).replace_extension(".qn"));
+        path = fs::path(ast.value["name"]).parent_path() / fs::path(node.value.at("name")).replace_extension(".qn");
     }
     import_list.push_back(path_processing(path));
 }
