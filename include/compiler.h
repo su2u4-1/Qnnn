@@ -5,10 +5,12 @@
 
 struct Type {
     string type;
-    vector<string> args;
-    Type(const string& type, const vector<string>& args);
+    vector<Type> args;
+    Type(const string& type, const vector<Type>& args);
     Type(const string& type);
     Type();
+    bool operator==(const Type& other);
+    bool operator!=(const Type& other);
 };
 struct Symbol {
     string kind;
@@ -32,7 +34,7 @@ class Compiler {
     void compile_class(const Node& node);
     void compile_import(const Node& node);
     void compile_declare(const Node& node);
-    Type compile_type(const Node& node);
+    const Type& compile_type(const Node& node);
     void compile_expression(const Node& node);
     void compile_term(const Node& node);
     void compile_variable(const Node& node);

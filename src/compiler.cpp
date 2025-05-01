@@ -13,11 +13,27 @@ Symbol::Symbol(const string& kind, const Type& type, const string& value) : kind
 Symbol::Symbol() : kind("None"), type(Type()), value(""), index(++symbol_index) {}
 
 // Type
-Type::Type(const string& type, const vector<string>& args) : type(type), args(args) {}
+Type::Type(const string& type, const vector<Type>& args) : type(type), args(args) {}
 
-Type::Type(const string& type) : type(type), args(vector<string>()) {}
+Type::Type(const string& type) : type(type), args(vector<Type>()) {}
 
-Type::Type() : type("None"), args(vector<string>()) {}
+Type::Type() : type("None"), args(vector<Type>()) {}
+
+bool Type::operator==(const Type& other) {
+    if (type != other.type)
+        return false;
+    if (args.size() != other.args.size())
+        return false;
+    for (size_t i = 0; i < args.size(); ++i) {
+        if (args[i] != other.args[i])
+            return false;
+    }
+    return true;
+}
+
+bool Type::operator!=(const Type& other) {
+    return !(*this == other);
+}
 
 // Compiler
 Compiler::Compiler(const Node& ast) : ast(ast), target_code(vector<string>()), symbol_table(vector<map<string, Symbol>>{map<string, Symbol>()}), import_list(vector<fs::path>()) {}
@@ -80,7 +96,12 @@ void Compiler::compile_declare(const Node& node) {
     }
 }
 
-Type Compiler::compile_type(const Node& node) {
+const Type& Compiler::compile_type(const Node& node) {
+    vector<Type> args;
+    for (const shared_ptr<Node>& i : node.children) {
+        args.push_back(compile_type(*i));
+    }
+    return Type(node.value.at("name"), args);
 }
 
 void Compiler::compile_expression(const Node& node) {
@@ -102,12 +123,28 @@ void Compiler::compile_call(const Node& node) {
 }
 
 void Compiler::compile_function(const Node& node) {
+    symbol_table.push_back(map<string, Symbol>());
+    Type return_type = compile_type(*node.children[0]);
+    Type args_type("args");
+    for (const shared_ptr<Node>& i : node.children[2]->children) {
+        const Type& t = compile_type(*i);
+        args_type.args.push_back(t);
+        symbol_table.back()[i->value["name"]] = Symbol("arg", Type(t), i->value["name"]);
+    }
+    symbol_table[0][node.value.at("name")] = Symbol("function", Type("function", {Type(node.value.at("const")), return_type, args_type}), node.value.at("name"));
+    for (const shared_ptr<Node>& i : node.children[1]->children) {
+        symbol_table.back()[i->value["name"]] = Symbol("typevar", Type("type"), i->value["name"]);
+    }
+    compile_statements(*node.children[3]);
+    return;
 }
 
 void Compiler::compile_class(const Node& node) {
+    symbol_table.push_back(map<string, Symbol>());
 }
 
 void Compiler::compile_method(const Node& node) {
+    symbol_table.push_back(map<string, Symbol>());
 }
 
 void Compiler::compile_declare_args(const Node& node) {
