@@ -69,22 +69,27 @@ bool is_term(const Token& token) {
 }
 
 void error(const string& msg, const fs::path& file_path, pair<int, int> pos, const string& source_code) {
-    string file_name = file_path.string();
-    if (PLATFORM_NAME == "windows") {
-        if (file_name[0] == '/' && (file_name[1] > 'a' && file_name[1] < 'z')) {
-            file_name = string(1, file_name[1] - 32) + ":" + file_name.substr(2);
-        }
-        while (file_name.find("/./") != string::npos) {
-            file_name.replace(file_name.find("/./"), 3, "/");
-        }
-    }
-    replace(file_name.begin(), file_name.end(), '\\', '/');
+    string file_name = path_processing(file_path);
     ostringstream oss;
     oss << get_call_stack();
     oss << "File " << file_name << ", line " << pos.first << ", in " << pos.second << "\n"
         << msg << "\n"
         << source_code << string(pos.second, ' ') << "^";
     throw runtime_error(oss.str());
+}
+
+string path_processing(const fs::path& file_path) {
+    string file_name = file_path.string();
+    if (PLATFORM_NAME == "windows") {
+        if (file_name[0] == '/' && (file_name[1] > 'a' && file_name[1] < 'z')) {
+            file_name = string(1, file_name[1] - 32) + ":" + file_name.substr(2);
+        }
+    }
+    while (file_name.find("/./") != string::npos) {
+        file_name.replace(file_name.find("/./"), 3, "/");
+    }
+    replace(file_name.begin(), file_name.end(), '\\', '/');
+    return file_name;
 }
 
 string get_call_stack() {

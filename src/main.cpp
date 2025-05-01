@@ -78,10 +78,10 @@ arguments parse_arguments(int argc, char* argv[]) {
             args.flags.push_back(argv[i]);
             if (string(argv[i]) == "--output-ast" || string(argv[i]) == "-oa") {
                 args.output_ast_type = 0;
-                args.output_ast_file = args.program_name.replace_extension(".ast");
+                args.output_ast_file = path_processing(args.program_name.replace_extension(".ast"));
             } else if (string(argv[i]) == "--output-ast-json" || string(argv[i]) == "-oaj") {
                 args.output_ast_type = 1;
-                args.output_ast_file = args.program_name.replace_filename(args.program_name.filename().string() + "_ast.json");
+                args.output_ast_file = path_processing(args.program_name.replace_filename(args.program_name.filename().string() + "_ast.json"));
             } else if (string(argv[i]) == "--output-ast-none" || string(argv[i]) == "-oan") {
                 args.output_ast_type = -1;
             } else if (string(argv[i]) == "--help" || string(argv[i]) == "-h") {
@@ -91,7 +91,7 @@ arguments parse_arguments(int argc, char* argv[]) {
                 state = 1;
             }
         } else {
-            fs::path t = fs::absolute(argv[i]);
+            fs::path t = path_processing(fs::absolute(argv[i]));
             if (state == 0) {
                 if (fs::exists(t) && t.extension() == ".qn") {
                     args.files.push_back(t);
@@ -100,7 +100,7 @@ arguments parse_arguments(int argc, char* argv[]) {
                     exit(1);
                 }
             } else if (state == 1) {
-                args.program_name = t.parent_path() / t.stem();
+                args.program_name = path_processing(t.parent_path() / t.stem());
                 state = 0;
             }
         }

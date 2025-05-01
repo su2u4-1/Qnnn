@@ -2,7 +2,7 @@
     {
         "type": "program",
         "value": {
-            "name": "/d/Qnnn/./test/test0.qn"
+            "name": "/home/su2u4/code/Qnnn/test/test0.qn"
         },
         "children": [
             {
@@ -624,7 +624,7 @@
     {
         "type": "program",
         "value": {
-            "name": "/d/Qnnn/./stdlib/list.qn"
+            "name": "/home/su2u4/code/Qnnn/stdlib/list.qn"
         },
         "children": [
             {
@@ -13764,7 +13764,7 @@
     {
         "type": "program",
         "value": {
-            "name": "/d/Qnnn/./test/./test1.qn"
+            "name": "/home/su2u4/code/Qnnn/test/test1.qn"
         },
         "children": [
             {

@@ -1,4 +1,4 @@
-program (name: /d/Qnnn/./test/test0.qn, )
+program (name: /home/su2u4/code/Qnnn/test/test0.qn, )
 {
     import (alias: stdlib, name: list, ) {}
     import (alias: test1, name: ./test1, ) {}
@@ -198,7 +198,7 @@ program (name: /d/Qnnn/./test/test0.qn, )
         }
     }
 }
-program (name: /d/Qnnn/./stdlib/list.qn, )
+program (name: /home/su2u4/code/Qnnn/stdlib/list.qn, )
 {
     class (name: list, )
     {
@@ -4322,7 +4322,7 @@ program (name: /d/Qnnn/./stdlib/list.qn, )
         }
     }
 }
-program (name: /d/Qnnn/./test/./test1.qn, )
+program (name: /home/su2u4/code/Qnnn/test/test1.qn, )
 {
     import (alias: stdlib, name: list, ) {}
     class (name: Test, )

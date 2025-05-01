@@ -42,6 +42,7 @@ bool is_symbol(char c);
 int operator_precedence(const string& op);
 bool is_term(const Token& token);
 void error(const string& msg, const fs::path& file_name, pair<int, int> pos, const string& source_code);
+string path_processing(const fs::path& file_path);
 string get_call_stack();
 void add_call_stack(const string& str, const int mode);
 void clear_call_stack();

@@ -63,7 +63,7 @@ void Compiler::compile_import(const Node& node) {
         symbol_table.back()[node.value.at("alias")] = Symbol("import", Type("userlib"), node.value.at("name"));
         path = fs::absolute(fs::path(ast.value["name"]).parent_path() / fs::path(node.value.at("name")).replace_extension(".qn"));
     }
-    import_list.push_back(path);
+    import_list.push_back(path_processing(path));
 }
 
 void Compiler::compile_declare(const Node& node) {
