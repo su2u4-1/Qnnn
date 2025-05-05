@@ -141,7 +141,7 @@ value = {
 }
 children = []
 
-type = args_call
+type = "args_call"
 value = {}
 children = [
     Node("expression"), *n
