@@ -21,6 +21,7 @@ struct Symbol {
     Symbol(const string& kind, const Type& type, const string& value, int index);
     Symbol(const string& kind, const Type& type, const string& value);
     Symbol();
+    bool operator==(const Symbol& other);
 };
 
 class Compiler {
