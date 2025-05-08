@@ -140,28 +140,25 @@ Token::Token(const string& type, const string& value, const fs::path& file_name,
     this->type = type;
     this->value = value;
     this->file_name = file_name;
-    this->line = pos.first;
-    this->column = pos.second;
+    this->pos = pos;
 }
 
 Token::Token(const string& type, const string& value) {
     this->type = type;
     this->value = value;
     this->file_name = fs::path();
-    this->line = -1;
-    this->column = -1;
+    this->pos = pair<int, int>(-1, -1);
 }
 
 Token::Token() {
     this->type = "None";
     this->value = "None";
     this->file_name = fs::path();
-    this->line = -1;
-    this->column = -1;
+    this->pos = pair<int, int>(-1, -1);
 }
 
 string Token::toString() {
-    return type + "< " + value + " > (" + to_string(line) + ", " + to_string(column) + ")";
+    return type + "< " + value + " > (" + to_string(pos.first) + ", " + to_string(pos.second) + ")";
     // return "Token(" + type + ", " + value + ", " + to_string(line) + ", " + to_string(column) + ")";
 }
 
@@ -211,34 +208,53 @@ bool Tokens::operator!=(const Token& other) const {
 }
 
 // Node
-Node::Node(const string& type, const map<string, string>& value, const vector<shared_ptr<Node>>& children) {
+Node::Node(const string& type, const map<string, string>& value, const vector<shared_ptr<Node>>& children, pair<int, int> pos) {
     this->type = type;
     this->value = value;
     this->children = children;
+    this->pos = pos;
 }
 
-Node::Node(const string& type, const map<string, string>& value, const shared_ptr<Node>& child) {
+Node::Node(const string& type, const map<string, string>& value, const shared_ptr<Node>& child, pair<int, int> pos) {
     this->type = type;
     this->value = value;
     this->children.push_back(child);
+    this->pos = pos;
+}
+
+Node::Node(const string& type, const map<string, string>& value, pair<int, int> pos) {
+    this->type = type;
+    this->value = value;
+    this->children = vector<shared_ptr<Node>>();
+    this->pos = pos;
 }
 
 Node::Node(const string& type, const map<string, string>& value) {
     this->type = type;
     this->value = value;
     this->children = vector<shared_ptr<Node>>();
+    this->pos = pair<int, int>(-1, -1);
+}
+
+Node::Node(const string& type, pair<int, int> pos) {
+    this->type = type;
+    this->value = map<string, string>();
+    this->children = vector<shared_ptr<Node>>();
+    this->pos = pos;
 }
 
 Node::Node(const string& type) {
     this->type = type;
     this->value = map<string, string>();
     this->children = vector<shared_ptr<Node>>();
+    this->pos = pair<int, int>(-1, -1);
 }
 
 Node::Node() {
     this->type = "None";
     this->value = map<string, string>();
     this->children = vector<shared_ptr<Node>>();
+    this->pos = pair<int, int>(-1, -1);
 }
 
 string Node::toString() {

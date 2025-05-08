@@ -59,7 +59,7 @@ void Parser::parser_error(const string& msg) {
 }
 
 void Parser::parser_error(const string& msg, const Token& token) {
-    error(msg, file_name, {token.line, token.column}, source_code_getitem(file_name, token.line - 1));
+    error("ParseError: " + msg, file_name, token.pos, source_code_getitem(file_name, token.pos.first - 1));
 }
 
 bool Parser::isCall() {
@@ -91,7 +91,7 @@ bool Parser::isCall() {
 
 shared_ptr<Node> Parser::parse() {
     add_call_stack("parse", 0);
-    shared_ptr<Node> root = make_shared<Node>("program", map<string, string>{{"name", file_name}});
+    shared_ptr<Node> root = make_shared<Node>("program", map<string, string>{{"name", file_name}}, current_token.pos);
     while (current_token.type != "EOF") {
         if (current_token == Token("keyword", "import"))
             root->children.push_back(parse_import());
@@ -110,7 +110,7 @@ shared_ptr<Node> Parser::parse() {
 shared_ptr<Node> Parser::parse_import() {
     add_call_stack("parse_import", 0);
     get_token();
-    shared_ptr<Node> import = make_shared<Node>("import");
+    shared_ptr<Node> import = make_shared<Node>("import", current_token.pos);
     if (current_token == Tokens("identifier", STDLIB)) {
         import->value["name"] = current_token.value;
         get_token();
@@ -143,6 +143,7 @@ vector<shared_ptr<Node>> Parser::parse_declare(bool attr, bool global) {
     add_call_stack("parse_declare", 0);
     map<string, string> state;
     vector<shared_ptr<Node>> nodes;
+    pair<int, int> pos = current_token.pos;
     if (current_token == Tokens("keyword", {"var", "const", "attr", "static"})) {
         if (attr && current_token == Tokens("keyword", {"var", "const"}))
             parser_error("Expected 'attr' or 'static', not " + current_token.toString());
@@ -174,9 +175,9 @@ vector<shared_ptr<Node>> Parser::parse_declare(bool attr, bool global) {
         children.push_back(parse_expression());
     }
     if (attr)
-        nodes.push_back(make_shared<Node>("declare_attr", state, children));
+        nodes.push_back(make_shared<Node>("declare_attr", state, children, pos));
     else
-        nodes.push_back(make_shared<Node>("declare_var", state, children));
+        nodes.push_back(make_shared<Node>("declare_var", state, children, pos));
     while (current_token == Token("symbol", ",")) {
         get_token();
         if (current_token.type != "identifier")
@@ -190,9 +191,9 @@ vector<shared_ptr<Node>> Parser::parse_declare(bool attr, bool global) {
             children.push_back(parse_expression());
         }
         if (attr)
-            nodes.push_back(make_shared<Node>("declare_attr", state, children));
+            nodes.push_back(make_shared<Node>("declare_attr", state, children, pos));
         else
-            nodes.push_back(make_shared<Node>("declare_var", state, children));
+            nodes.push_back(make_shared<Node>("declare_var", state, children, pos));
     }
     if (current_token != Token("symbol", ";"))
         parser_error("Expected ';', not " + current_token.toString());
@@ -202,7 +203,7 @@ vector<shared_ptr<Node>> Parser::parse_declare(bool attr, bool global) {
 
 shared_ptr<Node> Parser::parse_type() {
     add_call_stack("parse_type", 0);
-    shared_ptr<Node> type = make_shared<Node>("type");
+    shared_ptr<Node> type = make_shared<Node>("type", current_token.pos);
     if (current_token == Tokens("keyword", BUILTINTYPE) || current_token.type == "identifier")
         type->value["name"] = current_token.value;
     else
@@ -223,13 +224,13 @@ shared_ptr<Node> Parser::parse_type() {
 
 shared_ptr<Node> Parser::parse_expression() {
     add_call_stack("parse_expression", 0);
-    shared_ptr<Node> expression = make_shared<Node>("expression");
+    shared_ptr<Node> expression = make_shared<Node>("expression", current_token.pos);
     vector<shared_ptr<Node>> terms_operators;
     terms_operators.push_back(parse_term());
     while (true) {
         if (current_token != Tokens("symbol", OPERATOR))
             break;
-        terms_operators.push_back(make_shared<Node>("operator", map<string, string>{{"value", current_token.value}}));
+        terms_operators.push_back(make_shared<Node>("operator", map<string, string>{{"value", current_token.value}}, current_token.pos));
         get_token();
         terms_operators.push_back(parse_term());
     }
@@ -255,7 +256,7 @@ shared_ptr<Node> Parser::parse_expression() {
 
 shared_ptr<Node> Parser::parse_term() {
     add_call_stack("parse_term", 0);
-    shared_ptr<Node> term = make_shared<Node>("term");
+    shared_ptr<Node> term = make_shared<Node>("term", current_token.pos);
     if (is_term(current_token)) {
         if (current_token == Tokens("symbol", {"^", "@", "-", "!"})) {  // type = dereference or pointer or neg or not
             if (current_token.value == "^") {
@@ -282,7 +283,7 @@ shared_ptr<Node> Parser::parse_term() {
             term->value["type"] = "dict";
             get_token();
         } else if (current_token.type == "identifier" || current_token == Tokens("keyword", BUILTINTYPE)) {  // type = variable or call or type
-            shared_ptr<Node> var = make_shared<Node>("variable", map<string, string>{{"state", "false"}}, make_shared<Node>("name", map<string, string>{{"name", current_token.value}}));
+            shared_ptr<Node> var = make_shared<Node>("variable", map<string, string>{{"state", "false"}}, make_shared<Node>("name", map<string, string>{{"name", current_token.value}}, current_token.pos), current_token.pos);
             get_token();
             term->value["type"] = "variable";
             shared_ptr<Node> t;
@@ -341,7 +342,7 @@ shared_ptr<Node> Parser::parse_term() {
 
 shared_ptr<Node> Parser::parse_variable(shared_ptr<Node> var) {
     add_call_stack("parse_variable", 0);
-    shared_ptr<Node> variable = make_shared<Node>("variable", map<string, string>{{"state", "false"}}, var);
+    shared_ptr<Node> variable = make_shared<Node>("variable", map<string, string>{{"state", "false"}}, var, var->pos);
     if (current_token == Token("symbol", "[")) {
         variable->value["state"] = "index";
         get_token();
@@ -353,7 +354,7 @@ shared_ptr<Node> Parser::parse_variable(shared_ptr<Node> var) {
         get_token();
         if (current_token.type != "identifier")
             parser_error("Expected identifier, not " + current_token.toString());
-        variable->children.push_back(make_shared<Node>("name", map<string, string>{{"name", current_token.value}}));
+        variable->children.push_back(make_shared<Node>("name", map<string, string>{{"name", current_token.value}}, current_token.pos));
     } else
         parser_error("Expected '[' or '.', not " + current_token.toString());
     while (next_token() == Tokens("symbol", {".", "[", "<", "("})) {
@@ -375,7 +376,7 @@ shared_ptr<Node> Parser::parse_variable(shared_ptr<Node> var) {
 
 shared_ptr<Node> Parser::parse_use_typevar() {
     add_call_stack("parse_use_typevar", 0);
-    shared_ptr<Node> typevar = make_shared<Node>("use_typevar");
+    shared_ptr<Node> typevar = make_shared<Node>("use_typevar", current_token.pos);
     if (current_token == Token("symbol", "<")) {
         do {
             get_token();
@@ -392,13 +393,13 @@ shared_ptr<Node> Parser::parse_use_typevar() {
 
 shared_ptr<Node> Parser::parse_declare_typevar() {
     add_call_stack("parse_declare_typevar", 0);
-    shared_ptr<Node> typevar = make_shared<Node>("typevar");
+    shared_ptr<Node> typevar = make_shared<Node>("typevar", current_token.pos);
     if (current_token == Token("symbol", "<")) {
         do {
             get_token();
             if (current_token.type != "identifier")
                 parser_error("Expected identifier, not " + current_token.toString());
-            typevar->children.push_back(make_shared<Node>("declare_typevar", map<string, string>{{"name", current_token.value}}));
+            typevar->children.push_back(make_shared<Node>("declare_typevar", map<string, string>{{"name", current_token.value}}, current_token.pos));
             get_token();
         } while (current_token == Token("symbol", ","));
         if (current_token != Token("symbol", ">"))
@@ -411,11 +412,11 @@ shared_ptr<Node> Parser::parse_declare_typevar() {
 
 shared_ptr<Node> Parser::parse_call(shared_ptr<Node> var) {
     add_call_stack("parse_call", 0);
-    shared_ptr<Node> call = make_shared<Node>("call", map<string, string>{}, var);
+    shared_ptr<Node> call = make_shared<Node>("call", map<string, string>{}, var, var->pos);
     call->children.push_back(parse_use_typevar());
     if (current_token != Token("symbol", "("))
         parser_error("Expected '(', not " + current_token.toString());
-    shared_ptr<Node> args_call = make_shared<Node>("args_call");
+    shared_ptr<Node> args_call = make_shared<Node>("args_call", current_token.pos);
     if (next_token() == Token("symbol", ")")) {
         get_token();
     } else {
@@ -446,8 +447,8 @@ shared_ptr<Node> Parser::parse_call(shared_ptr<Node> var) {
 
 shared_ptr<Node> Parser::parse_function() {
     add_call_stack("parse_function", 0);
+    shared_ptr<Node> func = make_shared<Node>("func", current_token.pos);
     get_token();
-    shared_ptr<Node> func = make_shared<Node>("func");
     if (current_token == Token("keyword", "const")) {
         func->value["const"] = "true";
         get_token();
@@ -462,7 +463,7 @@ shared_ptr<Node> Parser::parse_function() {
     func->children.push_back(parse_declare_typevar());
     if (current_token != Token("symbol", "("))
         parser_error("Expected '(', not " + current_token.toString());
-    shared_ptr<Node> args_declare = make_shared<Node>("args_declare");
+    shared_ptr<Node> args_declare = make_shared<Node>("args_declare", current_token.pos);
     for (shared_ptr<Node> i : parse_declare_args())
         args_declare->children.push_back(i);
     func->children.push_back(args_declare);
@@ -477,8 +478,8 @@ shared_ptr<Node> Parser::parse_function() {
 
 shared_ptr<Node> Parser::parse_class() {
     add_call_stack("parse_class", 0);
+    shared_ptr<Node> class_node = make_shared<Node>("class", current_token.pos);
     get_token();
-    shared_ptr<Node> class_node = make_shared<Node>("class");
     if (current_token.type != "identifier")
         parser_error("Expected identifier, not " + current_token.toString());
     class_node->value["name"] = current_token.value;
@@ -502,8 +503,8 @@ shared_ptr<Node> Parser::parse_class() {
 
 shared_ptr<Node> Parser::parse_method() {
     add_call_stack("parse_method", 0);
+    shared_ptr<Node> method = make_shared<Node>("method", current_token.pos);
     get_token();
-    shared_ptr<Node> method = make_shared<Node>("method");
     if (current_token == Token("keyword", "op")) {
         method->value["kind"] = "op";
         get_token();
@@ -527,7 +528,7 @@ shared_ptr<Node> Parser::parse_method() {
     if (current_token != Token("identifier", "self"))
         parser_error("Excepted keyword 'self', not " + current_token.toString());
     get_token();
-    shared_ptr<Node> args_declare = make_shared<Node>("args_declare");
+    shared_ptr<Node> args_declare = make_shared<Node>("args_declare", current_token.pos);
     if (current_token == Token("symbol", ",")) {
         for (shared_ptr<Node> i : parse_declare_args())
             args_declare->children.push_back(i);
@@ -564,7 +565,7 @@ vector<shared_ptr<Node>> Parser::parse_declare_args() {
         get_token();
         if (current_token.type != "identifier")
             parser_error("Expected identifier, not " + current_token.toString());
-        args.push_back(make_shared<Node>("declare_arg", map<string, string>{{"name", current_token.value}, {"tuple", tuple}}, shared_ptr<Node>{type}));
+        args.push_back(make_shared<Node>("declare_arg", map<string, string>{{"name", current_token.value}, {"tuple", tuple}}, shared_ptr<Node>{type}, current_token.pos));
         get_token();
     } while (current_token == Token("symbol", ","));
     if (current_token != Token("symbol", ")"))
@@ -575,7 +576,7 @@ vector<shared_ptr<Node>> Parser::parse_declare_args() {
 
 shared_ptr<Node> Parser::parse_arr() {
     add_call_stack("parse_arr", 0);
-    shared_ptr<Node> arr = make_shared<Node>("arr");
+    shared_ptr<Node> arr = make_shared<Node>("arr", current_token.pos);
     get_token();
     while (current_token != Token("symbol", "]")) {
         arr->children.push_back(parse_expression());
@@ -590,7 +591,7 @@ shared_ptr<Node> Parser::parse_arr() {
 
 shared_ptr<Node> Parser::parse_tuple() {
     add_call_stack("parse_tuple", 0);
-    shared_ptr<Node> tuple = make_shared<Node>("tuple");
+    shared_ptr<Node> tuple = make_shared<Node>("tuple", current_token.pos);
     get_token();
     while (current_token != Token("symbol", ")")) {
         tuple->children.push_back(parse_expression());
@@ -612,7 +613,7 @@ shared_ptr<Node> Parser::parse_tuple() {
 
 shared_ptr<Node> Parser::parse_dict() {
     add_call_stack("parse_dict", 0);
-    shared_ptr<Node> dict = make_shared<Node>("dict");
+    shared_ptr<Node> dict = make_shared<Node>("dict", current_token.pos);
     get_token();
     while (current_token != Token("symbol", "}")) {
         dict->children.push_back(parse_expression());
@@ -632,7 +633,7 @@ shared_ptr<Node> Parser::parse_dict() {
 
 shared_ptr<Node> Parser::parse_statements() {
     add_call_stack("parse_statements", 0);
-    shared_ptr<Node> statements = make_shared<Node>("statements");
+    shared_ptr<Node> statements = make_shared<Node>("statements", current_token.pos);
     while (current_token != Token("symbol", "}")) {
         for (shared_ptr<Node> i : parse_statement())
             statements->children.push_back(i);
@@ -654,7 +655,7 @@ vector<shared_ptr<Node>> Parser::parse_statement() {
     else if (current_token == Token("keyword", "return"))
         return {parse_return()};
     else if (current_token == Token("keyword", "continue"))
-        return {make_shared<Node>("continue")};
+        return {make_shared<Node>("continue", current_token.pos)};
     else if (current_token == Tokens("keyword", {"var", "const"}))
         return parse_declare(false, false);
     else if (current_token == Tokens("keyword", {"attr", "static"}))
@@ -672,8 +673,8 @@ vector<shared_ptr<Node>> Parser::parse_statement() {
 
 shared_ptr<Node> Parser::parse_if() {
     add_call_stack("parse_if", 0);
+    shared_ptr<Node> if_node = make_shared<Node>("if", current_token.pos);
     get_token();
-    shared_ptr<Node> if_node = make_shared<Node>("if");
     if (current_token != Token("symbol", "("))
         parser_error("Expected '(', not " + current_token.toString());
     get_token();
@@ -719,8 +720,8 @@ shared_ptr<Node> Parser::parse_if() {
 
 shared_ptr<Node> Parser::parse_for() {
     add_call_stack("parse_for", 0);
+    shared_ptr<Node> for_node = make_shared<Node>("for", current_token.pos);
     get_token();
-    shared_ptr<Node> for_node = make_shared<Node>("for");
     if (current_token.type == "identifier") {
         for_node->value["label"] = current_token.value;
         get_token();
@@ -762,8 +763,8 @@ shared_ptr<Node> Parser::parse_for() {
 
 shared_ptr<Node> Parser::parse_while() {
     add_call_stack("parse_while", 0);
+    shared_ptr<Node> while_node = make_shared<Node>("while", current_token.pos);
     get_token();
-    shared_ptr<Node> while_node = make_shared<Node>("while");
     if (current_token != Token("symbol", "("))
         parser_error("Expected '(', not " + current_token.toString());
     get_token();
@@ -791,8 +792,8 @@ shared_ptr<Node> Parser::parse_while() {
 
 shared_ptr<Node> Parser::parse_break() {
     add_call_stack("parse_break", 0);
+    shared_ptr<Node> break_node = make_shared<Node>("break", current_token.pos);
     get_token();
-    shared_ptr<Node> break_node = make_shared<Node>("break");
     if (current_token.type == "identifier") {
         break_node->value["label"] = current_token.value;
         get_token();
@@ -806,8 +807,8 @@ shared_ptr<Node> Parser::parse_break() {
 
 shared_ptr<Node> Parser::parse_return() {
     add_call_stack("parse_return", 0);
+    shared_ptr<Node> return_node = make_shared<Node>("return", current_token.pos);
     get_token();
-    shared_ptr<Node> return_node = make_shared<Node>("return");
     if (current_token == Token("symbol", ";"))
         return return_node;
     else {

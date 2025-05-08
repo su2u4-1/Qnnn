@@ -57,8 +57,7 @@ class Token {
     string type;
     string value;
     fs::path file_name;
-    int line;
-    int column;
+    pair<int, int> pos;
     string toString();
     bool operator==(const Token& other) const;
     bool operator==(const Tokens& other) const;
@@ -78,14 +77,17 @@ class Tokens {
 
 class Node {
    public:
-    Node(const string& type, const map<string, string>& value, const vector<shared_ptr<Node>>& children);
-    Node(const string& type, const map<string, string>& value, const shared_ptr<Node>& child);
+    Node(const string& type, const map<string, string>& value, const vector<shared_ptr<Node>>& children, pair<int, int> pos);
+    Node(const string& type, const map<string, string>& value, const shared_ptr<Node>& child, pair<int, int> pos);
+    Node(const string& type, const map<string, string>& value, pair<int, int> pos);
     Node(const string& type, const map<string, string>& value);
+    Node(const string& type, pair<int, int> pos);
     Node(const string& type);
     Node();
     string type;
     map<string, string> value;
     vector<shared_ptr<Node>> children;
+    pair<int, int> pos;
     string toString();
 };
 
