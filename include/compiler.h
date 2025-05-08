@@ -32,6 +32,7 @@ class Compiler {
     vector<map<string, Symbol>> symbol_table;
     vector<fs::path> import_list;
     vector<string> compile();
+    void compile_error(const string& message, pair<int, int> pos);
     void compile_class(const Node& node);
     void compile_import(const Node& node);
     void compile_declare(const Node& node);
@@ -43,7 +44,7 @@ class Compiler {
     void compile_declare_typevar(const Node& node);
     void compile_call(const Node& node);
     void compile_function(const Node& node);
-    void compile_method(const Node& node);  // 移除重複的 compile_class 宣告
+    void compile_method(const Node& node);
     void compile_declare_args(const Node& node);
     void compile_arr(const Node& node);
     void compile_tuple(const Node& node);

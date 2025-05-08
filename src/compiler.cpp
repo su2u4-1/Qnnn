@@ -42,34 +42,37 @@ bool Type::operator!=(const Type& other) {
 // Compiler
 Compiler::Compiler(const Node& ast) : ast(ast), target_code(vector<string>()), symbol_table(vector<map<string, Symbol>>{map<string, Symbol>()}), import_list(vector<fs::path>()) {}
 
+void Compiler::compile_error(const string& message, pair<int, int> pos) {
+    error("CompileError: " + message, ast.value["name"], pos, source_code_getitem(ast.value["name"], pos.first - 1));
+}
+
 vector<string> Compiler::compile() {
     symbol_table.push_back(map<string, Symbol>());
     symbol_table[0]["__file_name"] = Symbol("env", Type("string"), ast.value["name"], 0);
     target_code.push_back("# start #");
     for (const shared_ptr<Node>& i : ast.children) {
-        if (i->type == "class") {
+        if (i->type == "class")
             compile_class(*i);
-        } else if (i->type == "import") {
+        else if (i->type == "import")
             compile_import(*i);
-        } else if (i->type == "declare") {
+        else if (i->type == "declare")
             compile_declare(*i);
-        } else if (i->type == "expression") {
+        else if (i->type == "expression")
             compile_expression(*i);
-        } else if (i->type == "function") {
+        else if (i->type == "function")
             compile_function(*i);
-        } else if (i->type == "arr") {
+        else if (i->type == "arr")
             compile_arr(*i);
-        } else if (i->type == "tuple") {
+        else if (i->type == "tuple")
             compile_tuple(*i);
-        } else if (i->type == "dict") {
+        else if (i->type == "dict")
             compile_dict(*i);
-        } else if (i->type == "if") {
+        else if (i->type == "if")
             compile_if(*i);
-        } else if (i->type == "for") {
+        else if (i->type == "for")
             compile_for(*i);
-        } else if (i->type == "while") {
+        else if (i->type == "while")
             compile_while(*i);
-        }
     }
     return target_code;
 }
@@ -157,6 +160,17 @@ void Compiler::compile_class(const Node& node) {
         symbol_table.back()[i->value["name"]] = Symbol("typevar", Type("type"), i->value["name"]);
     }
     symbol_table[0][node.value.at("name")] = Symbol("class", Type("class", {args_type}), node.value.at("name"));
+    for (int index = 1; index < node.children.size(); ++index) {
+        shared_ptr<Node> i = node.children[index];
+        if (i->type == "func")
+            compile_function(*i);
+        else if (i->type == "method")
+            compile_method(*i);
+        else if (i->type == "declare_attr")
+            compile_declare(*i);
+        else
+            compile_error("Unknown class member type: " + i->type, i->pos);
+    }
     compile_statements(*node.children[3]);
 }
 
