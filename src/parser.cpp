@@ -635,40 +635,34 @@ shared_ptr<Node> Parser::parse_statements() {
     add_call_stack("parse_statements", 0);
     shared_ptr<Node> statements = make_shared<Node>("statements", current_token.pos);
     while (current_token != Token("symbol", "}")) {
-        for (shared_ptr<Node> i : parse_statement())
-            statements->children.push_back(i);
+        if (current_token == Token("keyword", "if"))
+            statements->children.push_back(parse_if());
+        else if (current_token == Token("keyword", "for"))
+            statements->children.push_back(parse_for());
+        else if (current_token == Token("keyword", "while"))
+            statements->children.push_back(parse_while());
+        else if (current_token == Token("keyword", "break"))
+            statements->children.push_back(parse_break());
+        else if (current_token == Token("keyword", "return"))
+            statements->children.push_back(parse_return());
+        else if (current_token == Token("keyword", "continue"))
+            statements->children.push_back(make_shared<Node>("continue", current_token.pos));
+        else if (current_token == Tokens("keyword", {"var", "const"})) {
+            for (shared_ptr<Node> i : parse_declare(false, false))
+                statements->children.push_back(i);
+        } else if (current_token == Tokens("keyword", {"attr", "static"})) {
+            for (shared_ptr<Node> i : parse_declare(true, false))
+                statements->children.push_back(i);
+        } else if (is_term(current_token)) {
+            statements->children.push_back(parse_expression());
+            if (current_token != Token("symbol", ";"))
+                parser_error("Expected ';', not " + current_token.toString());
+        } else if (current_token != Token("keyword", "pass"))
+            parser_error("Expected statement, not " + current_token.toString());
         get_token();
     }
     add_call_stack("parse_statements", 1);
     return statements;
-}
-
-vector<shared_ptr<Node>> Parser::parse_statement() {
-    if (current_token == Token("keyword", "if"))
-        return {parse_if()};
-    else if (current_token == Token("keyword", "for"))
-        return {parse_for()};
-    else if (current_token == Token("keyword", "while"))
-        return {parse_while()};
-    else if (current_token == Token("keyword", "break"))
-        return {parse_break()};
-    else if (current_token == Token("keyword", "return"))
-        return {parse_return()};
-    else if (current_token == Token("keyword", "continue"))
-        return {make_shared<Node>("continue", current_token.pos)};
-    else if (current_token == Tokens("keyword", {"var", "const"}))
-        return parse_declare(false, false);
-    else if (current_token == Tokens("keyword", {"attr", "static"}))
-        return parse_declare(true, false);
-    else if (is_term(current_token)) {
-        shared_ptr<Node> t = parse_expression();
-        if (current_token != Token("symbol", ";"))
-            parser_error("Expected ';', not " + current_token.toString());
-        return {t};
-    } else if (current_token != Token("keyword", "pass"))
-        parser_error("Expected statement, not " + current_token.toString());
-    add_call_stack("parse_statement", 2);
-    return {};
 }
 
 shared_ptr<Node> Parser::parse_if() {

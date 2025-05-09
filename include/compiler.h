@@ -50,7 +50,6 @@ class Compiler {
     void compile_tuple(const Node& node);
     void compile_dict(const Node& node);
     void compile_statements(const Node& node);
-    void compile_statement(const Node& node);
     void compile_if(const Node& node);
     void compile_for(const Node& node);
     void compile_while(const Node& node);

@@ -34,7 +34,6 @@ class Parser {
     shared_ptr<Node> parse_tuple();
     shared_ptr<Node> parse_dict();
     shared_ptr<Node> parse_statements();
-    vector<shared_ptr<Node>> parse_statement();
     shared_ptr<Node> parse_if();
     shared_ptr<Node> parse_for();
     shared_ptr<Node> parse_while();

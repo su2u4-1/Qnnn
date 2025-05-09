@@ -210,9 +210,6 @@ void Compiler::compile_dict(const Node& node) {
 void Compiler::compile_statements(const Node& node) {
 }
 
-void Compiler::compile_statement(const Node& node) {
-}
-
 void Compiler::compile_if(const Node& node) {
 }
 
