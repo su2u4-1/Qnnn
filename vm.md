@@ -4,10 +4,10 @@
 `pop $[]`  
 `[op(3)] $[r0] $[r1] $[r2]`  
 `[op(2)] $[r0] $[r1]`  
-`if goto $[] [label]`  
+`if_goto $[] [label]`  
 `input [value]`  
-`label [label]`  
-`call [number of args]`  
+`set [label]`
+`call [function name] [type signature]`  
 `function [function name] [type signature]`  
 `return`  
 `get attr $[object pointer] [n]`  
@@ -17,21 +17,22 @@
 `pop $[]`  
 `[op(3)] $[r0] $[r1] $[r2]`  
 `[op(2)] $[r0] $[r1]`  
-`if goto $[] [label]`  
+`if_goto $[] [label]`  
 `input [value]`  
-`label [label]`
+`set [label]`
 ## tier 2
 `copy $[] $[]`    
 `[op(3)] $[r0] $[r1] $[r2]`  
 `[op(2)] $[r0] $[r1]`  
-`if goto $[] $[]`  
+`if_goto $[] $[]`  
 `input [value] $[]`  
-`label [label] $[]`
+`set [label]`
+`get [label] $[]`
 ## tier 3
 `copy $[] $[]`    
 `[op(3)] $[r0] $[r1] $[r2]`  
 `[op(2)] $[r0] $[r1]`  
-`if goto $[] $[]`  
+`if_goto $[] $[]`  
 `input [value] $[]`
 # op
 ## op(2)
@@ -59,31 +60,79 @@ bit or: `r2 = r0 | r1`
 logic and: `r2 = r0 && r1`  
 logic or: `r2 = r0 || r1`
 # register
+## low level register
+used when translate tier1 to tier2, and tier2 to tier3  
 |name|mean|
 |-|-|
 |$A|address|
-|$B|base|
-|$C|condition, constant|
-|$D|data|
-|$E||
-|$F||
-|$G|global|
-|$H|heap|
-|$I|integer, index|
-|$J||
-|$K||
-|$L|local, label|
 |$M|memory|
-|$N|now|
-|$O|output|
-|$P|pointer|
-|$Q||
-|$R|return, result|
-|$S|stack|
+|$N|now stack head|
 |$T|temporary|
-|$U||
-|$V|value|
-|$W||
-|$X|x|
-|$Y|y|
-|$Z|z|
+## high level register
+used when translate tier0 to tier1  
+|name|mean|
+|-|-|
+|$T|temporary|
+# translate
+## tier0 to tier1
+### `call [function name] [type signature]`  
+```
+```
+### `function [function name] [type signature]`  
+```
+set "{function name}({type signature})"
+```
+### `return`  
+```
+```
+### `get attr $[object pointer] [n]`  
+```
+```
+### `get index $[container] [n]`
+```
+```
+## tier1 to tier2
+### `push $[]`
+```
+copy $N $A
+copy $[] $M
+input 1 $T
+add $N $T $N
+```
+### `pop $[]`
+```
+input 1 $T
+sub $N $T $N
+copy $N $A
+copy $M $[]
+```
+### `if goto $[] $[label]`
+```
+get label [label] $T
+if goto $[] $T
+```
+### `input [value]`
+```
+input [value] $T
+copy $N $A
+copy $T $M
+input 1 $T
+add $N $T $N
+```
+### `get label [label]`
+```
+label [label] $T
+copy $N $A
+copy $T $M
+input 1 $T
+add $N $T $N
+```
+## tier2 to tier3
+### `set label [label]`
+```
+label_table[label] = address
+```
+### `get label [label] $[]`
+```
+input [label_table[label]] $[]
+```
