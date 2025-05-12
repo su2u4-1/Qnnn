@@ -3,107 +3,177 @@
 `push $[]`  
 `pop $[]`  
 `[op(3)] $[r0] $[r1] $[r2]`  
+`[op(3)] $[r0] [value] $[r2]`  
 `[op(2)] $[r0] $[r1]`  
+`[op(2)] [value] $[r1]`  
+`[op(3)]`
+`[op(2)]`  
 `if_goto $[] [label]`  
 `input [value]`  
 `set [label]`
-`call [function name] [type signature]`  
-`function [function name] [type signature]`  
+`call [subroutine name] [type signature]`  
+`subroutine [subroutine name] [type signature]`  
 `return`  
 `get attr $[object pointer] [n]`  
-`get index $[container] [n]`
+`get index $[container] [n]`  
+> \[op(2)\] assignment `= $[r0] $[r1]` equal `copy $[r0] $[r1]`  
+> \[op(2)\] can pop a value from stack and push them back onto the stack after computation.  
+> \[op(3)\] can pop two values from stack and push them back onto the stack after computation.
 ## tier 1
 `push $[]`  
 `pop $[]`  
 `[op(3)] $[r0] $[r1] $[r2]`  
 `[op(2)] $[r0] $[r1]`  
 `if_goto $[] [label]`  
+`goto [label]`  
 `input [value]`  
 `set [label]`
+`get [label]`
 ## tier 2
 `copy $[] $[]`    
 `[op(3)] $[r0] $[r1] $[r2]`  
 `[op(2)] $[r0] $[r1]`  
 `if_goto $[] $[]`  
+`goto $[]`  
 `input [value] $[]`  
 `set [label]`
-`get [label] $[]`
+`get [label]`
 ## tier 3
 `copy $[] $[]`    
 `[op(3)] $[r0] $[r1] $[r2]`  
 `[op(2)] $[r0] $[r1]`  
 `if_goto $[] $[]`  
+`goto $[]`  
 `input [value] $[]`
 # op
 ## op(2)
-logic not: `r1 = !r0`  
-neg: `r1 = -r0`  
-get address: `r1 = @r0`  
-deference: `r1 = ^r0`
+assignment: `r1 = r0` \[`asi`\]  
+logic not: `r1 = !r0` \[`not`\]  
+neg: `r1 = -r0` \[`neg`\]  
+get address: `r1 = @r0` \[`ptr`\]  
+deference: `r1 = ^r0` \[`def`\]
 ## op(3)
-power: `r2 = r0 ** r1`  
-mul: `r2 = r0 * r1`  
-div: `r2 = r0 / r1`  
-rem: `r2 = r0 % r1`  
-add: `r2 = r0 + r1`  
-sub: `r2 = r0 - r1`  
-left shift: `r2 = r0 << r1`  
-right shift: `r2 = r0 >> r1`  
-lt: `r2 = r0 < r1`  
-leq: `r2 = r0 <= r1`  
-gt: `r2 = r0 > r1`  
-geq: `r2 = r0 >= r1`  
-eq: `r2 = r0 == r1`  
-neq: `r2 = r0 != r1`  
-bit and: `r2 = r0 & r1`  
-bit or: `r2 = r0 | r1`  
-logic and: `r2 = r0 && r1`  
-logic or: `r2 = r0 || r1`
+power: `r2 = r0 ** r1` \[`pow`\]  
+mul: `r2 = r0 * r1` \[`mul`\]  
+div: `r2 = r0 / r1` \[`div`\]  
+rem: `r2 = r0 % r1` \[`rem`\]  
+add: `r2 = r0 + r1` \[`add`\]  
+sub: `r2 = r0 - r1` \[`sub`\]  
+left shift: `r2 = r0 << r1` \[`lsh`\]  
+right shift: `r2 = r0 >> r1` \[`rsh`\]  
+lt: `r2 = r0 < r1` \[`lt`\]  
+leq: `r2 = r0 <= r1` \[`leq`\]  
+gt: `r2 = r0 > r1` \[`gt`\]  
+geq: `r2 = r0 >= r1` \[`geq`\]  
+eq: `r2 = r0 == r1` \[`eq`\]  
+neq: `r2 = r0 != r1` \[`neq`\]  
+bit and: `r2 = r0 & r1` \[`band`\]  
+bit or: `r2 = r0 | r1` \[`bor`\]  
+logic and: `r2 = r0 && r1` \[`land`\]  
+logic or: `r2 = r0 || r1` \[`lor`\]
 # register
 ## low level register
-used when translate tier1 to tier2, and tier2 to tier3  
 |name|mean|
 |-|-|
 |$A|address|
+|$C|content|
+|$D|data|
+|$F|frame base|
 |$M|memory|
-|$N|now stack head|
-|$T|temporary|
-## high level register
-used when translate tier0 to tier1  
-|name|mean|
-|-|-|
+|$S|stack head|
 |$T|temporary|
 # translate
+## init
+```
+input 1 $C
+input {memory size} $S
+input 0 $A
+input {memory size}
+input 4 $A
+input {code start} $M
+input 8 $A
+input {content start} $M
+input 12 $A
+input {global start} start $N
+input 16 $A
+input {heap start} start $N
+```
 ## tier0 to tier1
-### `call [function name] [type signature]`  
+### `call [subroutine name] [type signature]`
 ```
+asi $S $D                           // save now stack head to $D
+input {number of args}              // push {number of args}
+push $F                             // push old $F
+asi $D $F                           // set new $F from $D
+get "call{n}"                       // get return address
+input {number of local variable}    // push return address
+push 0                              // set local variable scope
+// ^ repent this {number of local variable} times
+goto "{subroutine name}({type signature})"  // call subroutine
+set "call{n}"                       // set label for return
 ```
-### `function [function name] [type signature]`  
+### `subroutine [subroutine name] [type signature]`
 ```
-set "{function name}({type signature})"
+set "{subroutine name}({type signature})" // set subroutine start label
 ```
-### `return`  
+### `return`
 ```
+pop $D          // save return value to $D
+asi $A $F       // load $F to $A
+sub $F $M $S    // set $S = *$F, equal set stack head
+push $D         // push return value to stack head from $D
+sub $F 2 $A     // load $F - 2 to $A
+asi $M $D       // save return address to $D
+sub $F 1 $A     // load $F - 1 to $A
+asi $M $F       // set $F to old $F from $M
+goto $D         // return control to the parent subroutine
 ```
-### `get attr $[object pointer] [n]`  
+### `get attr $[object pointer] [n]`
 ```
+asi $[object pointer] $A
+sub $M {n} $A
+push $M
 ```
 ### `get index $[container] [n]`
 ```
+asi $[container] $A
+sub $M {n} $A
+push $M
+```
+### `[op(3)] $[r0] [value] $[r2]`
+```
+input [value] $T
+[op(3)] $[r0] $T $[r2]
+```
+### `[op(2)] [value] $[r1]`
+```
+input [value] $T
+[op(2)] $T $[r1]
+```
+### `[op(3)]`
+```
+pop $T
+pop $D
+[op(3)] $D $T $D
+push $D
+```
+### `[op(2)]`
+```
+pop $T
+[op(2)] $T $T
+push $T
 ```
 ## tier1 to tier2
 ### `push $[]`
 ```
-copy $N $A
+copy $S $A
 copy $[] $M
-input 1 $T
-add $N $T $N
+sub $S $C $S
 ```
 ### `pop $[]`
 ```
-input 1 $T
-sub $N $T $N
-copy $N $A
+add $S $C $S
+copy $S $A
 copy $M $[]
 ```
 ### `if goto $[] $[label]`
@@ -114,25 +184,23 @@ if goto $[] $T
 ### `input [value]`
 ```
 input [value] $T
-copy $N $A
+copy $S $A
 copy $T $M
-input 1 $T
-add $N $T $N
+sub $S $C $S
 ```
-### `get label [label]`
+### `get [label]`
 ```
-label [label] $T
-copy $N $A
+get [label] $T
+copy $S $A
 copy $T $M
-input 1 $T
-add $N $T $N
+sub $S $C $S
 ```
 ## tier2 to tier3
-### `set label [label]`
+### `set [label]`
 ```
 label_table[label] = address
 ```
-### `get label [label] $[]`
+### `get [label] $[]`
 ```
 input [label_table[label]] $[]
 ```
