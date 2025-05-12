@@ -32,7 +32,7 @@ def main() -> str:
         with open(filename, "r", encoding="utf-8") as f:
             data = json.load(f)
     elif filename.endswith(".qn"):
-        system(f"python ./build.py ./src -o ./build/app.exe -a {filename} -o ./temp/format -oaj")
+        system(f"python ./build.py ./src -o ./temp/app.exe -a {filename} -o ./temp/format -oaj")
         with open("./temp/format_ast.json", "r", encoding="utf-8") as f:
             data = json.load(f)
     else:

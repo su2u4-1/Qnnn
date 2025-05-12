@@ -12,7 +12,7 @@ def parse_args(arg: list[str]) -> tuple[list[str], str, list[str], list[str]]:
     files: list[str] = []
     flags: list[str] = []
     state = -1
-    output_file = "./build/output.exe"
+    output_file = "./temp/output.exe"
     include_path = ""
     for i in arg:
         if state == 0:
@@ -82,8 +82,8 @@ def main(files: list[str], output_file: str, args: list[str], flags: list[str], 
 
 
 p_hash = ""
-if isfile("./temp/hash.txt"):
-    with open("./temp/hash.txt", "r") as f:
+if isfile("./temp/hash"):
+    with open("./temp/hash", "r") as f:
         p_hash = f.read()
 
 if len(argv) > 1:
@@ -94,5 +94,5 @@ else:
 
 if not isdir("./temp"):
     mkdir("./temp")
-with open("./temp/hash.txt", "w") as f:
+with open("./temp/hash", "w") as f:
     f.write(str(a_hash))

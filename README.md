@@ -2,14 +2,23 @@
 執行以下任一方法 / Run one of the following methods:
 
 ## 方法一 / Method 1
+### windows
 ```sh
-$ python ./build.py ./src -o ./build/app.exe -a ./<file_name>.qn --<flag>
+$ python ./build.py ./src -o ./temp/app.exe -a <file_name>.qn <flags>
+```
+### linux
+```sh
+$ python3 ./build.py ./src -o ./temp/app -a <file_name>.qn <flags>
+```
+### 我自己在測試時的指令
+```sh
+$ python(3) ./build.py ./src -o ./temp/app.exe -a ./test/test0.qn -o ./test/test -oa
 ```
 
 ## 方法二 / Method 2
 ```sh
-$ g++ ./src/lexer.cpp ./src/main.cpp ./src/parser.cpp ./src/qlib.cpp -o ./build/app.exe
-$ ./build/app.exe ./<file_name>.qn --<flag>
+$ g++ ./src/lexer.cpp ./src/main.cpp ./src/parser.cpp ./src/qlib.cpp -o ./temp/app.exe
+$ ./temp/app.exe ./<file_name>.qn <flags>
 ```
 
 # 介紹 / Introduction
@@ -56,11 +65,13 @@ d:\Qnnn\
 ## 說明 / Description
 ### build.py
 `build.py` 是一個用於編譯和執行 `Qnnn` 程式的腳本，旨在簡化開發過程。  
-`build.py` is a script designed for compiling and executing `Qnnn` programs, aiming to simplify the development process.
+`build.py` is a script designed for compiling and executing `Qnnn` programs, aiming to simplify the development process.  
+在編譯前build.py會計算原始碼的hash，且把hash值存於`./temp/hash`，如果hash計算出之值與之前一樣，則會跳過編譯過程直接執行測試    
+Before compiling, build.py will calculate the hash of the source code and store the hash value in `./temp/hash`. If the hash value calculated is the same as before, the compilation process will be skipped and the test will be executed directly.
 
 #### 使用方式 / Usage:
 ```sh
-$ python build.py {(<file> | <dir>)} [-i <dir>] [-o <output>] [-a {<arg>}]
+$ python build.py {(<file> | <dir>)} [-i <dir>] [-o <executable file>] [-a {<arg>}]
 ```
 - `{(<file> | <dir>)}`: 可接受一個或多個檔案或資料夾，`build.py` 會將資料夾中的所有檔案加入編譯，生成指定的 `<executable file>` 並運行。  
   `{(<file> | <dir>)}`: Accepts one or more files or directories. `build.py` will include all files in the directories for compilation , generate the specified `<executable file>` and run it.
