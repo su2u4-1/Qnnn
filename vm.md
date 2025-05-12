@@ -130,14 +130,12 @@ goto $D         // return control to the parent subroutine
 ```
 ### `get attr $[object pointer] [n]`
 ```
-asi $[object pointer] $A
-sub $M {n} $A
+add $[object pointer] {n} $A
 push $M
 ```
 ### `get index $[container] [n]`
 ```
-asi $[container] $A
-sub $M {n} $A
+add $[container] {n} $A
 push $M
 ```
 ### `[op(3)] $[r0] [value] $[r2]`
