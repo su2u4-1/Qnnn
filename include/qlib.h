@@ -35,6 +35,8 @@ extern vector<string> BUILTINTYPE;
 extern vector<string> OPERATOR;
 extern string HELP_DOCS;
 extern fs::path BASEPATH;
+extern fs::path STDLIBPATH;
+extern string VERSION;
 
 bool is_keyword(const string& word);
 bool is_symbol(const string& word);

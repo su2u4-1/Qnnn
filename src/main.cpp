@@ -64,7 +64,7 @@ vector<string> read_file(const fs::path& file_name) {
 arguments parse_arguments(int argc, char* argv[]) {
     arguments args;
     if (argc < 2) {
-        cerr << "Usage: " << argv[0] << " <filename>" << endl;
+        cerr << "Usage: " << path_processing(argv[0]) << " <filename>" << endl;
         exit(1);
     }
     if (string(argv[1]) == "--help" || string(argv[1]) == "-h") {
@@ -89,6 +89,13 @@ arguments parse_arguments(int argc, char* argv[]) {
                 exit(0);
             } else if (string(argv[i]) == "--output" || string(argv[i]) == "-o") {
                 state = 1;
+            } else if (string(argv[i]) == "--stdlibpath" || string(argv[i]) == "-sp") {
+                state = 2;
+            } else if (string(argv[i]) == "--version" || string(argv[i]) == "-v") {
+                cout << "Version: " << VERSION << endl;
+                exit(0);
+            } else {
+                throw "Error: Unknown argument " + string(argv[i]);
             }
         } else {
             fs::path t = path_processing(fs::absolute(argv[i]));
@@ -102,6 +109,8 @@ arguments parse_arguments(int argc, char* argv[]) {
             } else if (state == 1) {
                 args.program_name = path_processing(t.parent_path() / t.stem());
                 state = 0;
+            } else if (state == 2) {
+                STDLIBPATH = t;
             }
         }
     }

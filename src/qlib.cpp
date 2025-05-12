@@ -10,7 +10,9 @@ string HELP_DOCS =
     "  -oaj, --output-ast-json   Output AST to JSON file\n"
     "  -oan, --output-ast-none   No output AST\n"
     "  -h,   --help              Show this help message\n";
-fs::path BASEPATH = fs::absolute(fs::path(__FILE__).parent_path().parent_path());
+fs::path BASEPATH = path_processing(fs::absolute(fs::path(__FILE__).parent_path().parent_path()));
+fs::path STDLIBPATH = BASEPATH / "stdlib";
+string VERSION = "x.y.z";  // Placeholder for version
 
 vector<string> STDLIB = {"math", "list", "random", "io", "time"};
 vector<string> BUILTINTYPE = {"int", "void", "NULL", "arr", "type"};
