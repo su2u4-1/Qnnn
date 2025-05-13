@@ -47,10 +47,9 @@ d:\Qnnn\
 │   ├── parser.h
 │   ├── qlib.h
 ├── test\               # 測試檔案 / Test files
-│   ├── test<n>\        # 測試案例 / Test cases
-│   │   ├── test<n>_ast.json # 測試 AST 輸出 / Test AST output
-│   │   ├── test<n>.ast # 測試 AST 輸出 / Test AST output
-│   │   ├── test<n>.qn  # 測試原始碼 / Test source code
+│   ├── test_ast.json   # 測試 AST 輸出 / Test AST output
+│   ├── test.ast        # 測試 AST 輸出 / Test AST output
+│   ├── test<n>.qn      # 測試原始碼 / Test source code
 │   ......
 ├── temp\               # 臨時檔案 / Temporary files
 ├── README.md
@@ -58,7 +57,9 @@ d:\Qnnn\
 ├── LICENSE
 ├── .md                 # 我自己的筆記 / My own notes
 ├── ast_node.txt        # AST 結構設計 / AST structure design
-├── grammar.bnd         # Qnnn 語法 / Qnnn grammar
+├── grammar.bnf         # Qnnn 語法 / Qnnn grammar
+├── three-address_code.md   # 三地址碼設計 / three-address code design
+├── vm.md               # 虛擬機指令設計 / virtual machine command design
 ├── build.py
 ├── format.py
 ```
