@@ -31,6 +31,7 @@ class Compiler {
     vector<string> target_code;
     vector<map<string, Symbol>> symbol_table;
     vector<fs::path> import_list;
+    vector<string> loop_label_stack;
     vector<string> compile();
     void compile_error(const string& message, pair<int, int> pos);
     void compile_class(const Node& node);
@@ -45,11 +46,11 @@ class Compiler {
     void compile_call(const Node& node);
     void compile_function(const Node& node);
     void compile_method(const Node& node);
-    void compile_declare_args(const Node& node);
     void compile_arr(const Node& node);
     void compile_tuple(const Node& node);
     void compile_dict(const Node& node);
     void compile_statements(const Node& node);
+    void compile_continue(const Node& node);
     void compile_if(const Node& node);
     void compile_for(const Node& node);
     void compile_while(const Node& node);

@@ -1,0 +1,25 @@
+program (name: D:/Qnnn/test/test2.qn, )
+{
+    func (const: false, name: main, )
+    {
+        type (name: int, ) {}
+        typevar () {}
+        args_declare ()
+        {
+            declare_arg (name: args, tuple: true, )
+            {
+                type (name: string, ) {}
+            }
+        }
+        statements ()
+        {
+            return ()
+            {
+                expression ()
+                {
+                    term (type: int, value: 0, ) {}
+                }
+            }
+        }
+    }
+}

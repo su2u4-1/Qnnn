@@ -248,6 +248,7 @@ int main(int argc, char* argv[]) {
                     }
                 }
             }
+            cout << "compiled [" << file << "]" << endl;
         }
     } catch (const exception& e) {
         cerr << "Error: " << e.what() << endl;
