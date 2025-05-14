@@ -1,19 +1,16 @@
 #include "../include/compiler.h"
 
 // Symbol
-int Symbol::symbol_index = 0;
+Symbol::Symbol(const string& kind, const Type& type, const string& value, int index) : kind(kind), type(type), value(value), index(index) {}
 
-Symbol::Symbol(const string& kind, const Type& type, const string& value, int index)
-    : kind(kind), type(type), value(value), index(index) {
-    symbol_index = index;
-}
-
-Symbol::Symbol(const string& kind, const Type& type, const string& value) : kind(kind), type(type), value(value), index(++symbol_index) {}
-
-Symbol::Symbol() : kind("None"), type(Type()), value(""), index(++symbol_index) {}
+Symbol::Symbol() : kind("None"), type(Type()), value(""), index(-1) {}
 
 bool Symbol::operator==(const Symbol& other) {
     return kind == other.kind && type == other.type;
+}
+
+string Symbol::toString() const {
+    return "Symbol(" + kind + ", " + type.toString() + ", " + value + ", " + to_string(index) + ")";
 }
 
 // Type
@@ -39,7 +36,7 @@ bool Type::operator!=(const Type& other) {
     return !(*this == other);
 }
 
-string Type::toString() {
+string Type::toString() const {
     string t = type;
     if (args.size() > 0) {
         t += "<";
@@ -52,16 +49,58 @@ string Type::toString() {
 }
 
 // Compiler
-Compiler::Compiler(const Node& ast, Log& log) : ast(ast), target_code(vector<string>()), symbol_table(vector<map<string, Symbol>>{map<string, Symbol>()}), import_list(vector<fs::path>()), log(log) {}
+Compiler::Compiler(const Node& ast, Log& log) : ast(ast), target_code(vector<string>()), symbol_table(vector<map<string, Symbol>>{map<string, Symbol>()}), subroutine_table(map<string, vector<Symbol>>()), import_list(vector<fs::path>()), log(log), static_index(0), global_index(0), subroutine_index(0) {}
 
 void Compiler::compile_error(const string& message, pair<int, int> pos) {
     error("CompileError: " + message, ast.value.at("name"), pos, source_code_getitem(ast.value.at("name"), pos.first - 1));
 }
 
+void Compiler::add_subroutine(const string& name, const string& kind, const vector<string>& generic, const vector<Type>& args_type, const Type& return_type) {
+    string sign = kind + " " + name;
+    if (generic.size() > 0) {
+        sign += "<";
+        for (int i = 0; i < generic.size() - 1; i++)
+            sign += generic[i] + ", ";
+        sign += generic.back();
+        sign += ">";
+    }
+    sign += "(";
+    for (int i = 0; i < args_type.size() - 1; i++)
+        sign += args_type[i].toString() + ", ";
+    sign += args_type.back().toString();
+    sign += ") -> " + return_type.toString();
+    target_code.push_back("subroutine \"" + sign + '"');
+    if (subroutine_table.find(name) != subroutine_table.end())
+        subroutine_table[name] = vector<Symbol>();
+    subroutine_table[name].push_back(Symbol("subroutine", Type(kind, {Type(name), Type("generic_number:" + to_string(generic.size())), Type("args", args_type), return_type}), name, subroutine_index++));
+}
+
+void Compiler::print_info(const string& msg) const {
+    cout << "--------------------" << endl;
+    cout << msg << endl;
+    cout << "subroutine_table: {" << endl;
+    for (pair<const string, vector<Symbol>> i : subroutine_table) {
+        cout << "    " << i.first << ": [" << endl;
+        for (Symbol j : i.second) {
+            cout << "        " << j.toString() << "," << endl;
+        }
+        cout << "    ]," << endl;
+    }
+    cout << "}" << endl;
+    cout << "symbol_table: [" << endl;
+    for (map<string, Symbol> i : symbol_table) {
+        cout << "    {" << endl;
+        for (pair<const string, Symbol> j : i) {
+            cout << "        " << j.first << ": " << j.second.toString() << "," << endl;
+        }
+        cout << "    }," << endl;
+    }
+    cout << "]" << endl;
+}
+
 vector<string> Compiler::compile() {
     log.log_msg("compile", 0);
-    symbol_table.push_back(map<string, Symbol>());
-    symbol_table[0]["__file_name"] = Symbol("env", Type("string"), ast.value.at("name"), 0);
+    symbol_table[0]["__file_name"] = Symbol("env", Type("string"), ast.value.at("name"), global_index++);
     loop_label_stack = vector<string>();
     target_code.push_back("# start #");
     for (const shared_ptr<Node>& i : ast.children) {
@@ -70,7 +109,7 @@ vector<string> Compiler::compile() {
         else if (i->type == "import")
             compile_import(*i);
         else if (i->type == "declare")
-            compile_declare(*i);
+            compile_declare_var(*i);
         else if (i->type == "expression")
             compile_expression(*i);
         else if (i->type == "func")
@@ -88,6 +127,7 @@ vector<string> Compiler::compile() {
         else if (i->type == "while")
             compile_while(*i);
     }
+    // print_info("end");
     log.log_msg("compile", 1);
     return target_code;
 }
@@ -98,32 +138,36 @@ void Compiler::compile_import(const Node& node) {
         compile_error("CompileError: Unknown import type: " + node.type, node.pos);
     fs::path path;
     if (node.value.at("alias") == "stdlib") {
-        symbol_table.back()[node.value.at("name")] = Symbol("import", Type("stdlib"), node.value.at("name"));
+        symbol_table[0][node.value.at("name")] = Symbol("import", Type("stdlib"), node.value.at("name"), global_index++);
         path = path_processing(STDLIBPATH / (node.value.at("name") + ".qn"));
     } else {
-        symbol_table.back()[node.value.at("alias")] = Symbol("import", Type("userlib"), node.value.at("name"));
+        symbol_table[0][node.value.at("alias")] = Symbol("import", Type("userlib"), node.value.at("name"), global_index++);
         path = path_processing(fs::path(ast.value.at("name")).parent_path() / fs::path(node.value.at("name")).replace_extension(".qn"));
     }
     import_list.push_back(path_processing(path));
     log.log_msg("compile_import", 1);
 }
 
-void Compiler::compile_declare(const Node& node) {
-    log.log_msg("compile_declare", 0);
-    if (node.type != "declare_var" && node.type != "declare_attr")
+void Compiler::compile_declare_var(const Node& node) {
+    log.log_msg("compile_declare_var", 0);
+    if (node.type != "declare_var")
         compile_error("CompileError: Unknown declare type: " + node.type, node.pos);
-    if (node.type == "declare_var") {
-        if (node.value.at("modifier") == "global")
-            symbol_table[0][node.value.at("name")] = Symbol(node.value.at("kind"), compile_type(*node.children[0]), node.value.at("name"));
-        else
-            symbol_table.back()[node.value.at("name")] = Symbol(node.value.at("kind"), compile_type(*node.children[0]), node.value.at("name"));
-    } else if (node.type == "declare_attr") {
-        if (node.value.at("kind") == "static")
-            symbol_table[symbol_table.size() - 2][node.value.at("name")] = Symbol(node.value.at("modifier"), compile_type(*node.children[0]), node.value.at("name"));
-        else
-            symbol_table.back()[node.value.at("name")] = Symbol(node.value.at("modifier"), compile_type(*node.children[0]), node.value.at("name"));
-    }
-    log.log_msg("compile_declare", 1);
+    if (node.value.at("modifier") == "global") {
+        symbol_table[0][node.value.at("name")] = Symbol(node.value.at("kind"), compile_type(*node.children[0]), node.value.at("name"), global_index++);
+    } else
+        symbol_table.back()[node.value.at("name")] = Symbol(node.value.at("kind"), compile_type(*node.children[0]), node.value.at("name"), symbol_table.back().size());
+    log.log_msg("compile_declare_var", 1);
+}
+
+void Compiler::compile_declare_attr(const Node& node, const string& class_name) {
+    log.log_msg("compile_declare_attr", 0);
+    if (node.type != "declare_attr")
+        compile_error("CompileError: Unknown declare type: " + node.type, node.pos);
+    if (node.value.at("kind") == "static")
+        symbol_table[0][class_name + "::" + node.value.at("name")] = Symbol(node.value.at("modifier"), compile_type(*node.children[0]), class_name + "::" + node.value.at("name"), static_index++);
+    else
+        symbol_table.back()[class_name + "::" + node.value.at("name")] = Symbol(node.value.at("modifier"), compile_type(*node.children[0]), class_name + "::" + node.value.at("name"), symbol_table.back().size());
+    log.log_msg("compile_declare_attr", 1);
 }
 
 const Type Compiler::compile_type(const Node& node) {
@@ -178,30 +222,30 @@ void Compiler::compile_expression(const Node& node) {
             else if (i->value.at("value") == "=")
                 target_code.push_back("asi");
             else if (i->value.at("value") == "+=") {
-                target_code.push_back("pop $t1");
-                target_code.push_back("pop $t0");
-                target_code.push_back("add $t0 $t1 $t0");
-                target_code.push_back("push $t0");
+                target_code.push_back("pop $Y");
+                target_code.push_back("pop $X");
+                target_code.push_back("add $X $Y $X");
+                target_code.push_back("push $X");
             } else if (i->value.at("value") == "-=") {
-                target_code.push_back("pop $t1");
-                target_code.push_back("pop $t0");
-                target_code.push_back("sub $t0 $t1 $t0");
-                target_code.push_back("push $t0");
+                target_code.push_back("pop $Y");
+                target_code.push_back("pop $X");
+                target_code.push_back("sub $X $Y $X");
+                target_code.push_back("push $X");
             } else if (i->value.at("value") == "*=") {
-                target_code.push_back("pop $t1");
-                target_code.push_back("pop $t0");
-                target_code.push_back("mul $t0 $t1 $t0");
-                target_code.push_back("push $t0");
+                target_code.push_back("pop $Y");
+                target_code.push_back("pop $X");
+                target_code.push_back("mul $X $Y $X");
+                target_code.push_back("push $X");
             } else if (i->value.at("value") == "/=") {
-                target_code.push_back("pop $t1");
-                target_code.push_back("pop $t0");
-                target_code.push_back("div $t0 $t1 $t0");
-                target_code.push_back("push $t0");
+                target_code.push_back("pop $Y");
+                target_code.push_back("pop $X");
+                target_code.push_back("div $X $Y $X");
+                target_code.push_back("push $X");
             } else if (i->value.at("value") == "%=") {
-                target_code.push_back("pop $t1");
-                target_code.push_back("pop $t0");
-                target_code.push_back("rem $t0 $t1 $t0");
-                target_code.push_back("push $t0");
+                target_code.push_back("pop $Y");
+                target_code.push_back("pop $X");
+                target_code.push_back("rem $X $Y $X");
+                target_code.push_back("push $X");
             } else if (i->value.at("value") == "**")
                 target_code.push_back("pow");
             else if (i->value.at("value") == "@")
@@ -225,18 +269,7 @@ void Compiler::compile_term(const Node& node) {
     log.log_msg("compile_term", 0);
     if (node.type != "term")
         compile_error("CompileError: Unknown term type: " + node.type, node.pos);
-    if (node.value.at("type") == "int" || node.value.at("type") == "bool")
-        target_code.push_back("push " + node.value.at("value"));
-    else if (node.value.at("type") == "char")
-        target_code.push_back("push " + to_string(static_cast<int>(node.value.at("value")[0])));
-    else if (node.value.at("type") == "float") {
-        size_t pos = node.value.at("value").find('.');
-        if (pos == std::string::npos) {
-            compile_error("CompileError: Invalid float literal", node.pos);
-        }
-        target_code.push_back("push " + node.value.at("value").substr(0, pos));
-        target_code.push_back("push " + node.value.at("value").substr(pos + 1));
-    }
+    target_code.push_back("push term  // " + node.toString());
     // TODO
     log.log_msg("compile_term", 1);
 }
@@ -248,18 +281,18 @@ void Compiler::compile_variable(const Node& node) {
     log.log_msg("compile_variable", 1);
 }
 
-void Compiler::compile_use_typevar(const Node& node) {
-    log.log_msg("compile_use_typevar", 0);
-    if (node.type != "use_typevar")
-        compile_error("CompileError: Unknown use_typevar type: " + node.type, node.pos);
-    log.log_msg("compile_use_typevar", 1);
+void Compiler::compile_use_generic(const Node& node) {
+    log.log_msg("compile_use_generic", 0);
+    if (node.type != "use_generic")
+        compile_error("CompileError: Unknown use_generic type: " + node.type, node.pos);
+    log.log_msg("compile_use_generic", 1);
 }
 
-void Compiler::compile_declare_typevar(const Node& node) {
-    log.log_msg("compile_declare_typevar", 0);
-    if (node.type != "declare_typevar")
-        compile_error("CompileError: Unknown declare_typevar type: " + node.type, node.pos);
-    log.log_msg("compile_declare_typevar", 1);
+void Compiler::compile_declare_generic(const Node& node) {
+    log.log_msg("compile_declare_generic", 0);
+    if (node.type != "declare_generic")
+        compile_error("CompileError: Unknown declare_generic type: " + node.type, node.pos);
+    log.log_msg("compile_declare_generic", 1);
 }
 
 void Compiler::compile_call(const Node& node) {
@@ -269,47 +302,33 @@ void Compiler::compile_call(const Node& node) {
     log.log_msg("compile_call", 1);
 }
 
-// function_type = (<isConst>(bool), <return_type>(type), [<arg_type>(type), ...])
-// symbol_table[0][function_name] = function_type
-// symbol_table[-1] = {<arg_name>: Symbol("arg", arg_type, <arg_name>), ..., <typevar_name>: Symbol("typevar", Type("type"), <typevar_name>), ...}
 void Compiler::compile_function(const Node& node) {
     log.log_msg("compile_function", 0);
     if (node.type != "func")
         compile_error("CompileError: Unknown function type: " + node.type, node.pos);
     symbol_table.push_back(map<string, Symbol>());
     Type return_type = compile_type(*node.children[0]);
-    Type args_type("args");
+    vector<Type> args_type;
     for (const shared_ptr<Node>& i : node.children[2]->children) {
         Type t = compile_type(*i->children[0]);
         if (i->value["tuple"] == "true")
             t = Type("tuple", {t});
-        args_type.args.push_back(t);
-        symbol_table.back()[i->value.at("name")] = Symbol("arg", Type(t), i->value.at("name"));
+        args_type.push_back(t);
+        symbol_table.back()[i->value.at("name")] = Symbol("arg", Type(t), i->value.at("name"), symbol_table.back().size());
     }
-    symbol_table[0][node.value.at("name")] = Symbol("function", Type("function", {Type(node.value.at("const")), return_type, args_type}), node.value.at("name"));
+    vector<string> generics;
     for (const shared_ptr<Node>& i : node.children[1]->children) {
-        symbol_table.back()[i->value.at("name")] = Symbol("typevar", Type("type"), i->value.at("name"));
+        generics.push_back(i->value.at("name"));
+        symbol_table.back()[i->value.at("name")] = Symbol("generic", Type("type"), i->value.at("name"), symbol_table.back().size());
     }
-    string function_type = "";
-    if (node.value.at("const") == "true")
-        function_type = "const_function:" + node.value.at("name") + "(";
-    else
-        function_type = "function:" + node.value.at("name") + "(";
-    if (args_type.args.size() > 0) {
-        for (int i = 0; i < args_type.args.size() - 1; i++)
-            function_type += args_type.args[i].toString() + ",";
-        function_type += args_type.args.back().toString();
-    }
-    function_type += ")->" + return_type.toString();
-    target_code.push_back("subroutine " + function_type);
+    add_subroutine(node.value.at("name"), node.value.at("const") == "true" ? "const function" : "function", generics, args_type, return_type);
     compile_statements(*node.children[3]);
+    // print_info("function");
+    symbol_table.pop_back();
     log.log_msg("compile_function", 1);
     return;
 }
 
-// class_type = ([<arg_type>(type), ...])
-// symbol_table[-1] = {<typevar_name>: Symbol("typevar", Type("type"), <typevar_name>), ...}
-// symbol_table[0][function_name] = class_type
 void Compiler::compile_class(const Node& node) {
     log.log_msg("compile_class", 0);
     if (node.type != "class")
@@ -318,55 +337,49 @@ void Compiler::compile_class(const Node& node) {
     Type typearg("args");
     for (const shared_ptr<Node>& i : node.children[0]->children) {
         typearg.args.push_back(Type(i->value.at("name")));
-        symbol_table.back()[i->value.at("name")] = Symbol("typevar", Type("type"), i->value.at("name"));
+        symbol_table.back()[i->value.at("name")] = Symbol("generic", Type("type"), i->value.at("name"), symbol_table.back().size());
     }
-    symbol_table[0][node.value.at("name")] = Symbol("class", Type("class", {typearg}), node.value.at("name"));
+    symbol_table[0][node.value.at("name")] = Symbol("class", Type("class", {typearg}), node.value.at("name"), global_index++);
     target_code.push_back("# " + symbol_table[0][node.value.at("name")].type.toString() + " #");
+    // print_info("class");
     for (int index = 1; index < node.children.size(); ++index) {
         shared_ptr<Node> i = node.children[index];
         if (i->type == "func")
             compile_function(*i);
         else if (i->type == "method")
-            compile_method(*i);
+            compile_method(*i, node.value.at("name"));
         else if (i->type == "declare_attr")
-            compile_declare(*i);
+            compile_declare_attr(*i, node.value.at("name"));
         else
             compile_error("Unknown class member type: " + i->type, i->pos);
     }
+    symbol_table.pop_back();
     log.log_msg("compile_class", 1);
 }
 
-// method_type = (<kind>(str), <return_type>(type), [<arg_type>(type), ...])
-// symbol_table[-2][method_name] = method_type
-// symbol_table[-1] = {<arg_name>: Symbol("arg", arg_type, <arg_name>), ..., <typevar_name>: Symbol("typevar", Type("type"), <typevar_name>), ...}
-void Compiler::compile_method(const Node& node) {
+void Compiler::compile_method(const Node& node, const string& class_name) {
     log.log_msg("compile_method", 0);
     if (node.type != "method")
         compile_error("CompileError: Unknown method type: " + node.type, node.pos);
     symbol_table.push_back(map<string, Symbol>());
     Type return_type = compile_type(*node.children[0]);
-    Type args_type("args");
+    vector<Type> args_type;
     for (const shared_ptr<Node>& i : node.children[2]->children) {
         Type t = compile_type(*i->children[0]);
-        if (i->value["tuple"] == "true") {
+        if (i->value["tuple"] == "true")
             t = Type("tuple", {t});
-        }
-        args_type.args.push_back(t);
-        symbol_table.back()[i->value.at("name")] = Symbol("arg", Type(t), i->value.at("name"));
+        args_type.push_back(t);
+        symbol_table.back()[i->value.at("name")] = Symbol("arg", Type(t), i->value.at("name"), symbol_table.back().size());
     }
-    symbol_table.end()[-2][node.value.at("name")] = Symbol("method", Type("method", {Type(node.value.at("kind")), return_type, args_type}), node.value.at("name"));
+    vector<string> generics;
     for (const shared_ptr<Node>& i : node.children[1]->children) {
-        symbol_table.back()[i->value.at("name")] = Symbol("typevar", Type("type"), i->value.at("name"));
+        generics.push_back(i->value.at("name"));
+        symbol_table.back()[i->value.at("name")] = Symbol("generic", Type("type"), i->value.at("name"), symbol_table.back().size());
     }
-    string method_type = node.value.at("kind") + "_method:" + node.value.at("name") + "(";
-    if (args_type.args.size() > 0) {
-        for (int i = 0; i < args_type.args.size() - 1; i++)
-            method_type += args_type.args[i].toString() + ",";
-        method_type += args_type.args.back().toString();
-    }
-    method_type += ")->" + return_type.toString();
-    target_code.push_back("subroutine " + method_type);
+    add_subroutine(class_name + "::" + node.value.at("name"), node.value.at("kind") != "private" ? node.value.at("kind") + " method" : "method", generics, args_type, return_type);
     compile_statements(*node.children[3]);
+    // print_info("method");
+    symbol_table.pop_back();
     log.log_msg("compile_method", 1);
     return;
 }
@@ -398,9 +411,9 @@ void Compiler::compile_statements(const Node& node) {
         compile_error("CompileError: Unknown statements type: " + node.type, node.pos);
     for (const shared_ptr<Node>& i : node.children) {
         if (i->type == "declare_var" || i->type == "declare_attr")
-            compile_declare(*i);
-        else if (i->type == "declare_typevar")
-            compile_declare_typevar(*i);
+            compile_declare_var(*i);
+        else if (i->type == "declare_generic")
+            compile_declare_generic(*i);
         else if (i->type == "if")
             compile_if(*i);
         else if (i->type == "for")
