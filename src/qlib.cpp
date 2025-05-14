@@ -185,9 +185,8 @@ Token::Token() {
     this->pos = pair<int, int>(-1, -1);
 }
 
-string Token::toString() {
+string Token::toString() const {
     return type + "< " + value + " > (" + to_string(pos.first) + ", " + to_string(pos.second) + ")";
-    // return "Token(" + type + ", " + value + ", " + to_string(line) + ", " + to_string(column) + ")";
 }
 
 bool Token::operator==(const Token& other) const {
@@ -216,7 +215,7 @@ Tokens::Tokens(const string& type, const vector<string>& value) {
     this->value = value;
 }
 
-string Tokens::toString() {
+string Tokens::toString() const {
     string t = "";
     for (const string& i : value)
         t += ", " + i;
@@ -285,12 +284,12 @@ Node::Node() {
     this->pos = pair<int, int>(-1, -1);
 }
 
-string Node::toString() {
+string Node::toString() const {
     string t = type + "({";
     for (const auto& [key, val] : value)
         t += key + ": " + val + ", ";
     t += "}";
-    for (shared_ptr<Node>& i : children)
+    for (const shared_ptr<Node>& i : children)
         t += ", " + i->toString();
     t += ")";
     return t;

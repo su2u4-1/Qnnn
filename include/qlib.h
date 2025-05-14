@@ -69,7 +69,7 @@ class Token {
     string value;
     fs::path file_name;
     pair<int, int> pos;
-    string toString();
+    string toString() const;
     bool operator==(const Token& other) const;
     bool operator==(const Tokens& other) const;
     bool operator!=(const Token& other) const;
@@ -81,7 +81,7 @@ class Tokens {
     Tokens(const string& type, const vector<string>& value);
     string type;
     vector<string> value;
-    string toString();
+    string toString() const;
     bool operator==(const Token& other) const;
     bool operator!=(const Token& other) const;
 };
@@ -99,7 +99,7 @@ class Node {
     map<string, string> value;
     vector<shared_ptr<Node>> children;
     pair<int, int> pos;
-    string toString();
+    string toString() const;
 };
 
 #endif  // QLIB_H
