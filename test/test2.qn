@@ -6,6 +6,6 @@ class A{
     attr int a = 0;
 
     method public int plus_a(self, int b) {
-        return a + b;
+        return self.a + b;
     }
 }

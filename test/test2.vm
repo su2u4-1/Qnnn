@@ -1,8 +1,0 @@
-# start #
-subroutine function:main(tuple<string>)->int
-push 0
-return
-# class<args> #
-subroutine public_method:plus_a(int)->int
-add
-return
