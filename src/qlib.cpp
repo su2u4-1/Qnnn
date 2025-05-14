@@ -17,7 +17,6 @@ string VERSION = "x.y.z";  // Placeholder for version
 vector<string> STDLIB = {"math", "list", "random", "io", "time"};
 vector<string> BUILTINTYPE = {"int", "void", "NULL", "arr", "type"};
 vector<string> OPERATOR = {"+", "-", "*", "/", "%", "==", "!=", "<", ">", "<=", ">=", "&&", "||", "&", "|", "=", "+=", "-=", "*=", "/=", "%=", "**", "@", "^", "<<", ">>", "!"};
-vector<string> call_stack = {};
 
 bool is_keyword(const string& word) {
     return find(_KEYWORD.begin(), _KEYWORD.end(), word) != _KEYWORD.end();
@@ -71,13 +70,7 @@ bool is_term(const Token& token) {
 }
 
 void error(const string& msg, const fs::path& file_path, pair<int, int> pos, const string& source_code) {
-    string file_name = path_processing(file_path);
-    ostringstream oss;
-    oss << get_call_stack();
-    oss << "File " << file_name << ", line " << pos.first << ", in " << pos.second << "\n"
-        << msg << "\n"
-        << source_code << string(pos.second, ' ') << "^";
-    throw runtime_error(oss.str());
+    throw runtime_error("File " + path_processing(file_path) + ", line " + to_string(pos.first) + ", in " + to_string(pos.second) + "\n" + msg + "\n" + source_code + string(pos.second, ' ') + "^");
 }
 
 string path_processing(const fs::path& file_path) {
@@ -94,39 +87,72 @@ string path_processing(const fs::path& file_path) {
     return file_name;
 }
 
-string get_call_stack() {
-    string o = "Call stack (most recent call last):\n";
-    int indent = 0;
-    for (const string& i : call_stack) {
-        if (i.find("(in)") != string::npos)
-            indent++;
-        for (int j = 0; j < indent; j++)
-            o += "    ";
-        o += i + "\n";
-        if (i.find("(out)") != string::npos)
-            indent--;
-    }
-    return o;
+// Log
+Log::Log(const string& file_name) {
+    this->file_name = file_name;
+    this->indent = 0;
+    this->t = "";
+    ofstream clear_file(file_name);
+    clear_file.clear();
+    clear_file.close();
 }
 
-void add_call_stack(const string& str, const int mode) {
-    static string t;
+Log::Log() {
+    this->file_name = "./temp/log.log";
+    this->indent = 0;
+    this->t = "";
+}
+
+void Log::log_msg(const string& msg, const int mode) {
+    string s, o;
     if (mode == 0)
-        call_stack.push_back("\033[32m(in) \033[0m" + str + "()");
+        s = "(in) " + msg + "()";
     else if (mode == 1)
-        call_stack.push_back("\033[34m(out) \033[0m" + str + "()");
+        s = "(out) " + msg + "()";
     else if (mode == 2) {
-        t = str;
-        call_stack.push_back("(get) " + str);
-    } else if (mode == 5) {
-        t = str;
-        call_stack.push_back("(rollback) " + str);
+        t = msg;
+        s = "(get) " + msg;
+    } else if (mode == 3)
+        s = "(stage) " + msg;
+    else if (mode == 5) {
+        t = msg;
+        s = "(rollback) " + msg;
     } else
-        call_stack.push_back("(error) " + str);
+        s = "(error) " + msg;
+    if (s.find("(in)") != string::npos)
+        indent++;
+    for (int j = 0; j < indent; j++)
+        o += "    ";
+    o += s + "\n";
+    if (s.find("(out)") != string::npos)
+        indent--;
+    ofstream log_file(file_name, ios::app);
+    if (log_file.fail())
+        throw runtime_error("Error: Unable to open log file: " + file_name);
+    else {
+        log_file << o;
+        log_file.close();
+    }
 }
 
-void clear_call_stack() {
-    call_stack.clear();
+void Log::start_call_stack() {
+    ofstream log_file(file_name, ios::app);
+    if (log_file.fail())
+        throw runtime_error("Error: Unable to open log file: " + file_name);
+    else {
+        log_file << "\nCall stack start\n";
+        log_file.close();
+        indent = 0;
+        t = "";
+    }
+}
+
+void Log::end_call_stack() {
+    ofstream log_file(file_name, ios::app);
+    if (log_file.fail())
+        throw runtime_error("Error: Unable to open log file: " + file_name);
+    else
+        log_file << "Call stack end\n\n";
 }
 
 void source_code_setitem(fs::path file_name, vector<string> source_code) {

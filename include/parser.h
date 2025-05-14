@@ -5,11 +5,12 @@
 
 class Parser {
    public:
-    Parser(const vector<shared_ptr<Token>>& tokens, const fs::path& file_name);
+    Parser(const vector<shared_ptr<Token>>& tokens, const fs::path& file_name, Log& log);
     vector<shared_ptr<Token>> tokens;
     fs::path file_name;
     int index;
     Token current_token;
+    Log log;
     Token next_token();
     void get_token();
     void rollback_token();

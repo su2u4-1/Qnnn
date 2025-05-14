@@ -11,7 +11,9 @@ struct Type {
     Type();
     bool operator==(const Type& other);
     bool operator!=(const Type& other);
+    string toString();
 };
+
 struct Symbol {
     string kind;
     Type type;
@@ -26,8 +28,9 @@ struct Symbol {
 
 class Compiler {
    public:
-    Compiler(const Node& ast);
+    Compiler(const Node& ast, Log& log);
     Node ast;
+    Log log;
     vector<string> target_code;
     vector<map<string, Symbol>> symbol_table;
     vector<fs::path> import_list;
@@ -37,7 +40,7 @@ class Compiler {
     void compile_class(const Node& node);
     void compile_import(const Node& node);
     void compile_declare(const Node& node);
-    const Type& compile_type(const Node& node);
+    const Type compile_type(const Node& node);
     void compile_expression(const Node& node);
     void compile_term(const Node& node);
     void compile_variable(const Node& node);

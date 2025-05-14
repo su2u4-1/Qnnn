@@ -45,11 +45,20 @@ int operator_precedence(const string& op);
 bool is_term(const Token& token);
 void error(const string& msg, const fs::path& file_name, pair<int, int> pos, const string& source_code);
 string path_processing(const fs::path& file_path);
-string get_call_stack();
-void add_call_stack(const string& str, const int mode);
-void clear_call_stack();
 void source_code_setitem(fs::path file_name, vector<string> source_code);
 string source_code_getitem(fs::path file_name, int line);
+
+class Log {
+   public:
+    Log(const string& file_name);
+    Log();
+    string file_name;
+    int indent;
+    string t;
+    void log_msg(const string& str, const int mode);
+    void start_call_stack();
+    void end_call_stack();
+};
 
 class Token {
    public:
