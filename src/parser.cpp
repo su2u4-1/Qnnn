@@ -159,10 +159,14 @@ vector<shared_ptr<Node>> Parser::parse_declare(bool attr, bool global) {
         else
             parser_error("Expected type declare, not " + current_token.toString());
         get_token();
-    } else if (global) {
+    } else if (global)
         state["modifier"] = "global";
-    } else
-        state["modifier"] = "local";
+    else {
+        if (attr)
+            state["modifier"] = "private";
+        else
+            state["modifier"] = "local";
+    }
     shared_ptr<Node> type = parse_type();
     get_token();
     if (current_token.type != "identifier")
@@ -374,46 +378,46 @@ shared_ptr<Node> Parser::parse_variable(shared_ptr<Node> var) {
     return variable;
 }
 
-shared_ptr<Node> Parser::parse_use_typevar() {
-    log.log_msg("parse_use_typevar", 0);
-    shared_ptr<Node> typevar = make_shared<Node>("use_typevar", current_token.pos);
+shared_ptr<Node> Parser::parse_use_generic() {
+    log.log_msg("parse_use_generic", 0);
+    shared_ptr<Node> generic = make_shared<Node>("use_generic", current_token.pos);
     if (current_token == Token("symbol", "<")) {
         do {
             get_token();
-            typevar->children.push_back(parse_type());
+            generic->children.push_back(parse_type());
             get_token();
         } while (current_token == Token("symbol", ","));
         if (current_token != Token("symbol", ">"))
             parser_error("Expected '>', not " + current_token.toString());
         get_token();
     }
-    log.log_msg("parse_use_typevar", 1);
-    return typevar;
+    log.log_msg("parse_use_generic", 1);
+    return generic;
 }
 
-shared_ptr<Node> Parser::parse_declare_typevar() {
-    log.log_msg("parse_declare_typevar", 0);
-    shared_ptr<Node> typevar = make_shared<Node>("typevar", current_token.pos);
+shared_ptr<Node> Parser::parse_declare_generic() {
+    log.log_msg("parse_declare_generic", 0);
+    shared_ptr<Node> generic = make_shared<Node>("generic", current_token.pos);
     if (current_token == Token("symbol", "<")) {
         do {
             get_token();
             if (current_token.type != "identifier")
                 parser_error("Expected identifier, not " + current_token.toString());
-            typevar->children.push_back(make_shared<Node>("declare_typevar", map<string, string>{{"name", current_token.value}}, current_token.pos));
+            generic->children.push_back(make_shared<Node>("declare_generic", map<string, string>{{"name", current_token.value}}, current_token.pos));
             get_token();
         } while (current_token == Token("symbol", ","));
         if (current_token != Token("symbol", ">"))
             parser_error("Expected '>', not " + current_token.toString());
         get_token();
     }
-    log.log_msg("parse_declare_typevar", 1);
-    return typevar;
+    log.log_msg("parse_declare_generic", 1);
+    return generic;
 }
 
 shared_ptr<Node> Parser::parse_call(shared_ptr<Node> var) {
     log.log_msg("parse_call", 0);
     shared_ptr<Node> call = make_shared<Node>("call", map<string, string>{}, var, var->pos);
-    call->children.push_back(parse_use_typevar());
+    call->children.push_back(parse_use_generic());
     if (current_token != Token("symbol", "("))
         parser_error("Expected '(', not " + current_token.toString());
     shared_ptr<Node> args_call = make_shared<Node>("args_call", current_token.pos);
@@ -460,7 +464,7 @@ shared_ptr<Node> Parser::parse_function() {
         parser_error("Expected identifier, not " + current_token.toString());
     func->value["name"] = current_token.value;
     get_token();
-    func->children.push_back(parse_declare_typevar());
+    func->children.push_back(parse_declare_generic());
     if (current_token != Token("symbol", "("))
         parser_error("Expected '(', not " + current_token.toString());
     shared_ptr<Node> args_declare = make_shared<Node>("args_declare", current_token.pos);
@@ -484,7 +488,7 @@ shared_ptr<Node> Parser::parse_class() {
         parser_error("Expected identifier, not " + current_token.toString());
     class_node->value["name"] = current_token.value;
     get_token();
-    class_node->children.push_back(parse_declare_typevar());
+    class_node->children.push_back(parse_declare_generic());
     if (current_token != Token("symbol", "{"))
         parser_error("Expected '{', not " + current_token.toString());
     while (current_token != Token("symbol", "}")) {
@@ -521,7 +525,7 @@ shared_ptr<Node> Parser::parse_method() {
     else
         parser_error("Expected identifier, not " + current_token.toString());
     get_token();
-    method->children.push_back(parse_declare_typevar());
+    method->children.push_back(parse_declare_generic());
     if (current_token != Token("symbol", "("))
         parser_error("Expected '(', not " + current_token.toString());
     get_token();

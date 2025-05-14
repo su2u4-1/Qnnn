@@ -24,8 +24,8 @@ class Parser {
     shared_ptr<Node> parse_expression();
     shared_ptr<Node> parse_term();
     shared_ptr<Node> parse_variable(shared_ptr<Node> var);
-    shared_ptr<Node> parse_use_typevar();
-    shared_ptr<Node> parse_declare_typevar();
+    shared_ptr<Node> parse_use_generic();
+    shared_ptr<Node> parse_declare_generic();
     shared_ptr<Node> parse_call(shared_ptr<Node> var);
     shared_ptr<Node> parse_function();
     shared_ptr<Node> parse_class();
