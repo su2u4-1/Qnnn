@@ -1,3 +1,11 @@
 func int main(*string args) {
     return 0;
 }
+
+class A{
+    attr int a = 0;
+
+    method public int plus_a(self, int b) {
+        return a + b;
+    }
+}
