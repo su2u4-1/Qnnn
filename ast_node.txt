@@ -35,7 +35,7 @@ children = [
 type = "declare_attr"
 value = {
     "kind": "attr" or "static",
-    "modifier": "local" or "public",
+    "modifier": "private" or "public",
     "name": identifier
 }
 children = [
@@ -119,23 +119,23 @@ type = "call"
 value = {}
 children = [
     Node("variable"),
-    Node("use_typevar"),
+    Node("use_generic"),
     Node("args_call")
 ]
 
-type = "use_typevar"
+type = "use_generic"
 value = {}
 children = [
     Node("type"), *n
 ]
 
-type = "typevar"
+type = "generic"
 value = {}
 children = [
-    Node("declare_typevar"), *n
+    Node("declare_generic"), *n
 ]
 
-type = "declare_typevar"
+type = "declare_generic"
 value = {
     name: identifier
 }
@@ -175,7 +175,7 @@ value = {
 }
 children = [
     Node("type"),
-    Node("typevar"),
+    Node("generic"),
     Node("args_declare"),
     Node("statements")
 ]
@@ -200,7 +200,7 @@ value = {
     "name" : "class_name"
 }
 children = [
-    Node("declare_typevar"),
+    Node("declare_generic"),
     Node("func") or Node("method") or Node("declare_attr"), *n
 ]
 
@@ -211,7 +211,7 @@ value = {
 }
 children = [
     Node("type"),
-    Node("typevar"),
+    Node("generic"),
     Node("args_declare"),
     Node("statements")
 ]

@@ -2,7 +2,7 @@
 code ::= [{<import> | <declare'global'> | <function> | <class> | <comment_0> | <comment_1>}]
 declare ::= (('var' | 'const') | ('attr' | 'static') ['public']) <type> <identifier'var_name'> ['=' <expression>] [{',' <identifier'var_name'> ['=' <expression>]}] ';'
 declare_args ::= ['*'] <type> <identifier'var_name'> [{',' ['*'] <type> <identifier'var_name'>}]
-declare_typevar ::= '<' <identifier'type_name'> [{',' <identifier'type_name'>}] '>'
+declare_generic ::= '<' <identifier'type_name'> [{',' <identifier'type_name'>}] '>'
 type ::= <builtin_type> | <identifier'class_name'> | <type> '<' <type> [{',' <type>}] '>'
 expression ::= <term> {<operator> <term>}
 term ::= ('^' | '@' | '-' | '!') <term> | <call> | <variable> | <value> | '(' <expression> ')'
@@ -14,9 +14,9 @@ pointer ::= '@' <variable>
 dict ::= '{' [<built_in_types_non_container> ':' <expression> [{',' <expression'built_in_types_non_container'> ':' <expression>}]] '}'
 built_in_types_non_container ::= 'int' | 'char' | 'bool' | 'str' | 'float'
 tuple ::= '(' <expression> [{',' <expression>}] ')'
-function ::= 'func' ['const'] <type> <identifier'func_name'> [<declare_typevar>] '(' [<declare_args>] ')' '{' {(<statement>)} '}'
-class ::= 'class' <identifier'class_name'> [<declare_typevar>] '{' [{<declare'attr'> | <method> | <func>}] '}'
-method ::= 'method' [('public' | 'op')] <type> <identifier'method_name'> [<declare_typevar>] '(' <identifier'self'> [',' <declare_args>] ')' '{' {<statement>} '}'
+function ::= 'func' ['const'] <type> <identifier'func_name'> [<declare_generic>] '(' [<declare_args>] ')' '{' {(<statement>)} '}'
+class ::= 'class' <identifier'class_name'> [<declare_generic>] '{' [{<declare'attr'> | <method> | <func>}] '}'
+method ::= 'method' [('public' | 'op')] <type> <identifier'method_name'> [<declare_generic>] '(' <identifier'self'> [',' <declare_args>] ')' '{' {<statement>} '}'
 statement ::= <if> | <for> | <while> | <return> | <expression> ';' | <break> | <continue> | <pass> | <declare>
 if ::= 'if' '(' <expression> ')' '{' {<statement>} '}' [{'elif' '(' <expression> ')' '{' {<statement>} '}'}] ['else' '{' {<statement>} '}']
 for ::= 'for' [<identifier'label'>] '(' <type> <identifier'var_name'> 'in' <iterator> ')' '{' {<statement>} '}' ['else' '{' {<statement>} '}']

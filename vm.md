@@ -76,16 +76,20 @@ logic or: `r2 = r0 || r1` \[`lor`\]
 |name|mean|
 |-|-|
 |$A|address|
-|$C|content|
+|$C|content segment start|
 |$D|data|
 |$F|frame base|
+|$G|global segment start|
+|$H|heap|
 |$M|memory|
 |$S|stack head|
 |$T|temporary|
+|$X|unknown number|
+|$Y|unknown number|
+|$Z|unknown number|
 # translate
 ## init
 ```
-input 1 $C
 input {memory size} $S
 input 0 $A
 input {memory size}
@@ -166,11 +170,11 @@ push $T
 ```
 copy $S $A
 copy $[] $M
-sub $S $C $S
+sub $S 1 $S
 ```
 ### `pop $[]`
 ```
-add $S $C $S
+add $S 1 $S
 copy $S $A
 copy $M $[]
 ```
@@ -184,14 +188,14 @@ if goto $[] $T
 input [value] $T
 copy $S $A
 copy $T $M
-sub $S $C $S
+sub $S 1 $S
 ```
 ### `get [label]`
 ```
 get [label] $T
 copy $S $A
 copy $T $M
-sub $S $C $S
+sub $S 1 $S
 ```
 ## tier2 to tier3
 ### `set [label]`
