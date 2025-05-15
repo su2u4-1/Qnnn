@@ -334,13 +334,20 @@ void Compiler::compile_class(const Node& node) {
     if (node.type != "class")
         compile_error("CompileError: Unknown class type: " + node.type, node.pos);
     symbol_table.push_back(map<string, Symbol>());
-    Type typearg("args");
+    vector<Type> generic;
     for (const shared_ptr<Node>& i : node.children[0]->children) {
-        typearg.args.push_back(Type(i->value.at("name")));
+        generic.push_back(Type(i->value.at("name")));
         symbol_table.back()[i->value.at("name")] = Symbol("generic", Type("type"), i->value.at("name"), symbol_table.back().size());
     }
-    symbol_table[0][node.value.at("name")] = Symbol("class", Type("class", {typearg}), node.value.at("name"), global_index++);
-    target_code.push_back("# " + symbol_table[0][node.value.at("name")].type.toString() + " #");
+    symbol_table[0][node.value.at("name")] = Symbol("class", Type("class", {Type(node.value.at("name")), Type("generic_number:" + to_string(generic.size()))}), node.value.at("name"), global_index++);
+    string sign = "class " + node.value.at("name");
+    if (generic.size() > 0) {
+        sign += "<";
+        for (int i = 0; i < generic.size() - 1; i++)
+            sign += generic[i].type + ", ";
+        sign += generic.back().type + ">";
+    }
+    target_code.push_back("# " + sign + " #");
     // print_info("class");
     for (int index = 1; index < node.children.size(); ++index) {
         shared_ptr<Node> i = node.children[index];
