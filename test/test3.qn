@@ -1,0 +1,23 @@
+func int main() {
+    for (int i in (0, 1, 2, 3, 4)) {
+        if (i == 1) {
+            continue;
+        }
+        print(i);
+        if (i == 3) {
+            break;
+        }
+    }
+
+    var int i = 0;
+    while label0 (i < 100) {
+        while (i < 10) {
+            if (i == 5) {
+                break label0;
+            }
+            i += 1;
+        }
+        i += 1;
+    }
+    print(i);
+}
