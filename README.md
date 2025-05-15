@@ -12,7 +12,7 @@ $ python3 ./build.py ./src -o ./temp/app -a <file_name>.qn <flags>
 ```
 ### 我自己在測試時的指令
 ```sh
-$ python(3) ./build.py ./src -o ./temp/app.exe -a ./test/test0.qn -o ./test/test -oa
+$ python(3) ./build.py ./src -g -o ./temp/app.exe -a ./test/test2.qn -o ./temp/test2 -oa -c
 ```
 
 ## 方法二 / Method 2
