@@ -12,7 +12,7 @@ $ python3 ./build.py ./src -o ./temp/app -a <file_name>.qn <flags>
 ```
 ### 我自己在測試時的指令
 ```sh
-$ python(3) ./build.py ./src -g -o ./temp/app.exe -a ./test/test2.qn -o ./temp/test2 -oa -c
+$ python(3) ./build.py ./src -a ./test/test3.qn -o ./temp/test3 -oa -c
 ```
 
 ## 方法二 / Method 2
@@ -67,19 +67,21 @@ d:\Qnnn\
 ### build.py
 `build.py` 是一個用於編譯和執行 `Qnnn` 程式的腳本，旨在簡化開發過程。  
 `build.py` is a script designed for compiling and executing `Qnnn` programs, aiming to simplify the development process.  
-在編譯前build.py會計算原始碼的hash，且把hash值存於`./temp/hash`，如果hash計算出之值與之前一樣，則會跳過編譯過程直接執行測試    
-Before compiling, build.py will calculate the hash of the source code and store the hash value in `./temp/hash`. If the hash value calculated is the same as before, the compilation process will be skipped and the test will be executed directly.
+在編譯前build.py會計算原始碼的hash，且把hash值作為資料夾名稱存於`./temp/hash/`下，如果該hash值的資料夾已存在，則會跳過編譯過程直接執行之前編譯的程式。    
+Before compiling, build.py calculates the hash of the source code and uses it as a directory name under `./temp/hash/`. If a directory with that hash value already exists, the compilation process will be skipped and the previously compiled program will be executed directly.
 
 #### 使用方式 / Usage:
 ```sh
 $ python build.py {(<file> | <dir>)} [-i <dir>] [-o <executable file>] [-a {<arg>}]
 ```
-- `{(<file> | <dir>)}`: 可接受一個或多個檔案或資料夾，`build.py` 會將資料夾中的所有檔案加入編譯，生成指定的 `<executable file>` 並運行。  
-  `{(<file> | <dir>)}`: Accepts one or more files or directories. `build.py` will include all files in the directories for compilation , generate the specified `<executable file>` and run it.
-- `<args>`: 接受一連串以空白分隔的參數，這些參數會傳遞給生成的 `<executable file>`。  
-  `<args>`: Accepts a series of space-separated arguments, which will be passed to the generated `<executable file>`.
-- `-i <dir>`: 等同於 g++ 的 `-I` 選項，將 `<dir>` 作為 include 來源，且會將所有原始碼的路徑轉換成絕對路徑
-  `-i <dir>`: Equivalent to g++'s `-I` option, except `<dir>` is used as the include source, and all source code paths are converted to absolute paths.
+- `{(<file> | <dir>)}`: 可接受一個或多個檔案或資料夾，build.py 會將資料夾中的所有檔案加入編譯，生成可執行檔並運行。  
+  `{(<file> | <dir>)}`: Accepts one or more files or directories. build.py will include all files in the directories for compilation, generate an executable file and run it.
+- `-a {<arg>}`: 接受一連串以空白分隔的參數，這些參數會傳遞給生成的可執行檔。  
+  `-a {<arg>}`: Accepts a series of space-separated arguments, which will be passed to the generated executable file.
+- `-i <dir>`: 設定include目錄，會將所有原始碼的路徑轉換成絕對路徑，並添加`-I <dir>`編譯選項。  
+  `-i <dir>`: Sets the include directory, converts all source code paths to absolute paths, and adds the `-I <dir>` compilation option.
+- 其他參數會作為編譯器的選項傳遞給g++。  
+  Other arguments will be passed to g++ as compiler options.
 
 ### format.py
 `format.py` 的原始目的是使用語法分析器生成的 AST 來重新格式化原始碼，但目前該功能尚未完善。  
