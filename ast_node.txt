@@ -262,6 +262,7 @@ children = [
 
 type = "while"
 value = {
+    "label": identifier or "while",
     "else": "true" or "false"
 }
 children = [

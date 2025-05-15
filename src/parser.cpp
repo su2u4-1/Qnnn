@@ -763,6 +763,11 @@ shared_ptr<Node> Parser::parse_while() {
     log.log_msg("parse_while", 0);
     shared_ptr<Node> while_node = make_shared<Node>("while", current_token.pos);
     get_token();
+    if (current_token.type == "identifier") {
+        while_node->value["label"] = current_token.value;
+        get_token();
+    } else
+        while_node->value["label"] = "while";
     if (current_token != Token("symbol", "("))
         parser_error("Expected '(', not " + current_token.toString());
     get_token();
