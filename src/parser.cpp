@@ -649,9 +649,12 @@ shared_ptr<Node> Parser::parse_statements() {
             statements->children.push_back(parse_break());
         else if (current_token == Token("keyword", "return"))
             statements->children.push_back(parse_return());
-        else if (current_token == Token("keyword", "continue"))
+        else if (current_token == Token("keyword", "continue")) {
             statements->children.push_back(make_shared<Node>("continue", current_token.pos));
-        else if (current_token == Tokens("keyword", {"var", "const"})) {
+            get_token();
+            if (current_token != Token("symbol", ";"))
+                parser_error("Expected ';', not " + current_token.toString());
+        } else if (current_token == Tokens("keyword", {"var", "const"})) {
             for (shared_ptr<Node> i : parse_declare(false, false))
                 statements->children.push_back(i);
         } else if (current_token == Tokens("keyword", {"attr", "static"})) {
