@@ -49,13 +49,16 @@ string Type::toString() const {
 }
 
 // Compiler
-Compiler::Compiler(const Node& ast, Log& log) : ast(ast), target_code(vector<string>()), symbol_table(vector<map<string, Symbol>>{map<string, Symbol>()}), subroutine_table(map<string, vector<Symbol>>()), import_list(vector<fs::path>()), log(log), static_index(0), global_index(0), subroutine_index(0) {}
+Compiler::Compiler(const Node& ast, Log& log) : ast(ast), log(log) {
+    symbol_table.push_back(map<string, Symbol>());
+}
 
 void Compiler::compile_error(const string& message, pair<int, int> pos) {
     error("CompileError: " + message, ast.value.at("name"), pos, source_code_getitem(ast.value.at("name"), pos.first - 1));
 }
 
 void Compiler::add_subroutine(const string& name, const string& kind, const vector<string>& generic, const vector<Type>& args_type, const Type& return_type) {
+    log.log_msg("add_subroutine0", 0);
     string sign = kind + " " + name;
     if (generic.size() > 0) {
         sign += "<";
@@ -65,14 +68,17 @@ void Compiler::add_subroutine(const string& name, const string& kind, const vect
         sign += ">";
     }
     sign += "(";
-    for (int i = 0; i < args_type.size() - 1; i++)
-        sign += args_type[i].toString() + ", ";
-    sign += args_type.back().toString();
+    if (args_type.size() > 0) {
+        for (int i = 0; i < args_type.size() - 1; i++)
+            sign += args_type[i].toString() + ", ";
+        sign += args_type.back().toString();
+    }
     sign += ") -> " + return_type.toString();
     target_code.push_back("subroutine \"" + sign + '"');
     if (subroutine_table.find(name) != subroutine_table.end())
         subroutine_table[name] = vector<Symbol>();
     subroutine_table[name].push_back(Symbol("subroutine", Type(kind, {Type(name), Type("generic_number:" + to_string(generic.size())), Type("args", args_type), return_type}), name, subroutine_index++));
+    log.log_msg("add_subroutine0", 1);
 }
 
 void Compiler::print_info(const string& msg) const {
@@ -94,6 +100,11 @@ void Compiler::print_info(const string& msg) const {
             cout << "        " << j.first << ": " << j.second.toString() << "," << endl;
         }
         cout << "    }," << endl;
+    }
+    cout << "]" << endl;
+    cout << "loop_label_stack: [";
+    for (string i : loop_label_stack) {
+        cout << i << ", ";
     }
     cout << "]" << endl;
 }
@@ -447,6 +458,7 @@ void Compiler::compile_continue(const Node& node) {
     log.log_msg("compile_continue", 0);
     if (node.type != "continue")
         compile_error("CompileError: Unknown continue type: " + node.type, node.pos);
+    target_code.push_back("goto " + loop_label_stack.back() + "_start");
     log.log_msg("compile_continue", 1);
 }
 
@@ -461,6 +473,20 @@ void Compiler::compile_for(const Node& node) {
     log.log_msg("compile_for", 0);
     if (node.type != "for")
         compile_error("CompileError: Unknown for type: " + node.type, node.pos);
+    string n = "";
+    if (node.value.at("label") == "for")
+        n += "loop_" + to_string(loop_index++);
+    else {
+        symbol_table.back()[node.value.at("label")] = Symbol("loop_label", Type("string"), node.value.at("label"), symbol_table.back().size());
+        n += node.value.at("label");
+        loop_index++;
+    }
+    target_code.push_back("label \"" + n + "_start\"");
+    loop_label_stack.push_back(n);
+    compile_statements(*node.children[2]);
+    print_info("for");
+    target_code.push_back("label \"" + n + "_end\"");
+    loop_label_stack.pop_back();
     log.log_msg("compile_for", 1);
 }
 
@@ -468,6 +494,23 @@ void Compiler::compile_while(const Node& node) {
     log.log_msg("compile_while", 0);
     if (node.type != "while")
         compile_error("CompileError: Unknown while type: " + node.type, node.pos);
+    string n = "";
+    if (node.value.at("label") == "while")
+        n += "loop_" + to_string(loop_index++);
+    else {
+        symbol_table.back()[node.value.at("label")] = Symbol("loop_label", Type("string"), node.value.at("label"), symbol_table.back().size());
+        n += node.value.at("label");
+        loop_index++;
+    }
+    target_code.push_back("label \"" + n + "_start\"");
+    loop_label_stack.push_back(n);
+    compile_statements(*node.children[1]);
+    compile_expression(*node.children[0]);
+    target_code.push_back("pop $X");
+    target_code.push_back("if_goto $X " + n + "_start");
+    print_info("while");
+    target_code.push_back("label \"" + n + "_end\"");
+    loop_label_stack.pop_back();
     log.log_msg("compile_while", 1);
 }
 
@@ -475,6 +518,26 @@ void Compiler::compile_break(const Node& node) {
     log.log_msg("compile_break", 0);
     if (node.type != "break")
         compile_error("CompileError: Unknown break type: " + node.type, node.pos);
+    if (loop_label_stack.empty())
+        compile_error("CompileError: Break statement not in loop", node.pos);
+    if (node.value.at("label") != "break") {
+        bool found = false;
+        while (!loop_label_stack.empty()) {
+            if (loop_label_stack.back() == node.value.at("label")) {
+                target_code.push_back("goto " + loop_label_stack.back() + "_end");
+                loop_label_stack.pop_back();
+                found = true;
+                break;
+            }
+            loop_label_stack.pop_back();
+        }
+        if (!found)
+            compile_error("CompileError: Break label not found: " + node.value.at("label"), node.pos);
+    } else {
+        target_code.push_back("goto " + loop_label_stack.back() + "_end");
+        loop_label_stack.pop_back();
+    }
+    print_info("break");
     log.log_msg("compile_break", 1);
 }
 

@@ -35,6 +35,7 @@ class Compiler {
     map<string, vector<Symbol>> subroutine_table;
     vector<fs::path> import_list;
     vector<string> loop_label_stack;
+    int loop_index;
     int static_index;
     int global_index;
     int subroutine_index;
