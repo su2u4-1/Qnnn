@@ -11,8 +11,8 @@
 `if_goto $[] [label]`  
 `input [value]`  
 `set [label]`
-`call [subroutine name] [type signature]`  
-`subroutine [subroutine name] [type signature]`  
+`call [subroutine signature]`  
+`subroutine [subroutine signature]`  
 `return`  
 `get attr $[object pointer] [n]`  
 `get index $[container] [n]`  
@@ -103,7 +103,7 @@ input 16 $A
 input {heap start} start $N
 ```
 ## tier0 to tier1
-### `call [subroutine name] [type signature]`
+### `call [subroutine signature]`
 ```
 asi $S $D                           // save now stack head to $D
 input {number of args}              // push {number of args}
@@ -113,12 +113,12 @@ get "call{n}"                       // get return address
 input {number of local variable}    // push return address
 push 0                              // set local variable scope
 // ^ repent this {number of local variable} times
-goto "{subroutine name}({type signature})"  // call subroutine
+goto "{subroutine signature}"  // call subroutine
 set "call{n}"                       // set label for return
 ```
-### `subroutine [subroutine name] [type signature]`
+### `subroutine [subroutine signature]`
 ```
-set "{subroutine name}({type signature})" // set subroutine start label
+set "{subroutine signature}" // set subroutine start label
 ```
 ### `return`
 ```

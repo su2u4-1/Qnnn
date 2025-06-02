@@ -57,8 +57,22 @@ void Compiler::compile_error(const string& message, pair<int, int> pos) {
     error("CompileError: " + message, ast.value.at("name"), pos, source_code_getitem(ast.value.at("name"), pos.first - 1));
 }
 
+/*
+subroutine signature ::= <kind> <name> [<generic>] <args_type> "->" <return_type>
+kind ::= "function" | "const" | "method" | "public" | "operator"
+name ::= <identifier>
+generic ::= "<" <identifier> [{, <identifier>}] ">"
+args_type ::= "(" [<type> [{, <type>}]] ")"
+return_type ::= <type>
+type ::= <built-in type> | <identifier> | <identifier> "<" <type> [{, <type>}] ">"
+ex:
+    function a<T>(int, int) -> T
+    method b() -> void
+    public c<T, U>() -> int
+    operator d<T, U>(T, U) -> float
+*/
 void Compiler::add_subroutine(const string& name, const string& kind, const vector<string>& generic, const vector<Type>& args_type, const Type& return_type) {
-    log.log_msg("add_subroutine0", 0);
+    log.log_msg("add_subroutine", 0);
     string sign = kind + " " + name;
     if (generic.size() > 0) {
         sign += "<";
@@ -75,10 +89,10 @@ void Compiler::add_subroutine(const string& name, const string& kind, const vect
     }
     sign += ") -> " + return_type.toString();
     target_code.push_back("subroutine \"" + sign + '"');
-    if (subroutine_table.find(name) != subroutine_table.end())
+    if (subroutine_table.find(name) == subroutine_table.end())
         subroutine_table[name] = vector<Symbol>();
-    subroutine_table[name].push_back(Symbol("subroutine", Type(kind, {Type(name), Type("generic_number:" + to_string(generic.size())), Type("args", args_type), return_type}), name, subroutine_index++));
-    log.log_msg("add_subroutine0", 1);
+    subroutine_table[name].push_back(Symbol("subroutine", Type(sign), name, subroutine_index++));
+    log.log_msg("add_subroutine", 1);
 }
 
 void Compiler::print_info(const string& msg) const {
@@ -106,6 +120,10 @@ void Compiler::print_info(const string& msg) const {
     for (string i : loop_label_stack) {
         cout << i << ", ";
     }
+    cout << "]" << endl;
+    cout << "target_code: [" << endl;
+    for (string i : target_code)
+        cout << "    " << i << "," << endl;
     cout << "]" << endl;
 }
 
@@ -394,7 +412,7 @@ void Compiler::compile_method(const Node& node, const string& class_name) {
         generics.push_back(i->value.at("name"));
         symbol_table.back()[i->value.at("name")] = Symbol("generic", Type("type"), i->value.at("name"), symbol_table.back().size());
     }
-    add_subroutine(class_name + "::" + node.value.at("name"), node.value.at("kind") != "private" ? node.value.at("kind") + " method" : "method", generics, args_type, return_type);
+    add_subroutine(class_name + "::" + node.value.at("name"), node.value.at("kind") == "private" ? "method" : (node.value.at("kind") == "public" ? "public" : "operator"), generics, args_type, return_type);
     compile_statements(*node.children[3]);
     // print_info("method");
     symbol_table.pop_back();
