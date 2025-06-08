@@ -98,9 +98,9 @@ input {code start} $M
 input 8 $A
 input {content start} $M
 input 12 $A
-input {global start} start $N
+input {global start} $M
 input 16 $A
-input {heap start} start $N
+input {heap start} $M
 ```
 ## tier0 to tier1
 ### `call [subroutine signature]`
