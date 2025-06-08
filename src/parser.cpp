@@ -263,15 +263,14 @@ shared_ptr<Node> Parser::parse_term() {
     shared_ptr<Node> term = make_shared<Node>("term", current_token.pos);
     if (is_term(current_token)) {
         if (current_token == Tokens("symbol", {"^", "@", "-", "!"})) {  // type = dereference or pointer or neg or not
-            if (current_token.value == "^") {
+            if (current_token.value == "^")
                 term->value["type"] = "dereference";
-            } else if (current_token.value == "@") {
+            else if (current_token.value == "@")
                 term->value["type"] = "pointer";
-            } else if (current_token.value == "-") {
+            else if (current_token.value == "-")
                 term->value["type"] = "neg";
-            } else if (current_token.value == "!") {
+            else if (current_token.value == "!")
                 term->value["type"] = "not";
-            }
             get_token();
             term->children.push_back(parse_term());
         } else if (current_token == Token("symbol", "(")) {  // type = value or expression or tuple
