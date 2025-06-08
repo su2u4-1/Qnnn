@@ -181,10 +181,22 @@ void Compiler::compile_declare_var(const Node& node) {
     log.log_msg("compile_declare_var", 0);
     if (node.type != "declare_var")
         compile_error("CompileError: Unknown declare type: " + node.type, node.pos);
+    string t;
     if (node.value.at("modifier") == "global") {
         symbol_table[0][node.value.at("name")] = Symbol(node.value.at("kind"), compile_type(*node.children[0]), node.value.at("name"), global_index++);
-    } else
+        t = "input 12 $A\nadd $M " + to_string(symbol_table[0][node.value.at("name")].index) + " $A";
+    } else {
         symbol_table.back()[node.value.at("name")] = Symbol(node.value.at("kind"), compile_type(*node.children[0]), node.value.at("name"), symbol_table.back().size());
+        t = "add $F " + to_string(symbol_table.back()[node.value.at("name")].index + 4) + " $A";
+    }
+    if (node.children.size() == 2) {
+        if (node.children[1]->type != "expression")
+            compile_error("CompileError: Expected expression, not " + node.children[1]->type, node.pos);
+        compile_expression(*node.children[1]);
+        target_code.push_back("pop $T");
+        target_code.push_back(t);
+        target_code.push_back("copy $T $M");
+    }
     log.log_msg("compile_declare_var", 1);
 }
 
@@ -296,10 +308,56 @@ void Compiler::compile_expression(const Node& node) {
 
 void Compiler::compile_term(const Node& node) {
     log.log_msg("compile_term", 0);
+    print_info("start " + node.toString());
     if (node.type != "term")
         compile_error("CompileError: Unknown term type: " + node.type, node.pos);
-    target_code.push_back("push term  // " + node.toString());
-    // TODO
+    if (node.value.at("type") == "int")
+        target_code.push_back("push " + node.value.at("value"));
+    else if (node.value.at("type") == "float") {
+        size_t pos = node.value.at("value").find('.');
+        assert(pos != string::npos);
+        target_code.push_back("push " + node.value.at("value").substr(0, pos));
+        target_code.push_back("push " + node.value.at("value").substr(pos + 1));
+        target_code.push_back("call float.init");
+    } else if (node.value.at("type") == "bool")
+        target_code.push_back("push " + (node.value.at("value") == "true") ? "1" : "0");
+    else if (node.value.at("type") == "char")
+        target_code.push_back("push '" + node.value.at("value") + "'");
+    else if (node.value.at("type") == "str") {
+        for (char c : node.value.at("value"))
+            target_code.push_back("push " + to_string(c));
+    } else if (node.value.at("type") == "char")
+        target_code.push_back("push " + to_string(node.value.at("value")[0]));
+    else if (node.value.at("type") == "void" || node.value.at("type") == "null")
+        target_code.push_back("push 0");
+    else if (node.value.at("type") == "dereference" || node.value.at("type") == "pointer" || node.value.at("type") == " neg" || node.value.at("type") == "not") {
+        compile_term(*node.children[0]);
+        target_code.push_back("pop $T");
+        if (node.value.at("type") == "dereference")
+            target_code.push_back("def $T");
+        else if (node.value.at("type") == "pointer")
+            target_code.push_back("ptr $T");
+        else if (node.value.at("type") == "neg")
+            target_code.push_back("neg $T");
+        else if (node.value.at("type") == "not")
+            target_code.push_back("not $T");
+        target_code.push_back("push $T");
+    } else if (node.value.at("type") == "expression")
+        compile_expression(*node.children[0]);
+    else if (node.value.at("type") == "variable")
+        compile_variable(*node.children[0]);
+    else if (node.value.at("type") == "call")
+        compile_call(*node.children[0]);
+    else if (node.value.at("type") == "arr")
+        compile_arr(*node.children[0]);
+    else if (node.value.at("type") == "tuple")
+        compile_tuple(*node.children[0]);
+    else if (node.value.at("type") == "dict")
+        compile_dict(*node.children[0]);
+    else
+        compile_error("CompileError: Unknown term type: " + node.value.at("type"), node.pos);
+    print_info("end " + node.toString());
+    // target_code.push_back("push term  // " + node.toString());
     log.log_msg("compile_term", 1);
 }
 
@@ -315,13 +373,6 @@ void Compiler::compile_use_generic(const Node& node) {
     if (node.type != "use_generic")
         compile_error("CompileError: Unknown use_generic type: " + node.type, node.pos);
     log.log_msg("compile_use_generic", 1);
-}
-
-void Compiler::compile_declare_generic(const Node& node) {
-    log.log_msg("compile_declare_generic", 0);
-    if (node.type != "declare_generic")
-        compile_error("CompileError: Unknown declare_generic type: " + node.type, node.pos);
-    log.log_msg("compile_declare_generic", 1);
 }
 
 void Compiler::compile_call(const Node& node) {
@@ -345,7 +396,7 @@ void Compiler::compile_function(const Node& node) {
         args_type.push_back(t);
         symbol_table.back()[i->value.at("name")] = Symbol("arg", Type(t), i->value.at("name"), symbol_table.back().size());
     }
-    vector<string> generics;
+    vector<string> generics;  // compile_declare_generic
     for (const shared_ptr<Node>& i : node.children[1]->children) {
         generics.push_back(i->value.at("name"));
         symbol_table.back()[i->value.at("name")] = Symbol("generic", Type("type"), i->value.at("name"), symbol_table.back().size());
@@ -363,18 +414,18 @@ void Compiler::compile_class(const Node& node) {
     if (node.type != "class")
         compile_error("CompileError: Unknown class type: " + node.type, node.pos);
     symbol_table.push_back(map<string, Symbol>());
-    vector<Type> generic;
+    vector<string> generics;
     for (const shared_ptr<Node>& i : node.children[0]->children) {
-        generic.push_back(Type(i->value.at("name")));
+        generics.push_back(i->value.at("name"));
         symbol_table.back()[i->value.at("name")] = Symbol("generic", Type("type"), i->value.at("name"), symbol_table.back().size());
     }
-    symbol_table[0][node.value.at("name")] = Symbol("class", Type("class", {Type(node.value.at("name")), Type("generic_number:" + to_string(generic.size()))}), node.value.at("name"), global_index++);
+    symbol_table[0][node.value.at("name")] = Symbol("class", Type("class", {Type(node.value.at("name")), Type("generic_number:" + to_string(generics.size()))}), node.value.at("name"), global_index++);
     string sign = "class " + node.value.at("name");
-    if (generic.size() > 0) {
+    if (generics.size() > 0) {
         sign += "<";
-        for (int i = 0; i < generic.size() - 1; i++)
-            sign += generic[i].type + ", ";
-        sign += generic.back().type + ">";
+        for (int i = 0; i < generics.size() - 1; i++)
+            sign += generics[i] + ", ";
+        sign += generics.back() + ">";
     }
     target_code.push_back("# " + sign + " #");
     // print_info("class");
@@ -407,7 +458,7 @@ void Compiler::compile_method(const Node& node, const string& class_name) {
         args_type.push_back(t);
         symbol_table.back()[i->value.at("name")] = Symbol("arg", Type(t), i->value.at("name"), symbol_table.back().size());
     }
-    vector<string> generics;
+    vector<string> generics;  // compile_declare_generic
     for (const shared_ptr<Node>& i : node.children[1]->children) {
         generics.push_back(i->value.at("name"));
         symbol_table.back()[i->value.at("name")] = Symbol("generic", Type("type"), i->value.at("name"), symbol_table.back().size());
@@ -448,8 +499,6 @@ void Compiler::compile_statements(const Node& node) {
     for (const shared_ptr<Node>& i : node.children) {
         if (i->type == "declare_var" || i->type == "declare_attr")
             compile_declare_var(*i);
-        else if (i->type == "declare_generic")
-            compile_declare_generic(*i);
         else if (i->type == "if")
             compile_if(*i);
         else if (i->type == "for")
@@ -502,7 +551,6 @@ void Compiler::compile_for(const Node& node) {
     target_code.push_back("label \"" + n + "_start\"");
     loop_label_stack.push_back(n);
     compile_statements(*node.children[2]);
-    print_info("for");
     target_code.push_back("label \"" + n + "_end\"");
     loop_label_stack.pop_back();
     log.log_msg("compile_for", 1);
@@ -526,7 +574,6 @@ void Compiler::compile_while(const Node& node) {
     compile_expression(*node.children[0]);
     target_code.push_back("pop $X");
     target_code.push_back("if_goto $X " + n + "_start");
-    print_info("while");
     target_code.push_back("label \"" + n + "_end\"");
     loop_label_stack.pop_back();
     log.log_msg("compile_while", 1);
@@ -555,7 +602,6 @@ void Compiler::compile_break(const Node& node) {
         target_code.push_back("goto " + loop_label_stack.back() + "_end");
         loop_label_stack.pop_back();
     }
-    print_info("break");
     log.log_msg("compile_break", 1);
 }
 

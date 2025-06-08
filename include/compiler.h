@@ -52,7 +52,6 @@ class Compiler {
     void compile_term(const Node& node);
     void compile_variable(const Node& node);
     void compile_use_generic(const Node& node);
-    void compile_declare_generic(const Node& node);
     void compile_call(const Node& node);
     void compile_function(const Node& node);
     void compile_method(const Node& node, const string& class_name);

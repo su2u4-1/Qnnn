@@ -4,6 +4,7 @@
 #include <limits.h>
 
 #include <algorithm>
+#include <cassert>
 #include <filesystem>
 #include <fstream>
 #include <iostream>
