@@ -193,9 +193,9 @@ void Compiler::compile_declare_var(const Node& node) {
         if (node.children[1]->type != "expression")
             compile_error("CompileError: Expected expression, not " + node.children[1]->type, node.pos);
         compile_expression(*node.children[1]);
-        target_code.push_back("pop $T");
+        target_code.push_back("pop $X");
         target_code.push_back(t);
-        target_code.push_back("copy $T $M");
+        target_code.push_back("copy $X $M");
     }
     log.log_msg("compile_declare_var", 1);
 }
@@ -332,16 +332,16 @@ void Compiler::compile_term(const Node& node) {
         target_code.push_back("push 0");
     else if (node.value.at("type") == "dereference" || node.value.at("type") == "pointer" || node.value.at("type") == " neg" || node.value.at("type") == "not") {
         compile_term(*node.children[0]);
-        target_code.push_back("pop $T");
+        target_code.push_back("pop $X");
         if (node.value.at("type") == "dereference")
-            target_code.push_back("def $T");
+            target_code.push_back("def $X");
         else if (node.value.at("type") == "pointer")
-            target_code.push_back("ptr $T");
+            target_code.push_back("ptr $X");
         else if (node.value.at("type") == "neg")
-            target_code.push_back("neg $T");
+            target_code.push_back("neg $X");
         else if (node.value.at("type") == "not")
-            target_code.push_back("not $T");
-        target_code.push_back("push $T");
+            target_code.push_back("not $X");
+        target_code.push_back("push $X");
     } else if (node.value.at("type") == "expression")
         compile_expression(*node.children[0]);
     else if (node.value.at("type") == "variable")
@@ -365,6 +365,7 @@ void Compiler::compile_variable(const Node& node) {
     log.log_msg("compile_variable", 0);
     if (node.type != "variable")
         compile_error("CompileError: Unknown variable type: " + node.type, node.pos);
+    // TODO
     log.log_msg("compile_variable", 1);
 }
 
@@ -372,6 +373,7 @@ void Compiler::compile_use_generic(const Node& node) {
     log.log_msg("compile_use_generic", 0);
     if (node.type != "use_generic")
         compile_error("CompileError: Unknown use_generic type: " + node.type, node.pos);
+    // TODO
     log.log_msg("compile_use_generic", 1);
 }
 
@@ -379,6 +381,7 @@ void Compiler::compile_call(const Node& node) {
     log.log_msg("compile_call", 0);
     if (node.type != "call")
         compile_error("CompileError: Unknown call type: " + node.type, node.pos);
+    // TODO
     log.log_msg("compile_call", 1);
 }
 
@@ -475,6 +478,22 @@ void Compiler::compile_arr(const Node& node) {
     log.log_msg("compile_arr", 0);
     if (node.type != "arr")
         compile_error("CompileError: Unknown arr type: " + node.type, node.pos);
+    target_code.push_back("push " + to_string(node.children.size() + 1));
+    target_code.push_back("call \"function alloc(int) -> int\"");
+    target_code.push_back("push " + to_string(node.children.size() + 1));
+    target_code.push_back("pop $Y");
+    target_code.push_back("pop $X");
+    target_code.push_back("copy $X $A");
+    target_code.push_back("copy $Y $M");
+    target_code.push_back("push $X");
+    for (int i = 1; i <= node.children.size(); ++i) {
+        compile_expression(*node.children[i]);
+        target_code.push_back("pop $Y");
+        target_code.push_back("pop $X");
+        target_code.push_back("add $X " + to_string(i) + " $A");
+        target_code.push_back("copy $Y $M");
+        target_code.push_back("push $X");
+    }
     log.log_msg("compile_arr", 1);
 }
 
@@ -482,6 +501,7 @@ void Compiler::compile_tuple(const Node& node) {
     log.log_msg("compile_tuple", 0);
     if (node.type != "tuple")
         compile_error("CompileError: Unknown tuple type: " + node.type, node.pos);
+    // TODO
     log.log_msg("compile_tuple", 1);
 }
 
@@ -489,6 +509,7 @@ void Compiler::compile_dict(const Node& node) {
     log.log_msg("compile_dict", 0);
     if (node.type != "dict")
         compile_error("CompileError: Unknown dict type: " + node.type, node.pos);
+    // TODO
     log.log_msg("compile_dict", 1);
 }
 
@@ -526,6 +547,7 @@ void Compiler::compile_continue(const Node& node) {
     if (node.type != "continue")
         compile_error("CompileError: Unknown continue type: " + node.type, node.pos);
     target_code.push_back("goto " + loop_label_stack.back() + "_start");
+    // TODO
     log.log_msg("compile_continue", 1);
 }
 
@@ -533,6 +555,7 @@ void Compiler::compile_if(const Node& node) {
     log.log_msg("compile_if", 0);
     if (node.type != "if")
         compile_error("CompileError: Unknown if type: " + node.type, node.pos);
+    // TODO
     log.log_msg("compile_if", 1);
 }
 
