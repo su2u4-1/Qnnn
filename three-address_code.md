@@ -1,90 +1,90 @@
 ### assignment 
-symbol: `=`  
+symbol: `=`
 statement: `r0 = n`
 ### goto
-symbol: `goto`  
+symbol: `goto`
 statement: `goto r0`
 ### return
-symbol: `return`  
+symbol: `return`
 statement: `return r0`
 ### label
-symbol: `label`  
+symbol: `label`
 statement: `label L`
 ### logic not
-symbol: `!`  
+symbol: `!`
 statement: `r1 = !r0`
 ### neg
-symbol: `-`  
+symbol: `-`
 statement: `r1 = -r0`
 ### get address
-symbol: `@`  
+symbol: `@`
 statement: `r1 = @r0`
 ### deference
-symbol: `^`  
+symbol: `^`
 statement: `r1 = ^r0`
 ### if-goto
-symbol: `if-goto`  
+symbol: `if-goto`
 statement: `if r0 goto L`
 ### index
-symbol: `[]`  
+symbol: `[]`
 statement: `r0[r1]`
 ### attribute
-symbol: `.`  
+symbol: `.`
 statement: `r0.r1`
 ### call
-symbol: `call`  
+symbol: `call`
 statement: `call r0 n`
 ### power
-symbol: `**`  
+symbol: `**`
 statement: `r2 = r0 ** r1`
 ### mul
-symbol: `*`  
+symbol: `*`
 statement: `r2 = r0 * r1`
 ### div
-symbol: `/`  
+symbol: `/`
 statement: `r2 = r0 / r1`
 ### rem
-symbol: `%`  
+symbol: `%`
 statement: `r2 = r0 % r1`
 ### add
-symbol: `+`  
+symbol: `+`
 statement: `r2 = r0 + r1`
 ### sub
-symbol: `-`  
+symbol: `-`
 statement: `r2 = r0 - r1`
 ### left shift
-symbol: `<<`  
+symbol: `<<`
 statement: `r2 = r0 << r1`
 ### right shift
-symbol: `>>`  
+symbol: `>>`
 statement: `r2 = r0 >> r1`
 ### lt
-symbol: `<`  
+symbol: `<`
 statement: `r2 = r0 < r1`
 ### leq
-symbol: `<=`  
+symbol: `<=`
 statement: `r2 = r0 <= r1`
 ### gt
-symbol: `>`  
+symbol: `>`
 statement: `r2 = r0 > r1`
 ### geq
-symbol: `>=`  
+symbol: `>=`
 statement: `r2 = r0 >= r1`
 ### eq
-symbol: `==`  
+symbol: `==`
 statement: `r2 = r0 == r1`
 ### neq
-symbol: `!=`  
+symbol: `!=`
 statement: `r2 = r0 != r1`
 ### bit and
-symbol: `&`  
+symbol: `&`
 statement: `r2 = r0 & r1`
 ### bit or
-symbol: `|`  
+symbol: `|`
 statement: `r2 = r0 | r1`
 ### logic and
-symbol: `&&`  
+symbol: `&&`
 statement: `r2 = r0 && r1`
 ### logic or
-symbol: `||`  
+symbol: `||`
 statement: `r2 = r0 || r1`

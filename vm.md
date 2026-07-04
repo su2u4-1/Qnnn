@@ -1,75 +1,75 @@
 # command
 ## tier 0
-`push $[]`  
-`pop $[]`  
-`[op(3)] $[r0] $[r1] $[r2]`  
-`[op(3)] $[r0] [value] $[r2]`  
-`[op(2)] $[r0] $[r1]`  
-`[op(2)] [value] $[r1]`  
+`push $[]`
+`pop $[]`
+`[op(3)] $[r0] $[r1] $[r2]`
+`[op(3)] $[r0] [value] $[r2]`
+`[op(2)] $[r0] $[r1]`
+`[op(2)] [value] $[r1]`
 `[op(3)]`
-`[op(2)]`  
-`if_goto $[] [label]`  
-`input [value]`  
+`[op(2)]`
+`if_goto $[] [label]`
+`input [value]`
 `set [label]`
-`call [subroutine signature]`  
-`subroutine [subroutine signature]`  
-`return`  
-`get attr $[object pointer] [n]`  
-`get index $[container] [n]`  
-> \[op(2)\] assignment `= $[r0] $[r1]` equal `copy $[r0] $[r1]`  
-> \[op(2)\] can pop a value from stack and push them back onto the stack after computation.  
+`call [subroutine signature]`
+`subroutine [subroutine signature]`
+`return`
+`get attr $[object pointer] [n]`
+`get index $[container] [n]`
+> \[op(2)\] assignment `= $[r0] $[r1]` equal `copy $[r0] $[r1]`
+> \[op(2)\] can pop a value from stack and push them back onto the stack after computation.
 > \[op(3)\] can pop two values from stack and push them back onto the stack after computation.
 ## tier 1
-`push $[]`  
-`pop $[]`  
-`[op(3)] $[r0] $[r1] $[r2]`  
-`[op(2)] $[r0] $[r1]`  
-`if_goto $[] [label]`  
-`goto [label]`  
-`input [value]`  
+`push $[]`
+`pop $[]`
+`[op(3)] $[r0] $[r1] $[r2]`
+`[op(2)] $[r0] $[r1]`
+`if_goto $[] [label]`
+`goto [label]`
+`input [value]`
 `set [label]`
 `get [label]`
 ## tier 2
-`copy $[] $[]`    
-`[op(3)] $[r0] $[r1] $[r2]`  
-`[op(2)] $[r0] $[r1]`  
-`if_goto $[] $[]`  
-`goto $[]`  
-`input [value] $[]`  
+`copy $[] $[]`  
+`[op(3)] $[r0] $[r1] $[r2]`
+`[op(2)] $[r0] $[r1]`
+`if_goto $[] $[]`
+`goto $[]`
+`input [value] $[]`
 `set [label]`
 `get [label]`
 ## tier 3
-`copy $[] $[]`    
-`[op(3)] $[r0] $[r1] $[r2]`  
-`[op(2)] $[r0] $[r1]`  
-`if_goto $[] $[]`  
-`goto $[]`  
+`copy $[] $[]`  
+`[op(3)] $[r0] $[r1] $[r2]`
+`[op(2)] $[r0] $[r1]`
+`if_goto $[] $[]`
+`goto $[]`
 `input [value] $[]`
 # op
 ## op(2)
-assignment: `r1 = r0` \[`asi`\]  
-logic not: `r1 = !r0` \[`not`\]  
-neg: `r1 = -r0` \[`neg`\]  
-get address: `r1 = @r0` \[`ptr`\]  
+assignment: `r1 = r0` \[`asi`\]
+logic not: `r1 = !r0` \[`not`\]
+neg: `r1 = -r0` \[`neg`\]
+get address: `r1 = @r0` \[`ptr`\]
 deference: `r1 = ^r0` \[`def`\]
 ## op(3)
-power: `r2 = r0 ** r1` \[`pow`\]  
-mul: `r2 = r0 * r1` \[`mul`\]  
-div: `r2 = r0 / r1` \[`div`\]  
-rem: `r2 = r0 % r1` \[`rem`\]  
-add: `r2 = r0 + r1` \[`add`\]  
-sub: `r2 = r0 - r1` \[`sub`\]  
-left shift: `r2 = r0 << r1` \[`lsh`\]  
-right shift: `r2 = r0 >> r1` \[`rsh`\]  
-lt: `r2 = r0 < r1` \[`lt`\]  
-leq: `r2 = r0 <= r1` \[`leq`\]  
-gt: `r2 = r0 > r1` \[`gt`\]  
-geq: `r2 = r0 >= r1` \[`geq`\]  
-eq: `r2 = r0 == r1` \[`eq`\]  
-neq: `r2 = r0 != r1` \[`neq`\]  
-bit and: `r2 = r0 & r1` \[`band`\]  
-bit or: `r2 = r0 | r1` \[`bor`\]  
-logic and: `r2 = r0 && r1` \[`land`\]  
+power: `r2 = r0 ** r1` \[`pow`\]
+mul: `r2 = r0 * r1` \[`mul`\]
+div: `r2 = r0 / r1` \[`div`\]
+rem: `r2 = r0 % r1` \[`rem`\]
+add: `r2 = r0 + r1` \[`add`\]
+sub: `r2 = r0 - r1` \[`sub`\]
+left shift: `r2 = r0 << r1` \[`lsh`\]
+right shift: `r2 = r0 >> r1` \[`rsh`\]
+lt: `r2 = r0 < r1` \[`lt`\]
+leq: `r2 = r0 <= r1` \[`leq`\]
+gt: `r2 = r0 > r1` \[`gt`\]
+geq: `r2 = r0 >= r1` \[`geq`\]
+eq: `r2 = r0 == r1` \[`eq`\]
+neq: `r2 = r0 != r1` \[`neq`\]
+bit and: `r2 = r0 & r1` \[`band`\]
+bit or: `r2 = r0 | r1` \[`bor`\]
+logic and: `r2 = r0 && r1` \[`land`\]
 logic or: `r2 = r0 || r1` \[`lor`\]
 # register
 ## low level register
